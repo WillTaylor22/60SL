@@ -1,0 +1,162 @@
+#imagediv{
+    width: 400px;
+    height: 100px;
+    background-color: white;
+
+    position: absolute;
+    top:-250px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    margin: auto;
+}
+
+#logo{
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    margin: auto;
+}
+
+#sorry{
+    position: absolute;
+    top:110px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    margin: auto;
+}
+
+
+
+#maindiv{
+    width: 400px;
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    margin: auto;
+
+}
+
+#questiondiv{
+    width: 400px;
+    height: 100px;
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    margin: auto;
+
+}
+
+#searchbar{
+    width: 400px;
+}
+
+#searchbutton{
+    width: 200px;
+    position: relative;
+    left: 100px;
+
+    margin: auto;
+}
+
+img#toplogo{
+    margin: 10% 10px 10px 10%;
+}
+
+div#partnerlogo{
+    float: left;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+#just_pick_up, #see_prices, #reviewbtn{
+    height: 15%;
+    width: 100%;
+}
+
+.collectionform{
+    width: 100%;
+}
+
+.collectionform-half{
+    width: 49%;
+}
+
+td{
+    vertical-align: bottom;
+}
+
+.menutable{
+    /*table-layout:fixed;*/
+    /*border-spacing: 5px;*/
+    width: 100%;
+}
+
+.itemcolumn{
+    padding-right: 10px;
+}
+
+.subitemcolumn{
+    padding-right: 10px;
+}
+
+.pricecolumn{
+    padding-right: 15px;
+}
+/*
+.turnaroundcolumn{
+    min-width: 20%;
+    margin-left: 5px;
+    text-align: right;
+}
+
+.firstitem{
+
+}
+
+/*
+#orderdiv{
+    padding-top: 1px;
+    background-color: #FFFF33;
+    border-radius:10px;
+}
+*/
+/*#ordertable, th, td{
+    border: 1px solid black;
+}
+*/
+#quickviewdiv{
+    margin:0;padding:0;height:140px;
+}
+
+#collection_input, #delivery_input{
+    width: 320px;
+}
+
+#how_it_works{
+    text-align: center;
+    color: grey;
+}
+
+.review_left{
+    /*margin-right: 10px;*/
+    padding-right: 10px;
+}
+
+.review_space_below{
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+}

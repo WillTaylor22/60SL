@@ -1,0 +1,89 @@
+{% extends "templates/base.html" %}
+{% block content %}
+<h3>Here's Your Order</h3>
+<h5>Please check that it is correct<br><br>
+
+<table>
+<tr>
+	<td class='review_left review_space_below'>Your Name:</td>
+	<td class='review_space_below review_bold'>{{ order.first_name }} {{ order.last_name }}</td>
+</tr>
+<tr>
+	<td class='review_left'>Your Address:</td>
+	<td class='review_bold'>{{ order.address1 }}</td>
+</tr>
+{% if order.address2 %}
+<tr>
+	<td class='review_left'></td>
+	<td class='review_bold'>{{ order.address2 }}</td>
+</tr>
+{% endif %}
+{% if order.address3 %}
+<tr>
+	<td class='review_left'></td>
+	<td class='review_bold'>{{ order.address3 }}</td>
+</tr>
+{% endif %}
+<tr>
+	<td class='review_left'></td>
+	<td class='review_bold'>{{ order.postcode }}</td>
+</tr>
+{% if order.collectioninstructions %}
+<tr>
+	<td class='review_left review_space_below'>Collection Instructions</td>
+	<td class='review_space_below review_bold'>{{ order.collectioninstructions }}</td>
+</tr>
+{% endif %}
+<tr>
+	<td class='review_left'>Phone Number:</td>
+	<td class='review_bold'>{{ order.phonenumber }}</td>
+</tr>
+<tr>
+	<td class='review_left review_space_below'>Email:</td>
+	<td class='review_space_below review_bold'>{{ order.email }}</td>
+</tr>
+<tr>
+	<td class='review_left'>Cleaning & Delivery Courtesy Of:</td>
+	<td class='review_bold'>{{ partner_name }}</td>
+</tr>
+<tr>
+	<td class='review_left'>Collection Time:</td>
+	<td class='review_bold'>{{ order.collection_time_date }}</td>
+</tr>
+<tr>
+	<td class='review_left'>Delivery Time:</td>
+	<td class='review_bold'>{{ order.delivery_time_date }}</td>
+</tr>
+<!-- <tr>
+	<td>TEST: submitted?:</td>
+	<td>{{ order.submitted }}</td>
+</tr>
+<tr>
+	<td>TEST: order ID:</td>
+	<td>{{ order.ordernumber }}</td>
+</tr> -->
+</table>
+<br>
+</h5>
+<div id="submitorder">
+	<button id="back_button" onclick="goBack()" class="btn btn-default" style="float: left;">Go Back</button>
+	<form action="submitted" method="post">
+		<input value="{{ order.ordernumber }}" type="hidden" name="order_key">
+		<input id="place_order_button" class="btn btn-success btn-lg" type="submit" value="Place Order" style="float: right; width: 40%;">
+	</form>
+</div>
+
+{% endblock %}
+{% block endscripts %}
+<script type="text/javascript">
+
+function goBack()
+  {
+  window.history.back()
+  }
+</script>
+
+
+</script>
+
+{% endblock %}

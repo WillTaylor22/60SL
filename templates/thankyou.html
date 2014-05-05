@@ -1,0 +1,27 @@
+{% extends "templates/base.html" %} {% block content %}
+
+<h4>Order Received!</h4>
+
+Nice one, {{ order.first_name }}! What's next:
+
+<ul>
+	<li>We'll email you a receipt.</li>
+	<li>At <strong>{{ order.collection_time_date }}</strong>, your cleaners <strong>{{ order.service_partner }}</strong> will arrive to pick up your clothes. </li>
+	<li>They will confirm what you are giving them, and you pay by cash on the spot</li>
+	<li>They clean your clothes professionally</li>
+	<li>They bring your clothes back at <strong>{{ order.delivery_time_date }}</strong>. </li>
+</ul>
+
+<h5>Any problems, changes, or cancellations?</h5>
+
+<p>Contact your collection partner directly on <strong>{{ partner_phone_number }}</strong>. (This number on in your receipt)
+</p>
+
+
+<h5>Thank you for using 60 Second Laundry</h5>
+
+<p>Feedback? Want to say hello? Email us at contact@60secondlaundry.com. If you have a question about your order, call your cleaner.</p>
+
+<p>Have an amazing day.</p>
+
+{% endblock %}{% block endscripts %} {% endblock %}

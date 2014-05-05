@@ -1,0 +1,25 @@
+{% extends "templates/base.html" %}
+{% block content %}
+{% include "templates/logoheader.html" %}
+	<div id="questiondiv">
+		{% if error_message %}
+		<div class="alert alert-info">
+		  {{ error_message }}
+		</div>
+		{% endif %}
+		<form action="near" method="get">
+			<input id="searchbar" type="text" name="postcode"
+			placeholder="What's Your Postcode?">
+			<br>
+			<br>
+			<input id="searchbutton" type="submit" class="btn btn-success" value="Find Me A Dry Cleaner">
+		</form>
+
+		<br /><br /><br />
+		<span id="how_it_works">
+			<p>1. Find local cleaners</p>
+			<p>2. Book free collection and delivery</p>
+			<p>3. Pay cash on collection</p>
+		</span>
+	</div>
+{% endblock %}

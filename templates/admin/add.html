@@ -1,0 +1,13 @@
+{% extends "templates/base.html" %}
+{% block content %}
+<form action="{{ upload_url }}" enctype="multipart/form-data" method="POST">
+	<input id="searchbar" type="text" name="name" placeholder="Name">
+	<br>
+	<input id="searchbar" type="text" name="address" placeholder="Address"><br>
+	<input id="searchbar" type="text" name="outcodes" placeholder="Outcodes"> <br>
+	<input id="searchbar" type="text" name="minimum_order" placeholder="Minimum order">(as an integer)<br>
+	<input id="searchbar" type="text" name="delivery_cost" placeholder="Delivery cost">(as a string) <br>
+	<input type="file" name="logo">	<br>
+	<input id="searchbutton" class="btn btn-success" type="submit" value="Add to database">
+</form>
+{% endblock %}

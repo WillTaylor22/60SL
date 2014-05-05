@@ -1,0 +1,163 @@
+#header{
+    width: 100%;
+    height: 100px;
+    background-color: white;
+}
+
+
+
+#logo{
+    position: absolute;
+    top: 30px;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+#footer{
+    width: 100%;
+    height: 120px;
+    background-color: white;
+    float: left;
+}
+
+#logobottom{
+    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#detailsdiv{
+    width: 100%;
+    height: 150px;
+    background-color: white;
+}
+
+#partnerlogo{
+    width:; 20%;
+    min-width: 145px;
+    float: left;
+    background-color: white;
+    height: 150px;
+}
+
+#partnerlogoimg{
+    position: relative;
+    top: 15px;
+}
+
+#quickinfo{
+    width: 50%;
+    float: left;
+    background-color: white;
+    height: 150px;
+}
+
+#deliverycharges{
+    width: 30%;
+    float: left;
+    background-color: white;
+    height: 150px;
+
+    color: grey;
+}
+
+
+
+#bodydiv{
+    width: 100%;
+    padding-top:25px;
+    padding-bottom:25px;
+    padding-right:5%;
+    padding-left:5%;
+    background-color: white;
+}
+
+.container{
+    background-color: white;
+}
+
+#menudiv{
+    width: 80%;
+    float: left;
+}
+
+#orderdiv{
+    background-color: #eeeeee;
+    width: 20%;
+    min-height: 200px;
+    float: left;
+    font-size: 11px;
+}
+
+#ordertable, #ordertable td, #ordertable th{
+    border: 0px solid black;
+    width: 100%;
+}
+
+#paddedcell{
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+#maindiv{
+    background-color: purple;
+}
+
+#content{
+    background-color: white;
+}
+
+/* Start the star rating stuff */
+.wrapper:hover label{
+    background-position:left bottom;
+}
+label{
+    background:url('http://img833.imageshack.us/img833/5959/stard.png') no-repeat left bottom;
+    float:right;
+    line-height:20px;   
+    padding-left:20px;
+    height:15px;
+}
+input:checked+label,.wrapper:hover label:hover,.wrapper:hover label:hover~label{
+    background-position:0px -1px;
+}
+input:checked~label{
+    background-position:0px -1px;
+}   
+input{
+    display:none;
+}
+.wrapper{
+    float:left;
+}
+/* End star rating */
+
+#orderdiv hr{
+    color: #FF0066;
+}
+
+#deliverydiv{
+    background-color: #eeeeee;
+}
+
+#paymentdiv{
+    background-color: white;
+
+}
+
+#spacerdiv{
+    float: left;
+    min-height: 1px;
+    min-width: 30px;
+}
+
+#instructionsdiv {
+    background-color: #eeeeee;
+    float: left;
+    width: 75%;
+    min-height: 600px;
+}
+
+

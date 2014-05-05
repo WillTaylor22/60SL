@@ -1,0 +1,12 @@
+{% extends "templates/base.html" %}
+{% block content %}
+	{% for partner in partners %}
+	<div id="partnerinfo">
+		{% include "templates/quickview.html" %}
+		<form action="menu" method="get" style="float:left;"><input type="text" name="partner_name" value="{{ partner.name }}" hidden=True><input type="submit" class="btn btn-success" value="Book Collection">
+		</form>
+		<form action="menu" method="get" style="float:left;"><input type="text" name="partner_name" value="{{ partner.name }}" hidden=True><input type="submit" class="btn btn-primary" value="More >>>">
+		</form>
+	</div>
+{% endfor %}
+{% endblock %}

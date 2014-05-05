@@ -1,0 +1,22 @@
+{% extends "templates/base.html" %}
+{% block content %}
+		{% for partner in partners %}
+		<div>
+			<img src="{{ partner.logo_url }}" style="float: left; margin-right: 10px; margin-top: 20px;">
+			<br /><h4>{{ partner.name }}</h4>
+			<br />Address: {{ partner.address}}
+			<br />Minimum Order: {{ partner.minimum_order }}
+			<br />Delivery Cost String: {{ partner.delivery_cost }}
+			<br />Serves Outcodes:
+				{% for a in partner.outcodes %}
+					{{ a }}
+				{% endfor %}
+			<br />
+			<form id="{{ partner.name }}form" method="post" action="/delete">
+				<input type="hidden" name="name" value="{{ partner.name }}" /> 
+				<a onclick="document.getElementById('{{ partner.name }}form').submit();">Delete</a>
+			</form>
+			<br>
+		</div>
+		{% endfor %}
+{% endblock %}
