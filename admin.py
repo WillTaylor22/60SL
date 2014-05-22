@@ -38,6 +38,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 		partner_name = self.request.get('name')
 		partner_outcodes = self.request.get('outcodes')
 		partner_outcodes = partner_outcodes.split()
+		partner_address = self.request.get('address')
 		partner_minimum_order = self.request.get('minimum_order')
 		partner_delivery_cost = self.request.get('delivery_cost')
 
@@ -46,11 +47,25 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 
 		# Give the new partner our data
 		partner.name = partner_name
+		partner.address = partner_address
 		partner.outcodes = partner_outcodes
 		partner.minimum_order = int(partner_minimum_order)
 		partner.delivery_cost = partner_delivery_cost
+
+		partner.start_hr = int(self.request.get('start_hr'))
+		partner.start_min = int(self.request.get('start_min'))
+		partner.end_hr = int(self.request.get('end_hr'))
+		partner.end_min = int(self.request.get('end_min'))
+		partner.window_size = int(self.request.get('window_size'))
+
+		partner.start_day = int(self.request.get('start_day'))
+		partner.end_day = int(self.request.get('end_day'))
+
 		
 		partner.logo_key = blob_key # n.b. blobstore.BlobReferenceProperty() takes a blob_info
+		
+		partner.populate_slots()
+
 		partner.put()
 
 		# redirect

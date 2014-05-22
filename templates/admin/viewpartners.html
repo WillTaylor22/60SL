@@ -11,7 +11,13 @@
 				{% for a in partner.outcodes %}
 					{{ a }}
 				{% endfor %}
+			<br />slots:
+				{% for a in partner.delivery_slots %}
+					{{ a }}
+				{% endfor %}
 			<br />
+			<br />
+			Start Day: {{ partner.start_day }}, End Day: {{ partner.end_day }}
 			<form id="{{ partner.name }}form" method="post" action="/delete">
 				<input type="hidden" name="name" value="{{ partner.name }}" /> 
 				<a onclick="document.getElementById('{{ partner.name }}form').submit();">Delete</a>

@@ -4,9 +4,24 @@
 
 {% extends "templates/base.html" %}
 {% block content %}
-<br>
+
+<ol class="breadcrumb">
+	<li><a href="/">Home</a></li>
+	<li class="active">Listings</li>
+	<li class="active">Cleaner</li>
+</ol>
+
 <div id="quickviewdiv" style="">
-	{% include "templates/quickview.html" %}
+
+	<div id="partner_logo"><img src="{{ partner.logo_url }}" style="float: left; margin-right: 10px;" alt='Partner Logo'>
+	</div>
+	<div id="partner_facts" style="float: left;">
+		<h4>{{ partner.name }}</h4>
+		<h5>{{ partner.address}}</h5>
+		<h5>Minimum order: £{{ partner.minimum_order }}</h5>
+		<h5>{{ partner.delivery_cost }}</h5>
+	</div>
+
 </div>
 <form action="/collection" method="get">
 	<!-- leaving hidden field in, despite use of cookies, so that
@@ -15,7 +30,7 @@
 <input type="submit" class="btn btn-default btn-success btn-lg btn-block" value="Book Collection"></button></form><br>
 
 <div> <!-- content: tab headings, tab contents -->
-<ul class="nav nav-pills" data-tabs="tabs"> <!-- tab headings -->
+<ul class="nav nav-pills nav-justified" data-tabs="tabs"> <!-- tab headings -->
 {% set prevtabname = '' %}
 {% set i = 0 %}
 {% set length = 0 %}

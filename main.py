@@ -35,7 +35,7 @@ import mymodels
 from google.appengine.ext import ndb
 from bin import postcode
 
-from admin import InputHandler, UploadHandler, ServeHandler, DeleteHandler
+# from admin import InputHandler, UploadHandler, ServeHandler, DeleteHandler
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -124,6 +124,7 @@ class ListingsHandler(webapp2.RequestHandler):
 
 		mypostcode = self.request.get('postcode')
 
+		# record for analytics
 		postcodeattempt = mymodels.postcode_attempt()
 		postcodeattempt.postcode = mypostcode
 		postcodeattempt.put()
@@ -140,8 +141,10 @@ class ListingsHandler(webapp2.RequestHandler):
 			query = mymodels.Partner.query(mymodels.Partner.outcodes == outcode)
 			partners = query.fetch(10)
 
+
 			if partners[0]:
 				template_values = {
+					'postcode' : mypostcode,
 					'partners' : partners
 				}
 				template = JINJA_ENVIRONMENT.get_template('templates/listings.html')
@@ -162,17 +165,20 @@ class ListingsHandler(webapp2.RequestHandler):
 		self.response.write(template.render(template_values))
 
 
-	
-
 class MenuHandler(webapp2.RequestHandler):
 	def get(self):
 		partner_name = self.request.get('partner_name')
+		postcode = 'Postcode'
 
 		session = get_current_session()
 		session['partner'] = partner_name
 
 		query = mymodels.Partner.query(mymodels.Partner.name == partner_name)
 		partner = query.fetch(1)[0]
+
+		if session.has_key('postcode'):
+			postcode = session['postcode']
+
 
 		query = mymodels.menuitem.query(
 			ancestor=mymodels.partner_key(partner_name)).order(ndb.GenericProperty("itemid"))
@@ -186,6 +192,7 @@ class MenuHandler(webapp2.RequestHandler):
 			menuitems = query.fetch(300)
 
 		template_values = {
+			'postcode': postcode,
 			'partner' : partner,
 			'menuitems' : menuitems
 		}
@@ -193,22 +200,42 @@ class MenuHandler(webapp2.RequestHandler):
 		template = JINJA_ENVIRONMENT.get_template('templates/menu.html')
 		self.response.write(template.render(template_values))
 
-
-class CollectionHandler(webapp2.RequestHandler):
+class FormHandler(webapp2.RequestHandler):
 	def get(self):
+
 		partner_name = self.request.get('partner_name')
 
 		session = get_current_session()
 		postcode = ''
+		partner = ''
 
 		if session.has_key('postcode'):
 			postcode = session['postcode']
 
+		if session.has_key('partner'):
+			partner = session['partner']
+
+		query = mymodels.Partner.query(mymodels.Partner.name == partner_name)
+		partner = query.fetch(1)[0]
+
+		next_three_days = partner.get_next_three_days()
+		print next_three_days
+		# 1. Populate array of values
+		# Given: Start time, end time, window size
+		# Create a slot start every 15 minutes from start time to (end time - window)
+		# Create a label for each slot start
+
+
+		# 2. put array into template_values
+		# 3. display template values currectly in the app
+
 		template_values = {
+			'next_three_days': next_three_days,
 			"partner_name" : partner_name,
 			"postcode": postcode,
+			'partner': partner,
 		}
-		template = JINJA_ENVIRONMENT.get_template('templates/collection.html')
+		template = JINJA_ENVIRONMENT.get_template('templates/form.html')
 		self.response.write(template.render(template_values))
 
 class ReviewOrderHandler(webapp2.RequestHandler):
@@ -232,8 +259,8 @@ class ReviewOrderHandler(webapp2.RequestHandler):
 		myOrder.collectioninstructions = self.request.get('Collect_instructions')
 		myOrder.phonenumber = self.request.get('Phone_number')
 		myOrder.email = self.request.get('Email')
-		myOrder.collection_time_date = self.request.get('collection_input')
-		myOrder.delivery_time_date = self.request.get('delivery_input')
+		myOrder.collection_time_date = self.request.get('collection_day_output') + ', ' + self.request.get('collection_time_output')
+		myOrder.delivery_time_date = self.request.get('delivery_day_output') + ', ' + self.request.get('delivery_time_output')
 		myOrder.service_partner = partner_name
 
 		myOrder.put()
@@ -264,6 +291,10 @@ class SubmitHandler(webapp2.RequestHandler):
 			myOrder.submitted = True
 			myOrder.put()
 
+		myOrder.send_txt_to_cleaner()
+		myOrder.send_email_to_cleaner()
+		myOrder.send_email_to_customer()
+
 		template_values = {
 			"order" : myOrder,
 		}
@@ -273,6 +304,20 @@ class SubmitHandler(webapp2.RequestHandler):
 
 		template = JINJA_ENVIRONMENT.get_template('templates/thankyou.html')
 		self.response.write(template.render(template_values))
+
+class CleanerLoginHandler(webapp2.RequestHandler):
+	def get(self):
+		template_values = {}
+		template = JINJA_ENVIRONMENT.get_template('templates/cleanerlogin.html')
+		self.response.write(template.render(template_values))
+
+
+class FeedbackHandler(webapp2.RequestHandler):
+	def post(self):
+		myFeedback = mymodels.feedback()
+		myFeedback.page = self.request.get('feedback_page')
+		myFeedback.feedback = self.request.get('feedback_content')
+		myFeedback.put()
 
 
 class TestHandler(webapp2.RequestHandler):
@@ -284,15 +329,21 @@ class TestHandler(webapp2.RequestHandler):
 # URL Routing happens here
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/near', ListingsHandler),
-    ('/menu', MenuHandler),
+    webapp2.Route('/near', handler=ListingsHandler, name='near'),
+	#    webapp2.Route('/menu/<partner>', handler=MenuHandler, name='menu'),
+	('/menu', MenuHandler),
     ('/revieworder', ReviewOrderHandler),
-    ('/collection', CollectionHandler),
-    ('/add', InputHandler),
-    ('/upload', UploadHandler),
-    ('/viewpartners', ServeHandler),
-    ('/test', TestHandler),
-    ('/delete', DeleteHandler),
+    ('/collection', FormHandler),
     ('/submitted', SubmitHandler),
     
+    ('/add', 'admin.InputHandler'),
+    ('/upload', 'admin.UploadHandler'),
+    ('/delete', 'admin.DeleteHandler'),
+    ('/viewpartners', 'admin.ServeHandler'),
+
+    ('/login', CleanerLoginHandler),
+    ('/feedback', FeedbackHandler),
+
+    ('/test', TestHandler),
+
 ], debug=True)

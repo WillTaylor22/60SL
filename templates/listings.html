@@ -1,12 +1,36 @@
 {% extends "templates/base.html" %}
 {% block content %}
+
+<ol class="breadcrumb">
+	<li><a href="/">Home</a></li>
+	<li class="active">Listings</li>
+</ol>
+
 	{% for partner in partners %}
 	<div id="partnerinfo">
-		{% include "templates/quickview.html" %}
-		<form action="menu" method="get" style="float:left;"><input type="text" name="partner_name" value="{{ partner.name }}" hidden=True><input type="submit" class="btn btn-success" value="Book Collection">
-		</form>
-		<form action="menu" method="get" style="float:left;"><input type="text" name="partner_name" value="{{ partner.name }}" hidden=True><input type="submit" class="btn btn-primary" value="More >>>">
-		</form>
+		
+		<div id="quickviewdiv" style="">
+
+			<div id="partner_logo"><img src="{{ partner.logo_url }}" style="float: left; margin-right: 10px;" alt='Partner Logo'>
+			</div>
+			<div id="partner_facts" style="float: left; width: 270px;">
+				<h4>{{ partner.name }}</h4>
+				<div id="partner_facts_deeper" style="float: left;">
+					<h5>{{ partner.address}}</h5>
+					<h5>Min order: £{{ partner.minimum_order }}</h5>
+					<h5>{{ partner.delivery_cost }}</h5>
+				</div>
+			<form action="menu" method="get" style="float:right; margin-top: 45px;">
+					<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
+					<input type="submit" class="btn btn-success" value="View Menu >">
+			</form>
+			</div>
+			
+
+		</div>
+
+
+		
 	</div>
 {% endfor %}
 {% endblock %}

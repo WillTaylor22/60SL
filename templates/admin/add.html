@@ -1,13 +1,22 @@
 {% extends "templates/base.html" %}
 {% block content %}
 <form action="{{ upload_url }}" enctype="multipart/form-data" method="POST">
-	<input id="searchbar" type="text" name="name" placeholder="Name">
+	<input id="searchbar" type="text" name="name" placeholder="Name" value="Washington Dry Cleaners">
 	<br>
-	<input id="searchbar" type="text" name="address" placeholder="Address"><br>
-	<input id="searchbar" type="text" name="outcodes" placeholder="Outcodes"> <br>
-	<input id="searchbar" type="text" name="minimum_order" placeholder="Minimum order">(as an integer)<br>
-	<input id="searchbar" type="text" name="delivery_cost" placeholder="Delivery cost">(as a string) <br>
+	<input id="searchbar" type="text" name="address" placeholder="Address" value="18 Half Moon St."><br>
+	<input id="searchbar" type="text" name="outcodes" placeholder="Outcodes" value="W1 W1J"> <br>
+	<input id="searchbar" type="text" name="minimum_order" placeholder="Minimum order" value="30">(as an integer)<br>
+	<input id="searchbar" type="text" name="delivery_cost" placeholder="Delivery cost" value="Free Delivery" >(as a string) <br>
 	<input type="file" name="logo">	<br>
+	<input id="searchbar" type="text" name="start_hr" placeholder="Delivery Start Time (Hour, 24 hour clock)" value='7'><br>
+	<input id="searchbar" type="text" name="start_min" placeholder="Delivery Start Time (Minute)" value='0'><br>
+	<input id="searchbar" type="text" name="end_hr" placeholder="Delivery End Time (Hour, 24 hour clock)" value='22'><br>
+	<input id="searchbar" type="text" name="end_min" placeholder="Delivery End Time (Minute)" value='0'><br>
+	<input id="searchbar" type="text" name="window_size" placeholder="Window (in minutes)" value='60'><br><br>
+	Days Available For Delivery: Start Day. Enter lowest value of 0 - 6, where Sunday = 0, Monday = 1, etc
+	<input id="searchbar" type="text" name="start_day" placeholder="" value='0'><br>
+	Days Available For Delivery: End Day. Enter highest value of 0 - 6, where Sunday = 0, Monday = 1, etc
+	<input id="searchbar" type="text" name="end_day" placeholder="" value='6'><br><br>
 	<input id="searchbutton" class="btn btn-success" type="submit" value="Add to database">
 </form>
 {% endblock %}
