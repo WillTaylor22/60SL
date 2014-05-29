@@ -3,7 +3,7 @@
 
 <a href="/"><img src="static/img/Logo_width300.png" alt="Sixty Second Laundry" style=" margins: auto; margin-top: 30px; margin-left: 50px;"></a>
 {% if timetaken %}
-<h3>You just did your laundry in {{ timetaken }} {{ timeunit }}. Feels good, man.</h3>
+<h3>You just did your laundry in {{ timetaken }} seconds. Feels good, man.</h3>
 <hr>{% endif %}
 
 
@@ -20,21 +20,21 @@ Nice one {{ order.first_name }}. We've emailed you a receipt. What's next:
 <br>
 <h5>Changes or cancellations?</h5>
 
-<p>Contact your cleaners directly on <strong>{{ partner_phone_number }}</strong>. (This number is also on your receipt)
+<p>Call your cleaner directly on <strong>{{ partner_phone_number }}</strong>. (This number is also on your receipt)
 </p>
 
 
 <h5>Thanks for using <span style="color:red;">60 Second</span> <span style="color:darkblue;">Laundry</span></h5>
-
+<p>We want to be better. What new features do you want to see? What did you like? What did you hate?</p>
+<br>
 <div class="input-group" style="width: 400px;">
 	<input type="hidden" id="meta" value="Sent from the 'review' page">
-	<textarea id="feedback" class="collectionform input-sm" style="border-color: lightgrey; width: 320px;"placeholder="Help us make 60 Second Landry better. Type here to send anonymous feedback. What's good? What's bad? suggestions welcome."></textarea>
-	<span class="input-grousp-btn" style="float:right;">
-		<button id="feedback_button" class="btn btn-default" style="color:#999999; width: 80px; height: 48px;">Send</button>
+	<textarea id="feedback" class="collectionform-sm" style="border-color: lightgrey; width: 340px;"placeholder="What was good? What was bad?"></textarea>
+	<span class="input-grousp-btn" style="float:right; margin-top: 34px;">
+		<button id="feedback_button" class="btn btn-default">Send</button>
 	</span>
 	</div>
-<p>Want to say hello? Email us at contact@60secondlaundry.com. If you have a question about your order, call your cleaner.</p>
-
+<br>
 <p>Have an amazing day.</p>
 <img src="static/img/Will_Signature.png" alt="Will's Signature">
 <p>Will Taylor</p>

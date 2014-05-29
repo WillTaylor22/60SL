@@ -7,27 +7,35 @@
 
 <ol class="breadcrumb">
 	<li><a href="/">Home</a></li>
-	<li class="active">Listings</li>
+	<li><a href="/near">Listings</a></li>
 	<li class="active">Cleaner</li>
 </ol>
 
-<div id="quickviewdiv" style="">
+	<div id="partnerinfo">
+		
+		<div id="quickviewdiv" style="">
 
-	<div id="partner_logo"><img src="{{ partner.logo_url }}" style="float: left; margin-right: 10px;" alt='Partner Logo'>
-	</div>
-	<div id="partner_facts" style="float: left;">
-		<h4>{{ partner.name }}</h4>
-		<h5>{{ partner.address}}</h5>
-		<h5>Minimum order: £{{ partner.minimum_order }}</h5>
-		<h5>{{ partner.delivery_cost }}</h5>
-	</div>
+			<div id="partner_logo"><img src="{{ partner.logo_url }}" style="float: left; margin-right: 10px;" alt='Partner Logo'>
+			</div>
+			<div id="partner_facts" style="float: left; width: 270px;">
+				<h4>{{ partner.name }}</h4>
+				<div id="partner_facts_deeper" style="float: left;">
+					<h5>{{ partner.address}}</h5>
+					<h5>Min order: £{{ partner.minimum_order }}</h5>
+					<h5>{{ partner.delivery_cost }}</h5>
+				</div>
+			<form action="collection" method="get" style="float:right; margin-top: 45px;">
+					<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
+					<input type="submit" class="btn btn-success" value="Book Collection >">
+			</form>
+			</div>
+			
 
-</div>
-<form action="/collection" method="get">
-	<!-- leaving hidden field in, despite use of cookies, so that
-	customers can eventually start from here and buy -->
-<input value="{{ partner.name }}" type="hidden" name="partner_name">
-<input type="submit" class="btn btn-default btn-success btn-lg btn-block" value="Book Collection"></button></form><br>
+		</div>
+
+
+		
+	</div>
 
 <div> <!-- content: tab headings, tab contents -->
 <ul class="nav nav-pills nav-justified" data-tabs="tabs"> <!-- tab headings -->
@@ -118,7 +126,6 @@
  -->
 <br>
 </div><!-- body div -->
-
 
 {% endblock %}
 {% block endscripts %}

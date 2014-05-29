@@ -9,14 +9,14 @@
 
 	<ol class="breadcrumb">
 		<li><a href="/">Home</a></li>
-		<li><a href="/near">Listings</a></li>
-		<li><a href="/menu">Cleaner</a></li>
+		<li class="active">Listings</li>
+		<li class="active">Cleaner</a></li>
 		<li class="active">Booking</li>
 	</ol>
 
 
 	<div id="collectioninfo">
-		<form action="revieworder" method="post" onsubmit="return validateForm()">
+		<form action="revieworder" method="post">
 			<fieldset>
 				<legend>Where Do We Collect & Deliver?</legend>
 				<input class="collectionform input-lg" name="Address_line_1" type="text" name="searchquery"
@@ -27,7 +27,7 @@
 				placeholder="Address Line 3"><br>
 				<input class="collectionform input-lg" name="Postcode" type="text" name="searchquery" value = "{{ postcode }}"
 				placeholder="Postcode" required>
-				<textarea class="collectionform input-lg" style="border-color: grey;" name="Collect_instructions" type="text" name="searchquery"
+				<textarea class="collectionform input-lg" name="Collect_instructions" type="text" name="searchquery"
 				placeholder="Collection Instructions?"></textarea>
 			</fieldset>
 			<br><br>
@@ -43,8 +43,6 @@
 				<input class="collectionform input-lg" name="Email" type="email" name="searchquery"
 				placeholder="Email" required value="wrftaylor@gmail.com"><br>
 			</fieldset>
-			<br>
-			<P style="color:grey;"><span class="glyphicon glyphicon-lock"></span> Your details are stored securely and will not be used for marketing.</P>
 			<br><br>
 
 			<fieldset>
@@ -52,10 +50,6 @@
 			<div style="display: none" id="c_warning_div" class="alert alert-info">
 				<strong>Note:</strong> If your cleaner feels that they can't collect at short notice, they'll give you a call to re-arrange.
 			</div>
-			<div style="display: none" id="c_empty_div" class="alert alert-info">
-				No slots available
-			</div>
-
 
 			<div class="btn-group btn-group-justified" data-toggle="buttons">
 				{% set i = 0 %}
@@ -66,13 +60,17 @@
 				{% set i = i+ 1 %}
 				{% endfor %}
 				<label class="btn btn-default">
-					<input type="radio" name="collection_day" id="collection_date_other"  value="">Other <span class="caret"></span>
+					<input type="radio" id="collection_date_other" name="collection_day" value="">Other <span class="caret"></span>
 				</label>
             </div>
             
             <div id="c_date_div" style="display: none; float:right;">
 			</div>
-			
+			<br>
+			<div style="display: none" id="c_empty_div" class="alert alert-info">
+				No more collections today!
+			</div>
+
             <br>
             <div class="btn-group" data-toggle="buttons">
             	{% set i = 0 %}
@@ -92,10 +90,6 @@
             <fieldset>
 			<legend>Deliver: <strong><span id="delivery_string_day"></span><span id="d_comma"></span> <span id="delivery_string_time"></span></strong></legend>
 
-			<div style="display: none" id="d_empty_div" class="alert alert-info">
-				No slots available
-			</div>
-
 			<div class="btn-group btn-group-justified" data-toggle="buttons">
 				{% set i = 0 %}
 				{% for day_label in next_three_days %}
@@ -112,7 +106,11 @@
 			<div id="d_date_div" style="display: none; float:right;">
 			</div>
 
-			
+			<br>
+			<div style="display: none" id="d_empty_div" class="alert alert-info">
+				No more deliveries today (given the time you selected for collection)
+			</div>
+
 
             <br>
             <div class="btn-group" data-toggle="buttons">
@@ -136,88 +134,52 @@
 
 	</div>
 	<br/>
-			<div style="display: none" id="invalid_times_div" class="alert alert-info">
-				<span id="invalid_time_message"></span>
-			</div><br>
 	<div id="review">
-		<input id="reviewbtn" class="btn btn-success btn-lg" type="submit" value="Review Booking"><br><br><br></form>
-	</div>
-
-	<div class="input-group">
-	<input type="hidden" id="meta" value="Sent from the 'form' page">
-	<input type="text" class="form-control" id="feedback" name="searchquery" placeholder="“What do you think of this?”">
-	<span class="input-group-btn">
-		<button id="feedback_button" class="btn btn-default" style="color:#999999;">Send</button>
-	</span>
+		<input id="reviewbtn" class="btn btn-success btn-lg" type="submit" value="Review Booking" ><br><br><br></form>
 	</div>
 {% endblock %}
 
 {% block endscripts %}
-<!-- feedback -->
-<script src="static/js/feedbackbar.js"></script>
-
 <!-- timepicker -->
 <script src="static/eternicode-bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
 
 <script type="text/javascript">
 
-$(document).ready(function() {
-	// Back button logic. Restores state if someone uses back button to come back to form
-	$("input[name='collection_day']:checked").click()
-	$("input[name='collection_time']:checked").click()
-	$("input[name='delivery_day']:checked").click()
-	$("input[name='delivery_time']:checked").click()
-	$('#d_date_div').datepicker('setDate', $("#storedDate").attr("value"))
-
-	fastest_cleaning_time_hrs = 6
-	initialise_datepickers()
+$('#c_date_div').datepicker({
+    startDate: "now",
+    todayHighlight: true
+}).on('changeDate', function(e){
+    // get date
+    var selectedDate = $('#c_date_div').datepicker('getDate')
+    
+	c_date_change(selectedDate)
+	
 });
 
-function initialise_datepickers(){
-	array = []
-	var i = 0
-	var first_day = {{ partner.start_day }}
-	if(first_day != 0){
-		for(i = 0; i< first_day; i += 1){
-			array.push(i)
-		}
-	}
-	var end_day = {{ partner.end_day }}
-	if(end_day != 6){
-		for(var i = end_day+1; i<= 6; i += 1){
-			array.push(i)
-		}
-	}
+$('#d_date_div').datepicker({
+    startDate: "now",
+    todayHighlight: true
+}).on('changeDate', function(e){
+    // get date
+    var selected_date = $('#d_date_div').datepicker('getDate')
+    if(isNaN(Date.parse(selected_date))==false){
+    	// get string
+		var string = get_outstring_from_date(selected_date)
 
-	$('#c_date_div').datepicker({
-	    daysOfWeekDisabled: array,
-	    startDate: "now",
-	    todayHighlight: true
-	}).on('changeDate', function(e){
-	    // get date
-	    var selectedDate = $('#c_date_div').datepicker('getDate')
-	    
-		c_date_change(selectedDate)
-	});
+		// use string
+		$("#delivery_string_day").text(string) // display
+		$("[name='delivery_date_output']").val(string) // save to hidden field for submission
+    }
 
-	$('#d_date_div').datepicker({
-		daysOfWeekDisabled: array,
-	    startDate: "now",
-	    todayHighlight: true
-	}).on('changeDate', function(e){
-	    // get date
-	    var selected_date = $('#d_date_div').datepicker('getDate')
-	    
-	    d_date_change(selected_date)
-	});
-
-}
+});
 
 function getOrdinal(n) {
    var s=["th","st","nd","rd"],
        v=n%100;
    return n+(s[(v-20)%10]||s[v]||s[0]);
 }
+
+
 
 </script>
 
@@ -229,7 +191,15 @@ function getOrdinal(n) {
 $('.btn').button() // activates buttons, required by bootstrap
 
 
-
+$(document).ready(function() {
+	// Back button logic. Restores state if someone uses back button to come back to form
+	$("input[name='collection_day']:checked").click()
+	$("input[name='collection_time']:checked").click()
+	$("input[name='delivery_day']:checked").click()
+	$("input[name='delivery_time']:checked").click()
+	$('#d_date_div').datepicker('setDate', $("#storedDate").attr("value"))
+	validateForm()
+});
 
 var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -240,64 +210,54 @@ var months = ["January", "February", "March", "April", "May", "June", "July", "A
 $( "[name='collection_day']" ).change(function () {
 
     // get selected value
-	var selected_c_date_button = $("input[type='radio'][name='collection_day']:checked");
+    var selectedVal = "";
+	var selected = $("input[type='radio'][name='collection_day']:checked");
+	var selectedDate = new Date(selected.attr('value'))
 
-	// if "Other", show calendar, otherwise, change date to selected one.
-	if (selected_c_date_button.attr('id') == "collection_date_other"){
+	// Show calandar if user selects "Other"
+	if (selected.attr('id') == "collection_date_other"){
 		document.getElementById("c_date_div").style.display = "block";
 	}
 	else{
 		document.getElementById("c_date_div").style.display = "none";
-		var selectedDate = new Date(selected_c_date_button.attr('value'))
-		c_date_change(selectedDate)
 	}
 
-	
+	c_date_change(selectedDate)
 })
 
+function get_earliest_delivery_today(){
+	var now_time = now.getHours()*60 + now.getMinutes()
+	var earliest_collection_time = now_time + 60
+
+}
 
 $( "[name='delivery_day']" ).change(function () {
 	
-	// get selected button
-	var selected_d_date_button = $("input[type='radio'][name='delivery_day']:checked");
+	// get selected value
+	var selectedDate = get_current_delivery_date()
 
-	// if "Other", show calendar, otherwise, change date to selected one.
-	if (selected_d_date_button.attr('id') == "delivery_date_other"){
+	var selected = $("input[type='radio'][name='delivery_day']:checked");
+
+	// Show calandar for "Other"
+	if (selected.attr('id') == "delivery_date_other"){
 		document.getElementById("d_date_div").style.display = "block";
 	}
 	else{
 		document.getElementById("d_date_div").style.display = "none";
-		var selected_d_date = get_current_delivery_date()
-		d_date_change(selected_d_date)
 	}
+
+	d_date_change(selectedDate)
 });
 
-function get_current_collection_date(){
+function get_current_delivery_date(){
 	var selectedVal = "";
-	var selected = $("input[type='radio'][name='collection_day']:checked");
+	var selected = $("input[type='radio'][name='delivery_day']:checked");
 	
-	if (selected.attr('id') == "collection_date_other"){
-		return $('#c_date_div').datepicker('getDate')
-	}
-	else{
-		return new Date(selected.attr('value'))
-	}
-}
-
-function get_current_collection_time(){
-	var selectedVal = "";
-	var selected = $("input[type='radio'][name='collection_time']:checked");
-	return selected.attr('value')
-}
-
-function get_current_delivery_date(){ // n.b. can fail because calendar dates are not in the same timezone as button dates
-	
-	var selected_d_button = $("input[type='radio'][name='delivery_day']:checked");
-	if (selected_d_button.attr('id') == "delivery_date_other"){
+	if (selected.attr('id') == "delivery_date_other"){
 		return $('#d_date_div').datepicker('getDate')
 	}
 	else{
-		return new Date(selected_d_button.attr('value'))
+		return new Date(selected.attr('value'))
 	}
 }
 
@@ -307,9 +267,10 @@ function get_current_delivery_time(){
 	return selected.attr('value')
 }
 
+// TODO if days are same, limit the delivery times based on delivery days
+
 function c_date_change(selectedDate){
 	if(isNaN(Date.parse(selectedDate))==false){
-
 		// get string for output & save
 		var string = get_outstring_from_date(selectedDate)
 		$("#collection_string_day").text(string) //display
@@ -321,9 +282,9 @@ function c_date_change(selectedDate){
 		var today = new Date()
 		today.setHours(selectedDate.getHours(),selectedDate.getMinutes(),0,0)
 
-
 		if (selectedDate - today == 0){
 			document.getElementById("c_warning_div").style.display = "block";
+			document.getElementById("c_empty_div").style.display = "block";
 			hide_earlier_collection_times()
 		}
 		else{
@@ -332,24 +293,31 @@ function c_date_change(selectedDate){
 			show_earlier_collection_times()
 		}
 
+		// deactivate earlier d_days (see also when timepicker changes)
+		$('#d_date_div').datepicker('setStartDate', selectedDate)
 
-		// --- interactions ---
-
+		$("input[name='delivery_day']").each(function(){
+			if(new Date($(this).attr("value")) < selectedDate){
+				$(this).parent().attr("disabled", true)
+			}
+			else{
+				$(this).parent().attr("disabled", false)
+			}
+		})
 	
 
-		// if d_date or d_time now invalid
+
+		// if d_time or d_date is set
+		// and then c_date is changed to make d_date invalid
 		// then reset the d_day and d_time
 
-		// first check the date to see if that's invalidated. If it's not, then check if dates match and check time.
-
-		// in either case, both need to reset.
-
+		// first check the date to see if that's invalidated. If it's not, then nothing needs to change. If it is, then both need to reset.
+		
 		// check if d_date set:
 		if(isOneChecked("delivery_day")){
-			hide_earlier_delivery_times()
-
 			// check if d_date now invalid
 			var current_d_date = get_current_delivery_date()
+
 			if (selectedDate > current_d_date){
 				// so c_date has invalidated the c_date and c_time. time to reset!
 				// reset delivery_day
@@ -361,37 +329,8 @@ function c_date_change(selectedDate){
 				var d_time_selected = $("input[type='radio'][name='delivery_time']:checked");
 				d_time_selected.parent().removeClass("active")
 				reset_d_time() // clears strings and saves
-			} else {
-				// could be that same day is selected and d_time is now invalid
-
-				if (selectedDate - current_d_date == 0){
-
-					// now get times
-					if (isOneChecked("collection_time")){
-						if (isOneChecked("delivery_time")){
-							var current_c_time = get_time(get_current_collection_time())
-							var current_d_time = get_time(get_current_delivery_time())
-							if (current_c_time + 60 + fastest_cleaning_time_hrs * 60 > current_d_time){
-
-								// so c_date & c_time have invalidated the d_date and d_time. time to reset!
-
-								// reset delivery_day
-								var d_date_selected = $("input[type='radio'][name='delivery_day']:checked");
-								d_date_selected.parent().removeClass("active")
-								reset_d_date()
-
-								// reset delvery_time
-								var d_time_selected = $("input[type='radio'][name='delivery_time']:checked");
-								d_time_selected.parent().removeClass("active")
-								reset_d_time() // clears strings and saves
-							}
-						}
-					}
-				}
 			}
 		}
-
-
 
 		// have just selected collection_day.
 		// if c_day == today
@@ -399,29 +338,29 @@ function c_date_change(selectedDate){
 		// disable deliveries "today"
 
 		// check if c_date == today
-		// if (selectedDate - today == 0){
+		if (selectedDate - today == 0){
 
-		// 	//check if no deliveries possible today:
+			//check if no deliveries possible today:
 
-			// // get_soonest_d_possible
-			// var now = new Date()
-			// var now_time = now.getHours()*60 + now.getMinutes()
-			// soonest_d = now_time + 60 + 6 * 60 //timenow + 7hrs
+			// get_soonest_d_possible
+			var now = new Date()
+			var now_time = now.getHours()*60 + now.getMinutes()
+			soonest_d = now_time + 60 + 6 * 60 //timenow + 7hrs
 
-			// // get last slot
-			// $("input[name='delivery_time']").each(function(){
-			// 	last_slot = this.value
-			// })
-			// last_slot = get_time(last_slot)
+			// get last slot
+			$("input[name='delivery_time']").each(function(){
+				last_slot = this.value
+			})
+			last_slot = get_time(last_slot)
 
-			// if (last_slot < soonest_d){
-			// 	var tomorrow = new Date(now + 1000000)
-			// 	// disable deliveries today
-			// 	$("#d_day_0").parent().attr("disabled", true) // button
-			// 	$('#d_date_div').datepicker('setStartDate', tomorrow)// calendar
-			// }
-		// }
-
+			if (last_slot < soonest_d){
+				var tomorrow = new Date(now + 1000000)
+				console.log(tomorrow)
+				// disable deliveries today
+				$("#d_day_0").parent().attr("disabled", true) // button
+				$('#d_date_div').datepicker('setStartDate', tomorrow)// calendar
+			}
+		}
 	}
 };
 
@@ -442,7 +381,6 @@ function d_date_change(selectedDate){
 		// -> first, check date is today
 		var today = new Date()
 		today.setHours(selectedDate.getHours(),selectedDate.getMinutes(),0,0)
-		
 
 		if (selectedDate - today == 0){
 			document.getElementById("d_empty_div").style.display = "block";
@@ -452,13 +390,8 @@ function d_date_change(selectedDate){
 			document.getElementById("d_empty_div").style.display = "none";
 			show_earlier_delivery_times()
 		}
-
-		// same-day warning/hiding if d_date now same as c_day
-		if(isOneChecked("collection_day")){
-			hide_earlier_delivery_times()
-		}
 	}
-}
+};
 
 function hide_earlier_collection_times(){
 	// get earliest collection time
@@ -482,12 +415,10 @@ function hide_earlier_collection_times(){
 		}
 	})
 	if (hide_count == total_count){
-		document.getElementById("c_warning_div").style.display = "none";
 		document.getElementById("c_empty_div").style.display = "block";
 	}
 	else{
 		document.getElementById("c_empty_div").style.display = "none";
-		document.getElementById("c_warning_div").style.display = "block";
 	}
 
 	// erase any 'saved' info if they had just been removed
@@ -512,16 +443,15 @@ function reset_d_time(){
 	$("#delivery_string_time").text("") // remove string
 	$("#d_comma").text("") // remove comma from string
 	$("[name='delivery_time_output']").val("") // remove save to hidden field for submission
-	document.getElementById("d_empty_div").style.display = "none";
 }
 
 function reset_d_date(){
 	$("#delivery_string_day").text("") // remove string
 	$("#d_comma").text("") // remove comma from string
 	$("[name='delivery_date_output']").val("") // remove save to hidden field for submission
-	document.getElementById("d_date_div").style.display = "none";
-	document.getElementById("d_empty_div").style.display = "none";
 }
+
+
 
 function show_earlier_collection_times(){
 	$("input[name='collection_time']").each(function(){
@@ -530,102 +460,63 @@ function show_earlier_collection_times(){
 	document.getElementById("c_empty_div").style.display = "none";
 }
 
-function hide_earlier_delivery_times(){
-	// deploys if:
-	// a.) if delivery_day = coll_day (coll or deliver day selected)
-	// -> ai.) if c_time selected, earliest_coll = c_time_selected + 1
-	// -> aii.) if c_time not selected, earliest_coll = start_of_day + 1
-	// b.) delivery_day = today selected -> earliest_coll = now + 1
-	// choose latest option of a and b
+function hide_earlier_delivery_times(){ // deploys if deliver today selected.
+	// get collection time
+	if(isOneChecked("collection_time")){
+		var selected_collection_time = $("input[name='collection_time']:selected")
+		var collection_hour = parseInt(selected_collection_time.value.substr(0,2))
+		var collection_min = parseInt(selected_collection_time.value.substr(3,5))
+		var collection_time = collection_hour*60 + collection_min
+	}
+	else{ // no collection time selected
+		// so user selected "deliver today" first
+		// remove all options except earliest
+		var now = new Date()
+		var collection_time = now.getHours() * 60 + now.getMinutes() + 60
+	}
 
+	// get earliest delivery time
+	var fastest_cleaning_time_hrs = 6
+	var earliest_delivery_time = collection_time + 60 * fastest_cleaning_time_hrs
 
-	// action: gets current collection time (if selected), or sets current collection time to earliest possible
-	// then, gets earliest delivery time
-	// then, removes delivery times before the earliest delivery time
-	if(isOneChecked("delivery_day")){
-		// >get earliest collection time:
-		var earliest_c_time = 0
-		// check if delivery_day = collection_day. get c_day and d_day
-		var current_delivery_date = get_current_delivery_date()
-		if(isOneChecked("collection_day")){ // d_day & c_day  selected
-			var current_collection_date = get_current_collection_date()
-			current_delivery_date.setHours(current_collection_date.getHours(),current_collection_date.getMinutes(),0,0)
+	// initialise values for triggering "empty" warning
+	// and for checking deliv time values
+	var total_count = 0
+	var hiden_count = 0
+	var this_hour = 0
+	var this_min = 0
+	var this_time = 0
 
-			if(current_collection_date - current_delivery_date == 0){
-				// then check if c_time selected
-				if(isOneChecked("collection_time")){
-					// ai.)
-					var current_collection_time = get_time(get_current_collection_time())
-					earliest_c_time = current_collection_time + 60
-				} else {
-					// a.ii)
-					var i = 0
-					$("input[name='collection_time']").each(function(){
-						if(i == 0){
-							earliest_c_time = get_time(this.value) + 60
-						}
-						i += 1
-					})
-				}
-			}
-		}    // d_day selected, c_day not selected
+	$("input[name='delivery_time']").each(function(){
+		this_hour = parseInt(this.value.substr(0,2))
+		this_min = parseInt(this.value.substr(3,5))
+		this_time = this_hour*60 + this_min
 
-		// b. check if d_date = today
-		var today = new Date()
-		today.setHours(current_delivery_date.getHours(),current_delivery_date.getMinutes(),0,0)
-		if (current_delivery_date - today == 0){
-			var now = new Date()
-			var now_time = now.getHours()*60 + now.getMinutes()
-			var earliest_c_time_today = now_time + 60
-			earliest_c_time = Math.max(earliest_c_time, earliest_c_time_today)
+		total_count += 1
+		if (this_time < earliest_delivery_time){
+			$(this).parent().addClass('hidden')
+			hiden_count += 1
 		}
-		
-		// we now have an earliest_c_time. check if != 0, get earliest_d_time, then hide previos d times.
-		if (earliest_c_time == 0){
-			$("input[name='delivery_time']").each(function(){
-				$(this).parent().removeClass('hidden')
-				document.getElementById("d_empty_div").style.display = "none";
-			})
-		} else {
-			// get earliest delivery time
-			var earliest_d_time = earliest_c_time + 60 * fastest_cleaning_time_hrs
+	})
 
-			// initialise values for triggering "empty" warning
-			// and for checking deliv time values
-			var total_count = 0
-			var hidden_count = 0
-			var this_time = 0
+	// deploy warning
+	if (hiden_count == total_count){
+		document.getElementById("d_empty_div").style.display = "block";
+	}
+	else{
+		document.getElementById("d_empty_div").style.display = "none";
+	}
 
-			// hide
-			$("input[name='delivery_time']").each(function(){
-				total_count += 1
-				if (get_time(this.value) < earliest_d_time){
-					$(this).parent().addClass('hidden')
-					hidden_count += 1
-				} else {
-					$(this).parent().removeClass('hidden')
-				}
-			})
-
-			// deploy warning
-			if (hidden_count == total_count){
-				document.getElementById("d_empty_div").style.display = "block";
-			}
-			else{
-				document.getElementById("d_empty_div").style.display = "none";
-			}
-
-			// erase any 'saved' info if selected d_val had just been removed
-			if(isOneChecked("delivery_time")){
-				var selected = $("input[type='radio'][name='delivery_time']:checked");
-				var selected_val = selected.attr('value')
-				var selected_time = get_time(selected_val)
-
-				if (selected_time < earliest_d_time){
-					selected.parent().removeClass("active") // deselect button
-					reset_d_time() // clears strings and saves
-				}
-			}
+	// erase any 'saved' info if selected val had just been removed
+	if(isOneChecked("delivery_time")){
+		var selected = $("input[type='radio'][name='delivery_time']:checked");
+		var selected_val = selected.attr('value')
+		var selected_time = get_time(selected_val)
+		if (selected_time < earliest_delivery_time){
+			selected.parent().removeClass("active") // deselect button
+			$("#delivery_string_time").text("") // remove string
+			$("#d_comma").text("") // remove comma from string
+			$("[name='delivery_time_output']").val("") // remove save to hidden field for submission
 		}
 	}
 }
@@ -684,6 +575,8 @@ function get_time_string(mins){
 	return hour + ":" + min
 }
 
+
+
 $( "[name='collection_time']" ).change(function () {
     var selectedVal = "";
 	var selected = $("input[type='radio'][name='collection_time']:checked");
@@ -693,19 +586,67 @@ $( "[name='collection_time']" ).change(function () {
 
 	// get interval string from button value
 	var slot = {{ partner.window_size }}
-	
 	var endtime = get_time(selectedVal) + slot
 	var string = selectedVal + " - " + get_time_string(endtime)
-	
+
 	// display and save interval string	
 	$("#collection_string_time").text(string)
 	$("#c_comma").text(",")
 	$("[name='collection_time_output']").val(string)
 
-	// --- interractions:
-	// hide unavailable deliveries, reset deliveries if neccessary
-	hide_earlier_delivery_times()
+	// get the selected collection time and disable earlier delivery times.
+	var earliest_delivery_time = end_time + 8*60
+
+	// check if deliv day = collect day
+
+
+	// hide unavailable deliveries
+	// for each item in delivery, get the time
+	$("[name='delivery_time']").each(function(){
+		this_time = get_time(this.value)
+
+		if (this_time < earliest_delivery_time){
+			$(this).parent().addClass('hidden')
+			$("#collection_string_time").text(string)
+		}
+		else{
+			$(this).parent().removeClass('hidden')
+		}
+	})
+
+	// if d_time is set
+	// and d_date = c_date
+	// and then c_time is changed to make d_date invalid
+	// then reset d_time
+
+	// first check the time to see if that's invalidated. If it's not, then nothing needs to change. If it is, then both need to reset.
+	
+	// check if d_time set:
+	if(isOneChecked("delivery_time")){
+		if(is_sameday){
+			// check if d_date now invalid
+			var current_d_time = get_current_delivery_time() // returns e.g. 12:00
+			current_d_time_mins = get_time(current_d_time.value)
+
+			if (selectedDate > current_d_time){
+				// c_date has invalidated c_date and c_time!
+				// time to reset!
+
+				// reset delivery_day
+				var d_date_selected = $("input[type='radio'][name='delivery_day']:checked");
+				d_date_selected.parent().removeClass("active")
+				reset_d_date()
+				
+				// reset delvery_time
+				var d_time_selected = $("input[type='radio'][name='delivery_time']:checked");
+				d_time_selected.parent().removeClass("active")
+				reset_d_time() // clears strings and saves
+			}
+		}	
+	}
 });
+
+
 
 $( "[name='delivery_time']" ).change(function () {
     var selectedVal = "";
@@ -738,59 +679,23 @@ $( "[name='delivery_time']" ).change(function () {
 
 <!-- form validation -->
 <script type="text/javascript">
+// function validateForm(){
+// 	var x= $("[name='collection_time_output']").val()
+// 	console.log(x)
+// 	console.log("in validate form")
+// 	if (x==null || x=="")
+// 	  {
+// 	  alert("Collection time missing");
+// 	  return false;
+// 	  }
+// 	return true;
+// }
+
 function validateForm(){
-	var failflag = 0
-	$("#invalid_c_time").text("")
-
-	var x= $("[name='collection_time_output']").val()
-	if (x==null || x=="")
-	  {
-	  $("#invalid_time_message").text("Add a collection time")
-	  failflag += 1
-	  }
-	x= $("[name='collection_day_output']").val()
-	if (x==null || x=="")
-	  {
-	  $("#invalid_time_message").text("Add a collection day")
-	  failflag += 1
-	  }
-	x= $("[name='delivery_time_output']").val()
-	if (x==null || x=="")
-	  {
-	  $("#invalid_time_message").text("Add a delivery time")
-	  failflag += 1
-	  }
-	x= $("[name='delivery_day_output']").val()
-	if (x==null || x=="")
-	  {
-	  $("#invalid_time_message").text("Add a delivery day")
-	  failflag += 1
-	  }
-	if (failflag==1){
-		show_invalid_times_warning()
-	}
-	else if (failflag>1){
-		show_invalid_times_warning()
-		$("#invalid_time_message").text("Add delivery & collection times")
-	}
-	else{
-		hide_invalid_times_warning()
-	}
-
-	if(failflag > 0){
-		return false;
-	}
-
-	return true;
+	console.log("form invalid")
+	return false;
 }
 
-function show_invalid_times_warning(){
-	document.getElementById("invalid_times_div").style.display = "block";
-}
-
-function hide_invalid_times_warning(){
-	document.getElementById("invalid_times_div").style.display = "none";
-}
 
 </script>
 {% endblock %}

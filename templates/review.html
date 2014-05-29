@@ -1,11 +1,20 @@
 {% extends "templates/base.html" %}
+{% block headscripts %}
+<style type="text/css"> 
+ a:hover {
+  cursor:pointer;
+ }
+</style>
+
+{% endblock %}
+
 {% block content %}
 
 <ol class="breadcrumb">
 	<li><a href="/">Home</a></li>
-	<li class="active">Listings</li>
-	<li class="active">Cleaner</a></li>
-	<li class="active">Booking</li>
+	<li><a href="/near">Listings</a></li>
+	<li><a href="/menu">Cleaner</a></li>
+	<li><a onclick="goBack()">Booking</a></li>
 	<li class="active">Review</li>
 </ol>
 
@@ -13,7 +22,7 @@
 <h3>Here's Your Order</h3>
 <h5>Please check that it is correct<br><br>
 
-<table>
+<table class="review_table">
 <tr>
 	<td class='review_left review_space_below'>Your Name:</td>
 	<td class='review_space_below review_bold'>{{ order.first_name }} {{ order.last_name }}</td>
@@ -82,8 +91,20 @@
 		<input id="place_order_button" class="btn btn-success btn-lg" type="submit" value="Place Order" style="float: right; width: 40%;">
 	</form>
 </div>
+<br><br><br><br><br><br><br><br><br><br>
+<div class="input-group">
+	<input type="hidden" id="meta" value="Sent from the 'review' page">
+	<input type="text" class="form-control" id="feedback" name="searchquery" placeholder="“What do you think of this?”">
+	<span class="input-group-btn">
+		<button id="feedback_button" class="btn btn-default" style="color:#999999;">Send</button>
+	</span>
+	</div>
 
 {% endblock %}
+<!-- feedback -->
+<script src="static/js/feedbackbar.js"></script>
+
+
 {% block endscripts %}
 <script type="text/javascript">
 

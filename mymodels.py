@@ -4,6 +4,7 @@ from google.appengine.api import images
 DEFAULT_PARTNER_NAME = 'default_name'
 DEFAULT_PARTNER_OUTCODES = 'default_outcode'
 DEFAULT_ORDER_ID = 'default_name'
+DEFAULT_PARTNER_KEY = 'default_partner_key'
 
 def partner_key(partner_name=DEFAULT_PARTNER_NAME):
 	return ndb.Key('Partner', partner_name)
@@ -21,6 +22,10 @@ class Partner(ndb.Model):
 	minimum_order = ndb.IntegerProperty()
 	delivery_cost = ndb.StringProperty()
 
+	phonenumber = ndb.StringProperty()
+	email = ndb.StringProperty()
+
+
 	start_day = ndb.IntegerProperty() # Sunday = 0, Saturday = 6
 	end_day = ndb.IntegerProperty()
 
@@ -37,6 +42,7 @@ class Partner(ndb.Model):
 	@property
 	def logo_url(self):
 		return images.get_serving_url(self.logo_key)
+
 
 	# 1. Populate array of values
 	# Given: Start time, end time, window size
@@ -84,78 +90,45 @@ class Partner(ndb.Model):
 
 		print self.delivery_slots
 
-	def get_next_three_days(self):  # Gets an array containing next 3 possible days
+	def get_next_three_days(self):  # Gets an array containing next 3 possible days as dates
+		print "IN NEXT THREE DAYS"
 
-		# Creates possible_days ~ e.g. [1, 2, 3, 4, 5]
-		# TESTING print "self.start_day: ", self.start_day
+		# Logic:
+		# aiming to create an array [1, 2, 3] that contains the next three dates
+		# but skips a date if there is no delivery on that day
+		# which means it does a check on the day of week of that date
+
+
+		# Creates possible_days e.g. [1, 2, 3, 4, 5]
 		possible_days = []
-		# print possible_days
 		i = self.start_day
 		while i <= self.end_day:
-			j = i # Won't let us use 'i' for some silly reason
+			j = i # Won't let us use 'i' in append for some silly reason
 			possible_days.append(j)
 			i = i+1
 
-		#p rint possible_days
+		
+		from datetime import date, timedelta
 
+		today = date.today()
+		trial_date = ''
+		next_three_days = []
+		i = 0 # i itterates over days
+		j= 0
+		while i < 7:
+			trial_date = today + timedelta(i)
 
-		import time
+			if (trial_date.isoweekday()%7 in possible_days) :
+				next_three_days.append(trial_date)
+				j += 1
 
-		today_day = int(time.strftime("%w"))
-		print "possible_days: ", possible_days
-		print "today_day: ", today_day
-		try:
-			today_index = possible_days.index(today_day)
-		except ValueError:
-			today_index = -1
-		print "today_index: ", today_index
-		next_three_days = ['TEST','TEST','TEST']
-
-		# Series of if statements that allow the next_three_days array to 
-		# populate with the next 3 available days, rolling over if we go over
-		# the top of the "days available" amount
-
-		if today_index == -1: # Today is weekend, populate with start of next week
-			next_three_days[0] = possible_days[0]
-			next_three_days[1] = possible_days[1]
-			next_three_days[2] = possible_days[2]
-		else: # Today is weekday, populate with day number of today
-			next_three_days[0] = possible_days[today_index]
-			# Check if tomorrow is in possible_days array
-			if today_index + 1 < len(possible_days): # Tomorrow is within possible_days loop, populate with next index
-				next_three_days[1] = possible_days[today_index + 1]
-				if today_index + 2 < len(possible_days): # Day after tomorrow is in loop, populate with day after tomorrow
-					next_three_days[2] = possible_days[today_index + 2]
-				else: # Day after tomorrow is not in loop, populate with start of next week
-					next_three_days[2] = possible_days[0]
-			# tomorrow is not in possible_days array 
-			else: # populate with start of the next week
-				next_three_days[1] = possible_days[0]
-				next_three_days[2] = possible_days[1]
-
-
-		# Turns numbers to strings that say Today, Tomorrow or the day.
-		i = 0
-		while i<3:
-			if next_three_days[i] == today_day:
-				next_three_days[i]= 'Today'
-			elif next_three_days[i] == (today_day + 1) % 7: # % bit for "7 == 0" logic
-				next_three_days[i]= 'Tomorrow'
-			elif next_three_days[i]==1:
-				next_three_days[i]= 'Monday'
-			elif next_three_days[i]==2:
-				next_three_days[i]= 'Tuesday'
-			elif next_three_days[i]==3:
-				next_three_days[i]= 'Wednesday'
-			elif next_three_days[i]==4:
-				next_three_days[i]= 'Thursday'
-			elif next_three_days[i]==5:
-				next_three_days[i]= 'Friday'
-			elif next_three_days[i]==6:
-				next_three_days[i]= 'Saturday'
-			elif next_three_days[i]==0:
-				next_three_days[i]= 'Sunday'
+			if j == 3:
+				break
 			i += 1
+
+		print "next_three_days: ", next_three_days
+		
+		
 		return next_three_days
 
 class menuitem(ndb.Model):
@@ -192,35 +165,64 @@ class order(ndb.Model):
 		return self.key.id()
 
 	def send_txt_to_cleaner(self):
-		pass
+		print "SENT TXT TO CLEANER"
 
 	def send_email_to_cleaner(self):
-		#get cleaner
 
+		print "SENT EMAIL TO CLEANER"
+
+		partner = partner_key(service_partner).get()
 
 		from google.appengine.api import mail
 
 		message = mail.EmailMessage(
-			sender="Example.com Support <support@example.com>",
-		    subject="Your account has been approved")
+			sender="60 Second Laundry <orders@60secondlaundry.com>",
+		    subject="Order Receipt")
 
-		message.to = "Will Taylor <wrftaylor@gmail.com>"
-		message.body = """
-		Dear Will:
+		to_string = first_name + " " + last_name + " <" + email + ">"
+		message.to = to_string
+		message.body = "Dear " + first_name + """:
 
-		Your example.com account has been approved.  You can now visit
-		http://www.example.com/ and sign in using your Google Account to
-		access new features.
+		Thanks for your order.
 
-		Please let us know if you have any questions.
+		If you have any questions about your order, contact your cleaner directly on:
+		""" + partner.phonenumber + """
 
-		The example.com Team
+		Here are the details you need to keep.
+
+		If you enjoyed our service, please let us know via will.taylor@60secondlaundry.com
+
+		The 60 Second Laundry Team
 		"""
 
 		message.send()
 
 	def send_email_to_customer(self):
-		pass
+		print "SENT EMAIL TO CUSTOMER"
+
+		from google.appengine.api import mail
+
+		message = mail.EmailMessage(
+			sender="60 Second Laundry <orders@60secondlaundry.com>",
+		    subject="Order Receipt")
+
+		message.to = "Will Taylor <wrftaylor@gmail.com>"
+		message.body = """
+		Dear Will:
+
+		Thanks for your order.
+
+		If you have any questions about your order, contact your cleaner directly on:
+		07772622352
+
+		Here are the details you need to keep.
+
+		If you enjoyed our service, please let us know via will.taylor@60secondlaundry.com
+
+		The 60 Second Laundry Team
+		"""
+
+		message.send()
 
 class postcode_attempt(ndb.Model):
 	postcode = ndb.StringProperty()

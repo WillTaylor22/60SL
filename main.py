@@ -20,8 +20,7 @@ import os
 import urllib
 import webapp2
 import jinja2
-from datetime import datetime
-import csv # for reading the csv
+from datetime import datetime, date, timedelta
 import cgi
 
 from gaesessions import get_current_session
@@ -53,67 +52,41 @@ def currencyformat(value):
 	result = result.decode("utf8")
 	return result
 
+def nicedates(value):
+	today = date.today()
+	if value == today:
+		return 'Today'
+	elif value == (today + timedelta(1)):
+		return'Tomorrow'
+	elif value.isoweekday() == 1:
+		return 'Monday'
+	elif value.isoweekday() == 2:
+		return 'Tuesday'
+	elif value.isoweekday() == 3:
+		return 'Wednesday'
+	elif value.isoweekday() == 4:
+		return 'Thursday'
+	elif value.isoweekday() == 5:
+		return'Friday'
+	elif value.isoweekday() == 6:
+		return 'Saturday'
+	elif value.isoweekday() == 7:
+		return 'Sunday'
+
 
 JINJA_ENVIRONMENT.filters['datetimeformat'] = datetimeformat
 JINJA_ENVIRONMENT.filters['currencyformat'] = currencyformat
+JINJA_ENVIRONMENT.filters['nicedates'] = nicedates
 
 
-
-def grab():
-	#This section grabs the data
-	fname = "WashingtonExport.csv"
-	partner_name = "Washington Dry Cleaners"
-
-	__location__ = os.path.realpath(
-	    os.path.join(os.getcwd(), os.path.dirname(__file__)))
-	fpath = os.path.join(__location__, fname)
-	# you now have a filepath that you can open the file with
-
-	#open the file, the opened file is called importfile
-	with open(fpath, 'rU') as importfile:
-		dataimport = csv.reader(importfile, quotechar='"')
-		# dataimport then reads opened file
-
-		# for each row opened, print a comma, then the row.
-		for row in dataimport:
-			# adds entry
-			print "New Entry -------"
-			print partner_name
-			myItem = mymodels.menuitem(parent=mymodels.partner_key(partner_name))
-			print "loading: " + row[0]
-			myItem.itemid = int(row[0])			
-			print "loading: " + row[1]
-			myItem.tabname = row[1]
-			print "loading: " + row[2]
-			myItem.item = row[2]
-			print "loading: " + row[3]
-			myItem.subitem = row[3]
-			print "loading price: ", row[4]
-			if (row[4] == ""):
-				row[4] = 0
-			print "loading price: ", row[4]
-			myItem.price = float(row[4])
-			print "loading: ", row[5]
-			if (row[5] == ""):
-				row[5] = 0
-			print "reloading from pricemin: ", row[5]
-			myItem.pricemin = float(row[5])
-			print "loading: ", row[6]
-			if (row[6] == ""):
-				row[6] = 0
-			print "reloading from pricemax: ", row[6]
-			myItem.pricemax = float(row[6])
-			print "loading: ", row[7]
-			myItem.time = row[7]
-			myItem.put()
-
-			# prints to screen
-			print row
-	print 'DONE'
 
 # Handlers (Views)
 class MainHandler(webapp2.RequestHandler):
 	def get(self):
+		
+		session = get_current_session()
+		session['starttime'] = datetime.today()
+
 		template_values = {}
 
 		template = JINJA_ENVIRONMENT.get_template('templates/index.html')
@@ -122,7 +95,14 @@ class MainHandler(webapp2.RequestHandler):
 class ListingsHandler(webapp2.RequestHandler):
 	def get(self):
 
+		
+
 		mypostcode = self.request.get('postcode')
+		if mypostcode=="":
+			session = get_current_session()
+			if session.has_key('postcode'):
+				mypostcode = session['postcode']	
+		
 
 		# record for analytics
 		postcodeattempt = mymodels.postcode_attempt()
@@ -164,10 +144,15 @@ class ListingsHandler(webapp2.RequestHandler):
 		
 		self.response.write(template.render(template_values))
 
-
 class MenuHandler(webapp2.RequestHandler):
 	def get(self):
 		partner_name = self.request.get('partner_name')
+		if partner_name=="":
+			session = get_current_session()
+			if session.has_key('partner'):
+				partner_name = session['partner']
+
+
 		postcode = 'Postcode'
 
 		session = get_current_session()
@@ -183,13 +168,6 @@ class MenuHandler(webapp2.RequestHandler):
 		query = mymodels.menuitem.query(
 			ancestor=mymodels.partner_key(partner_name)).order(ndb.GenericProperty("itemid"))
 		menuitems = query.fetch(300)
-
-		# Populate if no items exisit
-		if(menuitems):
-			pass
-		else:
-			grab()
-			menuitems = query.fetch(300)
 
 		template_values = {
 			'postcode': postcode,
@@ -280,12 +258,30 @@ class SubmitHandler(webapp2.RequestHandler):
 	# The order has been created and 
 	def post(self):
 
+		timestart = ''
+		timetaken = ''
+		timeunit = 'seconds'
 		session = get_current_session()
-		ordernumber = session['ordernumber']
-		partnername = session['partnername']
+		if session.has_key('starttime'):
+			timestart = session['starttime']
+			timetaken = int((datetime.today() - timestart).total_seconds())
+			if timetaken > 60:
+				timeunit = "minute"
+				if timetaken > 120:
+					timeunit = "minutes"
+				timetaken = timetaken/60
+		
+		if session.has_key('ordernumber'):
+			ordernumber = session['ordernumber']
+		if session.has_key('partnername'):
+			partnername = session['partnername']
 
 		myOrder_k = ndb.Key('Partner', partnername, 'order', ordernumber)
 		myOrder = myOrder_k.get()
+
+		query = mymodels.Partner.query(mymodels.Partner.name == myOrder.service_partner)
+		partner = query.fetch(1)[0]
+		partner_phone_number = partner.phonenumber
 
 		if myOrder:
 			myOrder.submitted = True
@@ -296,7 +292,10 @@ class SubmitHandler(webapp2.RequestHandler):
 		myOrder.send_email_to_customer()
 
 		template_values = {
+			"partner_phone_number" : partner_phone_number,
 			"order" : myOrder,
+			"timetaken" : timetaken,
+			"timeunit" : timeunit,
 		}
 
 		# debugging:
@@ -311,14 +310,12 @@ class CleanerLoginHandler(webapp2.RequestHandler):
 		template = JINJA_ENVIRONMENT.get_template('templates/cleanerlogin.html')
 		self.response.write(template.render(template_values))
 
-
 class FeedbackHandler(webapp2.RequestHandler):
 	def post(self):
 		myFeedback = mymodels.feedback()
 		myFeedback.page = self.request.get('feedback_page')
 		myFeedback.feedback = self.request.get('feedback_content')
 		myFeedback.put()
-
 
 class TestHandler(webapp2.RequestHandler):
 	def get(self):

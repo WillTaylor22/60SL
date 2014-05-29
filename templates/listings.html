@@ -22,7 +22,7 @@
 				</div>
 			<form action="menu" method="get" style="float:right; margin-top: 45px;">
 					<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
-					<input type="submit" class="btn btn-success" value="View Menu >">
+					<input type="submit" class="btn btn-success" value="View Menu >"></input>
 			</form>
 			</div>
 			
@@ -32,5 +32,7 @@
 
 		
 	</div>
+
+	{% include "templates/footer.html" %}
 {% endfor %}
 {% endblock %}
