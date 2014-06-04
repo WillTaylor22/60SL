@@ -1,5 +1,6 @@
 from google.appengine.ext import ndb
 from google.appengine.api import images
+import string
 
 DEFAULT_PARTNER_NAME = 'default_name'
 DEFAULT_PARTNER_OUTCODES = 'default_outcode'
@@ -11,6 +12,10 @@ def partner_key(partner_name=DEFAULT_PARTNER_NAME):
 
 def order_key(partner_name=DEFAULT_PARTNER_NAME):
 	return ndb.Key('Partner', partner_name)
+
+def get_partner(partner_name):
+	query = Partner.query(Partner.name == partner_name)
+	return query.fetch(1)[0]
 
 #models
 class Partner(ndb.Model):
@@ -25,9 +30,12 @@ class Partner(ndb.Model):
 	phonenumber = ndb.StringProperty()
 	email = ndb.StringProperty()
 
-
+	# Out of date
 	start_day = ndb.IntegerProperty() # Sunday = 0, Saturday = 6
 	end_day = ndb.IntegerProperty()
+	##
+
+	days = ndb.IntegerProperty(repeated=True)
 
 	start_hr = ndb.IntegerProperty()
 	start_min = ndb.IntegerProperty()
@@ -100,12 +108,14 @@ class Partner(ndb.Model):
 
 
 		# Creates possible_days e.g. [1, 2, 3, 4, 5]
-		possible_days = []
-		i = self.start_day
-		while i <= self.end_day:
-			j = i # Won't let us use 'i' in append for some silly reason
-			possible_days.append(j)
-			i = i+1
+		possible_days = self.days
+		print "possible_days: ", possible_days
+		# OLD WAY:
+		# i = self.start_day
+		# while i <= self.end_day:
+		# 	j = i # Won't let us use 'i' in append for some silly reason
+		# 	possible_days.append(j)
+		# 	i = i+1
 
 		
 		from datetime import date, timedelta
@@ -142,6 +152,19 @@ class menuitem(ndb.Model):
 	pricemax = ndb.FloatProperty()
 	time = ndb.StringProperty()
 
+
+import urllib
+from google.appengine.api import urlfetch
+
+def send_sms(username, password, to, message, originator):
+	requested_url = 'http://api.textmarketer.co.uk/gateway/?option=xml' +\
+	                "&username=" + username + "&password=" + password +\
+	                "&to=" + to + "&message=" + urllib.quote(message) +\
+	                "&orig=" + urllib.quote(originator)
+
+	result = urlfetch.fetch(requested_url)
+	return result.content
+
 class order(ndb.Model):
 	# an individual order
 	ordertime = ndb.DateTimeProperty(auto_now_add=True)
@@ -166,60 +189,141 @@ class order(ndb.Model):
 
 	def send_txt_to_cleaner(self):
 		print "SENT TXT TO CLEANER"
+		print "order:"
+		print self
+		print "---"
+
+		partner = get_partner(self.service_partner)
+
+		username = '853av'
+		password = '552cu'
+		to = '447772622352' #partner.phonenumber
+		originator = '60SeLaundry'
+		
+		# [NEW ORDER] Will Taylor, 17 Corsham Street N1 6DR, Friday 30th May 14:00 - 15:00
+		message = '[NEW ORDER] '+self.first_name+' '+self.last_name+', '+self.address1
+		try:
+		    address2
+		except NameError:
+		    address2 = None
+		if address2:
+			message = message + ', ' + self.address2
+		message = message + ', ' + self.postcode
+		message = message + ', ' + self.collection_time_date
+		message = message + ' -> ' + self.delivery_time_date
+		
+		if len(message) > 150:
+			message = '[NEW ORDER] '+self.first_name+' '+self.last_name+', '+self.address1
+			message = message + ', ' + self.postcode
+			message = message + ', ' + self.collection_time_date
+			message = message + ' -> ' + self.delivery_time_date
+
+		if len(message) > 150:
+			message = '[NEW ORDER] '+self.first_name+' '+self.last_name+', '+self.address1
+			message = message + ', ' + self.postcode
+			message = message + ', ' + self.collection_time_date
+
+		if len(message) > 150:
+			message = '[NEW ORDER] '+self.collection_time_date
+			message = message + ', See Email For Details'
+
+		result = send_sms(username, password, to, message, originator)
+		print "TXT RESPONSE: ", result
+
+
 
 	def send_email_to_cleaner(self):
 
 		print "SENT EMAIL TO CLEANER"
 
-		partner = partner_key(service_partner).get()
+		partner = get_partner(self.service_partner)
 
 		from google.appengine.api import mail
 
-		message = mail.EmailMessage(
-			sender="60 Second Laundry <orders@60secondlaundry.com>",
-		    subject="Order Receipt")
+		sender_string = "60 Second Laundry <orders@60secondlaundry.com>"
 
-		to_string = first_name + " " + last_name + " <" + email + ">"
-		message.to = to_string
-		message.body = "Dear " + first_name + """:
+		# E.g. New Order: Will Taylor @ 29th May 17:00 - 18:00
+		subject_string = "New Order: " + self.first_name + " " + self.last_name \
+		+ " @ " + self.collection_time_date
+		
+		to_string = self.first_name + " " + self.last_name + " <" + self.email + ">"
+		body_string = "Dear " + partner.name + """:
 
-		Thanks for your order.
+		You have received an order!
 
-		If you have any questions about your order, contact your cleaner directly on:
-		""" + partner.phonenumber + """
+		For ALL questions & issues with the order, contact your customer directly on:
+		""" + self.phonenumber + """
 
-		Here are the details you need to keep.
+		Order details:
+		Customer Name: """ + self.first_name + " " + self.last_name + """
+		Address: """ + self.address1 + """
+		""" + self.address2 + """
+		""" + self.address3 + """
+		""" + self.postcode + """
+		Order Instructions: """ + self.collectioninstructions + """
+		Customer Phone Number: """ + self.phonenumber + """
+		Customer Email: """ + self.email + """
+
+		Collection Time: """ + self.collection_time_date + """
+		Delivery Time: """ + self.delivery_time_date + """
+		(We recommend that you call 30 mins in advance of arrival to let them know you are coming and avoid any missed deliveries)
+
+		Any questions about 60 Second Laundry, contact Will on will.taylor@60secondlaundry or call him on 07772622352.
 
 		If you enjoyed our service, please let us know via will.taylor@60secondlaundry.com
 
 		The 60 Second Laundry Team
+		We love cleaners!
 		"""
+
+		message = mail.EmailMessage(
+			sender=sender_string,
+		    subject=subject_string)
+
+		message.to = to_string
+		message.body = body_string
 
 		message.send()
 
 	def send_email_to_customer(self):
 		print "SENT EMAIL TO CUSTOMER"
 
+		partner = get_partner(self.service_partner)
+
 		from google.appengine.api import mail
 
 		message = mail.EmailMessage(
 			sender="60 Second Laundry <orders@60secondlaundry.com>",
-		    subject="Order Receipt")
+		    subject="Receipt For Your Order On " + self.collection_time_date)
 
 		message.to = "Will Taylor <wrftaylor@gmail.com>"
 		message.body = """
 		Dear Will:
 
-		Thanks for your order.
+		Thank you for your order!
 
-		If you have any questions about your order, contact your cleaner directly on:
-		07772622352
+		If you have any questions or changes with your order, contact your cleaner directly on:
+		""" + partner.phonenumber + """
 
-		Here are the details you need to keep.
+		Order details:
+		Your Name (in case you forget): """ + self.first_name + " " + self.last_name + """
+		Address: """ + self.address1 + """
+		""" + self.address2 + """
+		""" + self.address3 + """
+		""" + self.postcode + """
+		Order Instructions: """ + self.collectioninstructions + """
+		Customer Phone Number: """ + self.phonenumber + """
+		Customer Email: """ + self.email + """
 
-		If you enjoyed our service, please let us know via will.taylor@60secondlaundry.com
+		Collection Time: """ + self.collection_time_date + """
+		Delivery Time: """ + self.delivery_time_date + """
+		(We do ask cleaners to call 30 mins in advance of arrival to let you know they are coming)
+
+
+		If you enjoyed our service, please email Will on will.taylor@60secondlaundry.com
 
 		The 60 Second Laundry Team
+		We Love Cleaners!
 		"""
 
 		message.send()

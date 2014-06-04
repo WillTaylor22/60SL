@@ -17,10 +17,8 @@
 	<input id="searchbar" type="text" name="end_hr" placeholder="Delivery End Time (Hour, 24 hour clock)" value='22'><br>
 	<input id="searchbar" type="text" name="end_min" placeholder="Delivery End Time (Minute)" value='0'><br>
 	<input id="searchbar" type="text" name="window_size" placeholder="Window (in minutes)" value='60'><br><br>
-	Days Available For Delivery: Start Day. Enter lowest value of 0 - 6, where Sunday = 0, Monday = 1, etc
-	<input id="searchbar" type="text" name="start_day" placeholder="" value='0'><br>
-	Days Available For Delivery: End Day. Enter highest value of 0 - 6, where Sunday = 0, Monday = 1, etc
-	<input id="searchbar" type="text" name="end_day" placeholder="" value='6'><br><br>
+	Days Available For Delivery: Enter string of numbers seperated by spaces, where Sunday = 0, Monday = 1, etc
+	<input id="searchbar" type="text" name="days" placeholder="" value='0 1 2 3 4 5 6'><br><br>
 	<input id="searchbutton" class="btn btn-success" type="submit" value="Add to database">
 </form>
 {% endblock %}

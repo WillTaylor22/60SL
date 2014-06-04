@@ -16,7 +16,7 @@
 			<br />Day Start: {{partner.start_hr}}:{{partner.start_min}}. End: {{partner.end_hr}}:{{partner.end_min}}
 			<br />
 			<br />
-			Start Day: {{ partner.start_day }}, End Day: {{ partner.end_day }}
+			Days: {% for day in partner.days %}{{ day }} {% endfor %}
 			<form id="{{ partner.name }}form" method="post" action="/delete">
 				<input type="hidden" name="partner_name" value="{{ partner.name }}" /> 
 				<button onclick="document.getElementById('{{ partner.name }}form').submit();">Delete</button>

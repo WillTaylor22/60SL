@@ -25,7 +25,6 @@ import cgi
 
 from gaesessions import get_current_session
 
-
 # store partner_key
 # store order_key
 
@@ -144,6 +143,8 @@ class ListingsHandler(webapp2.RequestHandler):
 		
 		self.response.write(template.render(template_values))
 
+
+
 class MenuHandler(webapp2.RequestHandler):
 	def get(self):
 		partner_name = self.request.get('partner_name')
@@ -158,8 +159,12 @@ class MenuHandler(webapp2.RequestHandler):
 		session = get_current_session()
 		session['partner'] = partner_name
 
-		query = mymodels.Partner.query(mymodels.Partner.name == partner_name)
-		partner = query.fetch(1)[0]
+		# query = mymodels.Partner.query(mymodels.Partner.name == partner_name)
+		# partner = query.fetch(1)[0]
+		partner = mymodels.get_partner(partner_name)
+		print partner
+		
+		print "------"
 
 		if session.has_key('postcode'):
 			postcode = session['postcode']
@@ -198,6 +203,7 @@ class FormHandler(webapp2.RequestHandler):
 
 		next_three_days = partner.get_next_three_days()
 		print next_three_days
+		print "HERE"
 		# 1. Populate array of values
 		# Given: Start time, end time, window size
 		# Create a slot start every 15 minutes from start time to (end time - window)
@@ -337,6 +343,12 @@ app = webapp2.WSGIApplication([
     ('/upload', 'admin.UploadHandler'),
     ('/delete', 'admin.DeleteHandler'),
     ('/viewpartners', 'admin.ServeHandler'),
+
+    ('/partner-login', 'partner.PartnerLoginHandler'),
+    ('/partner-dashboard', 'partner.PartnerDashboardHandler'),
+    ('/partner-new-order', 'partner.PartnerNewOrderHandler'),
+    ('/partner-info', 'partner.PartnerInfoHandler'),
+    ('/partner-menu', 'partner.PartnerMenuHandler'),
 
     ('/login', CleanerLoginHandler),
     ('/feedback', FeedbackHandler),

@@ -126,8 +126,17 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 		partner.end_min = int(self.request.get('end_min'))
 		partner.window_size = int(self.request.get('window_size'))
 
-		partner.start_day = int(self.request.get('start_day'))
-		partner.end_day = int(self.request.get('end_day'))
+
+		days = self.request.get('days')
+		day_list = days.split()
+		day_list = map(int, day_list)
+		partner.days = day_list
+
+		# OLD:
+		# partner.start_day = int(self.request.get('start_day'))
+		# partner.end_day = int(self.request.get('end_day'))
+
+
 
 		
 		partner.logo_key = blob_key # n.b. blobstore.BlobReferenceProperty() takes a blob_info

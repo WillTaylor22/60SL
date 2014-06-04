@@ -132,7 +132,8 @@
 				<input value="" type="hidden" name="delivery_day_output">
 				<input value="" type="hidden" name="delivery_time_output">
 				<!-- For back button -->
-				<input value="" type="hidden" name="storedDate"> 
+				<input value="" type="hidden" id="storedCDate">
+				<input value="" type="hidden" id="storedDDate"> 
 
 	</div>
 	<br/>
@@ -167,28 +168,26 @@ $(document).ready(function() {
 	$("input[name='collection_time']:checked").click()
 	$("input[name='delivery_day']:checked").click()
 	$("input[name='delivery_time']:checked").click()
-	$('#d_date_div').datepicker('setDate', $("#storedDate").attr("value"))
 
 	fastest_cleaning_time_hrs = 6
 	initialise_datepickers()
+
+	// more Back Button
+	$('#c_date_div').datepicker('setDate', $("#storedCDate").attr("value"))
+	$('#d_date_div').datepicker('setDate', $("#storedDDate").attr("value"))
+
 });
 
 function initialise_datepickers(){
 	array = []
-	var i = 0
-	var first_day = {{ partner.start_day }}
-	if(first_day != 0){
-		for(i = 0; i< first_day; i += 1){
+	allowed_days = [{% for day in partner.days %}{{ day }},{% endfor %} 99] // 99 won't ever be called upon in logic below
+	for(i = 0; i<= 6; i += 1){
+		if (allowed_days.indexOf(i) >= 0 ){
+		}else{
 			array.push(i)
 		}
 	}
-	var end_day = {{ partner.end_day }}
-	if(end_day != 6){
-		for(var i = end_day+1; i<= 6; i += 1){
-			array.push(i)
-		}
-	}
-
+	
 	$('#c_date_div').datepicker({
 	    daysOfWeekDisabled: array,
 	    startDate: "now",
@@ -251,8 +250,6 @@ $( "[name='collection_day']" ).change(function () {
 		var selectedDate = new Date(selected_c_date_button.attr('value'))
 		c_date_change(selectedDate)
 	}
-
-	
 })
 
 
@@ -307,22 +304,22 @@ function get_current_delivery_time(){
 	return selected.attr('value')
 }
 
-function c_date_change(selectedDate){
-	if(isNaN(Date.parse(selectedDate))==false){
+function c_date_change(collection_date){
+	if(isNaN(Date.parse(collection_date))==false){
 
 		// get string for output & save
-		var string = get_outstring_from_date(selectedDate)
+		var string = get_outstring_from_date(collection_date)
 		$("#collection_string_day").text(string) //display
 		$("[name='collection_day_output']").val(string) // save for submission
-
+		$("#storedCDate").val(collection_date)
 
 		// Short-notice warning
 		// -> first, check date is today
 		var today = new Date()
-		today.setHours(selectedDate.getHours(),selectedDate.getMinutes(),0,0)
+		today.setHours(collection_date.getHours(),collection_date.getMinutes(),0,0)
 
 
-		if (selectedDate - today == 0){
+		if (collection_date - today == 0){
 			document.getElementById("c_warning_div").style.display = "block";
 			hide_earlier_collection_times()
 		}
@@ -350,7 +347,7 @@ function c_date_change(selectedDate){
 
 			// check if d_date now invalid
 			var current_d_date = get_current_delivery_date()
-			if (selectedDate > current_d_date){
+			if (collection_date > current_d_date){
 				// so c_date has invalidated the c_date and c_time. time to reset!
 				// reset delivery_day
 				var d_date_selected = $("input[type='radio'][name='delivery_day']:checked");
@@ -364,7 +361,7 @@ function c_date_change(selectedDate){
 			} else {
 				// could be that same day is selected and d_time is now invalid
 
-				if (selectedDate - current_d_date == 0){
+				if (collection_date - current_d_date == 0){
 
 					// now get times
 					if (isOneChecked("collection_time")){
@@ -392,38 +389,59 @@ function c_date_change(selectedDate){
 		}
 
 
+		// disable d_date buttons/calendar before c_date
 
-		// have just selected collection_day.
-		// if c_day == today
-		// and no deliveries are possible today
-		// disable deliveries "today"
+		// - set earliest calandar d_date to selected c_date
+		$('#d_date_div').datepicker('setStartDate', collection_date)
 
-		// check if c_date == today
-		// if (selectedDate - today == 0){
+		// compare button dates to c_date -> disable if earlier
+		$("input[name='delivery_day']").each(function(){
+			d_date = new Date($(this).val())
+			if(d_date < collection_date){
+				$(this).parent().attr("disabled", true) // disable d_date
+			}else{
+				$(this).parent().attr("disabled", false) // enable d_date
+			}
+		})
 
-		// 	//check if no deliveries possible today:
+		// disable today button and calendar option if no deliveries possible today
+		
+		// first, check that today is available
 
-			// // get_soonest_d_possible
-			// var now = new Date()
-			// var now_time = now.getHours()*60 + now.getMinutes()
-			// soonest_d = now_time + 60 + 6 * 60 //timenow + 7hrs
+		if (today_available()){
+			// second, find out if it's empty.
+			// do this by comparing earliest collection time to last delivery time
 
-			// // get last slot
-			// $("input[name='delivery_time']").each(function(){
-			// 	last_slot = this.value
-			// })
-			// last_slot = get_time(last_slot)
+			// earliest collection time:
+			var now = new Date()
+			var now_time = now.getHours()*60 + now.getMinutes()
+			var earliest_d_from_now = now_time + 60 + (60 * fastest_cleaning_time_hrs)
 
-			// if (last_slot < soonest_d){
-			// 	var tomorrow = new Date(now + 1000000)
-			// 	// disable deliveries today
-			// 	$("#d_day_0").parent().attr("disabled", true) // button
-			// 	$('#d_date_div').datepicker('setStartDate', tomorrow)// calendar
-			// }
-		// }
+			var last_d_available = 0
+			$("input[name='delivery_time']").each(function(){
+				last_d_available = this.value
+			})
+			last_d_available = get_time(last_d_available)
 
+			if (earliest_d_from_now > last_d_available){
+				// d_date = today would be empty
+				$("#d_day_0").parent().attr("disabled", true)
+			} else{
+				$("#d_day_0").parent().attr("disabled", false) // enable d_date
+			}
+		}
 	}
 };
+
+function today_available(){
+	var first_date = new Date($("#d_day_0").val())
+	var today = new Date()
+	today.setHours(first_date.getHours(),first_date.getMinutes(),0,0)
+	if (today - first_date == 0){
+		return true
+	}
+	return false
+}
 
 function is_sameday(){
 	var d_date_selected = $("input[type='radio'][name='delivery_day']:checked");
@@ -437,6 +455,7 @@ function d_date_change(selectedDate){
 		var string = get_outstring_from_date(selectedDate)
 		$("#delivery_string_day").text(string) //display
 		$("[name='delivery_day_output']").val(string) // save for submission
+		$("#storedDDate").val(selectedDate)
 
 		// Short-notice warning
 		// -> first, check date is today
@@ -519,6 +538,7 @@ function reset_d_date(){
 	$("#delivery_string_day").text("") // remove string
 	$("#d_comma").text("") // remove comma from string
 	$("[name='delivery_date_output']").val("") // remove save to hidden field for submission
+	$("#storedDDate").val("") // save for back button
 	document.getElementById("d_date_div").style.display = "none";
 	document.getElementById("d_empty_div").style.display = "none";
 }
