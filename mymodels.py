@@ -19,15 +19,16 @@ DEFAULT_PARTNER_KEY = 'default_partner_key'
 def partner_key(partner_name=DEFAULT_PARTNER_NAME):
   return ndb.Key('Partner', partner_name)
 
+def partner_key_by_email(partner_email):
+  partner = Partner.get_by_email(partner_email)
+  return ndb.Key('Partner', partner.name)
+
 def order_key(partner_name=DEFAULT_PARTNER_NAME):
   return ndb.Key('Partner', partner_name)
 
 def get_partner(partner_name):
   query = Partner.query(Partner.name == partner_name)
   return query.fetch(1)[0]
-
-def get_orders(partner_name):
-  query = Order
 
 def send_sms(username, password, to, message, originator):
   requested_url = 'http://api.textmarketer.co.uk/gateway/?option=xml' +\
@@ -73,12 +74,8 @@ class User(webapp2_extras.appengine.auth.models.User):
 
     return None, None
 
-class Partner(User):
+class Partner(ndb.Model):
   # Models an individual partner entry with name and outcodes
-
-  @property 
-  def partnerid(self):
-    return self.key.id()
 
   # public profile
   name = ndb.StringProperty()
@@ -104,9 +101,18 @@ class Partner(User):
 
   delivery_slots = ndb.StringProperty(repeated=True)
 
+  @property 
+  def id(self):
+    return self.key.id()
+
   @property
   def logo_url(self):
     return images.get_serving_url(self.logo_key)
+
+  @classmethod
+  def get_by_email(cls, partner_email):
+    query = cls.query(Partner.email == partner_email)
+    return query.fetch(1)[0]
 
   def populate_slots(self):
 
@@ -198,9 +204,6 @@ class Partner(User):
     
     return next_three_days
 
-class Admin(User):
-  pass
-
 class menuitem(ndb.Model):
   # an individual entry in the database
   itemid = ndb.IntegerProperty()
@@ -233,6 +236,19 @@ class order(ndb.Model):
   @property 
   def ordernumber(self):
     return self.key.id()
+
+  @classmethod
+  def get_by_partner_email(cls, partner_email):
+    query = cls.query(
+      ancestor=partner_key_by_email(partner_email)).order(ndb.GenericProperty("ordertime"))
+    orders = query.fetch(300)
+
+    return orders
+
+  @classmethod
+  def get_by_email(cls, partner_email):
+    query = cls.query(Partner.email == partner_email)
+    return query.fetch(1)[0]
 
   def send_txt_to_cleaner(self):
     print "SENT TXT TO CLEANER"

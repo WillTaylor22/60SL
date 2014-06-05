@@ -17,11 +17,16 @@ from string import split
 from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
 
+import mymodels
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
+
+def datetimeformat(value, format='%H:%M %d-%b'):
+    return value.strftime(format)
+JINJA_ENVIRONMENT.filters['datetimeformat'] = datetimeformat
 
 
 def user_required(handler):
@@ -113,67 +118,38 @@ class PartnerHomeHandler(BaseHandler):
     self.render_template('home.html')
 
 class PartnerSignupHandler(BaseHandler):
-
-  @user_required
   def get(self):
-
-    upload_url = blobstore.create_upload_url('/partner-signup')   # create upload_url for uploading picture
-
-    params ={
-      'upload_url': upload_url
-    }
-
-    self.render_template('signup.html', params)
+    self.render_template('signup.html')
  
   def post(self):
-    if self.request.get('adminpassword') != "SuperSecretPassword":
-      self.redirect(self.uri_for('partner-home'))
-
-    # collect info
+    user_name = self.request.get('username')
     email = self.request.get('email')
-    phonenumber = self.request.get('phonenumber')
     name = self.request.get('name')
     password = self.request.get('password')
     last_name = self.request.get('lastname')
-
-    outcodes = self.request.get('outcodes').split()
-    address = self.request.get('address')
-    minimum_order = int(self.request.get('minimum_order'))
-    delivery_cost = self.request.get('delivery_cost')
-
-    start_hr = int(self.request.get('start_hr'))
-    start_min = int(self.request.get('start_min'))
-    end_hr = int(self.request.get('end_hr'))
-    end_min = int(self.request.get('end_min'))
-    window_size = int(self.request.get('window_size'))
-    days = map(int, self.request.get('days').split())
-
-    upload_files = self.get_uploads('logo')  # Blob data: ('logo' is file upload field in the form)
-    blob_info = upload_files[0]
-    logo_key = blob_info.key()
-
+ 
     unique_properties = ['email_address']
-    user_data = self.user_model.create_user(unique_properties,
+    user_data = self.user_model.create_user(user_name,
+      unique_properties,
       email_address=email, name=name, password_raw=password,
-      last_name=last_name, outcodes=outcodes, address=address,
-      minimum_order = minimum_order, delivery_cost = delivery_cost,
-      start_hr = start_hr, start_min = start_min, end_hr = end_hr,
-      end_min = end_min, window_size = window_size, days = days,
-      logo_key = logo_key,
-      verified=True)
+      last_name=last_name, verified=False)
     if not user_data[0]: #user_data is a tuple
       self.display_message('Unable to create user for email %s because of \
-        duplicate keys %s' % (email, user_data[1]))
+        duplicate keys %s' % (user_name, user_data[1]))
       return
-
-    # model stuff:
-    # partner.populate_slots()
-    # clear_items(partner_name)     # Use to clear all items TODO: partner.clear_items() 
-    # grab(partner_name)      # Populate if no items exist TODO: partner.grab()
-
-    self.display_message("Partner Created")
-
-
+ 
+    user = user_data[1]
+    user_id = user.get_id()
+ 
+    token = self.user_model.create_signup_token(user_id)
+ 
+    verification_url = self.uri_for('partner-verification', type='v', user_id=user_id,
+      signup_token=token, _full=True)
+ 
+    msg = 'Send an email to user in order to verify their address. \
+          They will be able to do so by visiting  <a href="{url}">{url}</a>'
+ 
+    self.display_message(msg.format(url=verification_url))
 
 class LoginHandler(BaseHandler):
   def get(self):
@@ -297,16 +273,25 @@ class SetPasswordHandler(BaseHandler):
     
     self.display_message('Password updated')
 
-class AuthenticatedHandler(BaseHandler):
+class DashboardHandler(BaseHandler):
+  
   @user_required
   def get(self):
     user = self.user
 
-    partner = mymodels.get_partner(partner_name)
-    orders = mymodels.get_orders(partner_name)
+    partner = mymodels.Partner.get_by_email(user.email_address)
+    orders = mymodels.order.get_by_partner_email(user.email_address)
+
+    # verification_url = self.uri_for('partner-verification', type='v', user_id=user_id,
+    #   signup_token=token, _full=True)
+ 
+    # msg = 'Send an email to user in order to verify their address. \
+    #       They will be able to do so by visiting  <a href="{url}">{url}</a>'
+ 
+    # self.display_message(msg.format(url=verification_url))
 
     params = {
-      'partner': user,
+      'partner': partner,
       'orders': orders
     }
     self.render_template('dashboard.html', params)

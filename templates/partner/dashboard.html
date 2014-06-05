@@ -1,15 +1,32 @@
 {% extends "templates/partner/base.html" %}
 {% block content %}
 
-<!-- Add content here! -->
-<h1>Hello {{ user.name }}</h1>
+<h1>Your Dashboard: {{ partner.name }}</h1>
+<hr>
+<h4>Orders</h4>
+<table id="list_orders_table">
+	<tr>
+		<td><strong>ID</strong></td>
+		<td><strong>Received</strong></td>
+		<td><strong>Pickup</strong></td>
+		<td><strong>Collection</strong></td>
+		<td><strong>Items</strong></td>
+		<td><strong>Billed</strong></td>
+		<td><strong>Paid</strong></td>
+		<td><strong>See Order</strong></td>
+	</tr>
+{% for order in orders %}
+	<tr>
+		<td>{{ order.ordernumber }}</td>
+		<td>{{ order.ordertime|datetimeformat }}</td>
+		<td>{{ order.collection_time_date }}</td>
+		<td>{{ order.delivery_time_date }}</td>
+		<td>No</td>
+		<td>No</td>
+		<td>No</td>
+		<td><button type="submit" class="btn btn-success" formmethod="GET" formaction="/partner">See Order</button></td>
+	</tr>
+{% endfor %}
+</table>
 
-<h3>Your Orders</h3>
-
-<p>Order 1</p>
-<p>Order 2</p>
-<p>Order 3</p>
-
-{% endblock %}
-{% block endscripts %}
 {% endblock %}

@@ -292,10 +292,11 @@ class SubmitHandler(webapp2.RequestHandler):
 		if myOrder:
 			myOrder.submitted = True
 			myOrder.put()
+			myOrder.send_txt_to_cleaner()
+			myOrder.send_email_to_cleaner()
+			myOrder.send_email_to_customer()
 
-		myOrder.send_txt_to_cleaner()
-		myOrder.send_email_to_cleaner()
-		myOrder.send_email_to_customer()
+		
 
 		template_values = {
 			"partner_phone_number" : partner_phone_number,
@@ -333,7 +334,7 @@ class TestHandler(webapp2.RequestHandler):
 
 config = {
   'webapp2_extras.auth': {
-    'user_model': 'mymodels.Partner',
+    'user_model': 'mymodels.User',
     'user_attributes': ['name']
   },
   'webapp2_extras.sessions': {
@@ -364,7 +365,9 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/partner-login', 'partner.LoginHandler', name='partner-login'),
     webapp2.Route('/partner-logout', 'partner.LogoutHandler', name='partner-logout'),
     webapp2.Route('/partner-forgot', 'partner.ForgotPasswordHandler', name='partner-forgot'),
-    webapp2.Route('/partner-dashboard', 'partner.AuthenticatedHandler', name='partner-authenticated'),
+    webapp2.Route('/partner-dashboard', 'partner.DashboardHandler', name='partner-dashboard'),
+    webapp2.Route('/partner/orders/<ordernumber:\d+>', 'partner.ViewOrderHandler', name='partner-view-order'),
+
 
     webapp2.Route('/admin', 'admin.AdminHomeHandler', name="admin-home"),
     webapp2.Route('/admin-signup', 'admin.AdminSignupHandler'),

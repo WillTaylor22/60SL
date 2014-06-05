@@ -14,3 +14,8 @@ indexes:
   ancestor: yes
   properties:
   - name: itemid
+
+- kind: order
+  ancestor: yes
+  properties:
+  - name: ordertime
