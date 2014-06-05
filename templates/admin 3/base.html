@@ -5,7 +5,7 @@
 <head>
 	<title>60 Second Laundry</title>
 	<link href="static/css/bootstrap.min.css" rel="stylesheet">
-	<link href="static/css/partner_custom.css" rel="stylesheet">
+	<link href="static/css/admin_custom.css" rel="stylesheet">
 	{% block headscripts %}
 
 	{% endblock %}
@@ -22,14 +22,12 @@
 				<hr/>
 				<p>
 				{% if not user %}
-		        <a href="/partner-login">Login</a>
+		        <a href="/admin-login">Login</a>
 		        {% else %}
-		          Logged in as <span style="background-color: OldLace">{{ user.name }}</span> | <a href="/partner-logout">Logout</a>
+		          Logged in as <span style="background-color: OldLace">{{ user.name }}</span> | <a href="/admin-logout">Logout</a>
 		        {% endif %}
 		        |
-		        <a href="/partner-dashboard">Dashboard</a>
-		        |
-		        <a href="/partner-signup">New user</a>
+		        <a href="/admin-dashboard">Dashboard</a>
 		        |
 		        <a href="/">60 Second Laundry</a>
 		     	</p>

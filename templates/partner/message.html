@@ -2,13 +2,9 @@
 {% block content %}
 
 <!-- Add content here! -->
-<h1>Hello {{ user.name }}</h1>
+<h1>Message</h1>
 
-<h3>Your Orders</h3>
-
-<p>Order 1</p>
-<p>Order 2</p>
-<p>Order 3</p>
+<p>{% autoescape off %}{{ message }}{% endautoescape %}</p>
 
 {% endblock %}
 {% block endscripts %}

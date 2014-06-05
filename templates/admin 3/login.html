@@ -1,7 +1,7 @@
-{% extends "templates/partner/base.html" %}
+{% extends "templates/admin/base.html" %}
 {% block content %}
 
-<h1>Login To Your Cleaner Account</h1>
+<h1>Login To Admin Account</h1>
 
 {% if failed %}
 
@@ -10,7 +10,7 @@
 {% endif %}
 
 <div>
-	<form class="form" action="/partner-login" method="POST" >
+	<form class="form" action="/admin-login" method="POST" >
 		<table>
 			<tr>
 				<td><label for="username">Username </label></td>
@@ -30,6 +30,6 @@
 <br>
 <br>
 
-<a href="/partner-forgot">I have forgotten my password</a>
+<a href="/admin-forgot">I have forgotten my password</a>
 
 {% endblock %}

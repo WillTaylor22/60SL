@@ -1,0 +1,26 @@
+{% extends "templates/partner/base.html" %}
+{% block content %}
+<h1>Your Dashboard: {{ partner.name }}</h1>
+<hr>
+<h4>Orders</h4>
+<table id="list_orders_table">
+	<tr>
+		<td><strong>ID</strong></td>
+		<td><strong>Pickup</strong></td>
+		<td><strong>Collection</strong></td>
+		<td><strong>Billed</strong></td>
+		<td><strong>Paid</strong></td>
+		<td><strong>See Order</strong></td>
+	</tr>
+	<tr>
+		<td>2323234</td>
+		<td>Tuesday 3rd June, 7:30 - 8:30</td>
+		<td>Tuesday 3rd June, 7:30 - 8:30</td>
+		<td>Yes</td>
+		<td>Yes</td>
+		<td><button type="button" class="btn btn-default"><a href="#">See Order</a></button></td>
+	</tr>
+
+</table>
+
+{% endblock %}

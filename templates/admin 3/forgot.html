@@ -1,0 +1,21 @@
+{% extends "templates/admin/base.html" %}
+{% block content %}
+
+<!-- Add content here! -->
+<h1>Reset Password</h1>
+
+<p>Forgot your password? Click the link below to receive a link to recover your password.</p>
+
+{% if not_found %}
+    <strong>Not found!</strong> We could not found any user with the given username.
+{% endif %} 
+
+<form class="form" action= "/admin-forgot" method="POST">
+	<label for="username">Username</label>
+	<input type="text" value="{{ username }}" name="username"/><br>
+	<input type="submit" class="btn btn-success" value="Send password reset link"/>
+</form>
+
+{% endblock %}
+{% block endscripts %}
+{% endblock %}

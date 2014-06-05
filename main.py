@@ -329,30 +329,55 @@ class TestHandler(webapp2.RequestHandler):
 		template = JINJA_ENVIRONMENT.get_template('templates/test.html')
 		self.response.write(template.render(template_values))
 
+
+
+config = {
+  'webapp2_extras.auth': {
+    'user_model': 'mymodels.Partner',
+    'user_attributes': ['name']
+  },
+  'webapp2_extras.sessions': {
+    'secret_key': '60SLSECRET'
+  }
+}
+
 # URL Routing happens here
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     webapp2.Route('/near', handler=ListingsHandler, name='near'),
 	#    webapp2.Route('/menu/<partner>', handler=MenuHandler, name='menu'),
-	('/menu', MenuHandler),
+    ('/menu', MenuHandler),
     ('/revieworder', ReviewOrderHandler),
     ('/collection', FormHandler),
     ('/submitted', SubmitHandler),
     
-    ('/add', 'admin.InputHandler'),
-    ('/upload', 'admin.UploadHandler'),
-    ('/delete', 'admin.DeleteHandler'),
-    ('/viewpartners', 'admin.ServeHandler'),
+    ('/add', 'partner.InputHandler'),
+    ('/upload', 'partner.UploadHandler'),
+    ('/delete', 'partner.DeleteHandler'),
+    ('/viewpartners', 'partner.ServeHandler'),
 
-    ('/partner-login', 'partner.PartnerLoginHandler'),
-    ('/partner-dashboard', 'partner.PartnerDashboardHandler'),
-    ('/partner-new-order', 'partner.PartnerNewOrderHandler'),
-    ('/partner-info', 'partner.PartnerInfoHandler'),
-    ('/partner-menu', 'partner.PartnerMenuHandler'),
+    webapp2.Route('/partner', 'partner.PartnerHomeHandler', name="partner-home"),
+    webapp2.Route('/partner-signup', 'partner.PartnerSignupHandler'),
+    webapp2.Route('/partner-verify/<type:v|p>/<user_id:\d+>-<signup_token:.+>',
+  handler='partner.VerificationHandler', name='partner-verification'),
+    webapp2.Route('/partner-password', 'partner.SetPasswordHandler'),
+    webapp2.Route('/partner-login', 'partner.LoginHandler', name='partner-login'),
+    webapp2.Route('/partner-logout', 'partner.LogoutHandler', name='partner-logout'),
+    webapp2.Route('/partner-forgot', 'partner.ForgotPasswordHandler', name='partner-forgot'),
+    webapp2.Route('/partner-dashboard', 'partner.AuthenticatedHandler', name='partner-authenticated'),
 
-    ('/login', CleanerLoginHandler),
+    webapp2.Route('/admin', 'admin.AdminHomeHandler', name="admin-home"),
+    webapp2.Route('/admin-signup', 'admin.AdminSignupHandler'),
+    webapp2.Route('/admin-verify/<type:v|p>/<user_id:\d+>-<signup_token:.+>',
+  handler='admin.VerificationHandler', name='admin-verification'),
+    webapp2.Route('/admin-password', 'admin.SetPasswordHandler'),
+    webapp2.Route('/admin-login', 'admin.LoginHandler', name='admin-login'),
+    webapp2.Route('/admin-logout', 'admin.LogoutHandler', name='admin-logout'),
+    webapp2.Route('/admin-forgot', 'admin.ForgotPasswordHandler', name='admin-forgot'),
+    webapp2.Route('/admin-dashboard', 'admin.AuthenticatedHandler', name='admin-authenticated'),
+
     ('/feedback', FeedbackHandler),
 
     ('/test', TestHandler),
 
-], debug=True)
+], debug=True, config=config)
