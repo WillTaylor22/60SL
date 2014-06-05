@@ -197,7 +197,7 @@ class order(ndb.Model):
 
 		username = '853av'
 		password = '552cu'
-		to = '447772622352' #partner.phonenumber
+		to = partner.phonenumber
 		originator = '60SeLaundry'
 		
 		# [NEW ORDER] Will Taylor, 17 Corsham Street N1 6DR, Friday 30th May 14:00 - 15:00
@@ -246,7 +246,7 @@ class order(ndb.Model):
 		subject_string = "New Order: " + self.first_name + " " + self.last_name \
 		+ " @ " + self.collection_time_date
 		
-		to_string = self.first_name + " " + self.last_name + " <" + self.email + ">"
+		to_string = partner.name + " <" + partner.email + ">"
 		body_string = "Dear " + partner.name + """:
 
 		You have received an order!
@@ -296,7 +296,7 @@ class order(ndb.Model):
 			sender="60 Second Laundry <orders@60secondlaundry.com>",
 		    subject="Receipt For Your Order On " + self.collection_time_date)
 
-		message.to = "Will Taylor <wrftaylor@gmail.com>"
+		message.to = self.first_name + " " + self.last_name + " <" + self.email + ">"
 		message.body = """
 		Dear Will:
 
@@ -306,7 +306,7 @@ class order(ndb.Model):
 		""" + partner.phonenumber + """
 
 		Order details:
-		Your Name (in case you forget): """ + self.first_name + " " + self.last_name + """
+		Your Name: """ + self.first_name + " " + self.last_name + """
 		Address: """ + self.address1 + """
 		""" + self.address2 + """
 		""" + self.address3 + """
