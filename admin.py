@@ -5,6 +5,7 @@ import jinja2
 import mymodels
 from string import split
 import csv # for reading the csv
+import quopri # for "= every 75 char" bug
 
 from google.appengine.ext import ndb
 
@@ -17,14 +18,13 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
-def grab(partner_name):
+def grab(partner_name, fname):
 	#This section grabs the data
-	fname = "WashingtonDryCleaners.csv"
+	# fname = "WashingtonDryCleaners.csv"
 	
-
 	__location__ = os.path.realpath(
 	    os.path.join(os.getcwd(), os.path.dirname(__file__)))
-	fpath = os.path.join(__location__, fname)
+	fpath = os.path.join(__location__, "menus", fname)
 	# you now have a filepath that you can open the file with
 
 	#open the file, the opened file is called importfile
@@ -80,8 +80,6 @@ class InputHandler(webapp2.RequestHandler):
 	def get(self): # this page is ONLY for input of partners
 		upload_url = blobstore.create_upload_url('/upload')
 
-
-		
 		template_values ={
 			'upload_url': upload_url
 		}
@@ -104,13 +102,17 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 
 		
 		partner_outcodes = self.request.get('outcodes')
+		partner_outcodes = quopri.decodestring(partner_outcodes)
 		partner_outcodes = partner_outcodes.split()
 		partner_address = self.request.get('address')
 		partner_minimum_order = self.request.get('minimum_order')
 		partner_delivery_cost = self.request.get('delivery_cost')
 
 		partner.phonenumber = self.request.get('phonenumber')
+		partner.phonenumber_2 = self.request.get('phonenumber_2')
 		partner.email = self.request.get('email')
+		partner.email_2 = self.request.get('email_2')
+		partner.email_3 = self.request.get('email_3')
 
 		
 		# Give the new partner our data
@@ -120,12 +122,18 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 		partner.minimum_order = int(partner_minimum_order)
 		partner.delivery_cost = partner_delivery_cost
 
+		fname = self.request.get('filename')
+
 		partner.start_hr = int(self.request.get('start_hr'))
 		partner.start_min = int(self.request.get('start_min'))
 		partner.end_hr = int(self.request.get('end_hr'))
 		partner.end_min = int(self.request.get('end_min'))
 		partner.window_size = int(self.request.get('window_size'))
 
+		partner.last_orders_hr = int(self.request.get('last_orders_hr'))
+		partner.last_orders_min = int(self.request.get('last_orders_min'))
+		partner.end_of_morning_hr = int(self.request.get('end_of_morning_hr'))
+		partner.end_of_morning_min = int(self.request.get('end_of_morning_min'))
 
 		days = self.request.get('days')
 		day_list = days.split()
@@ -147,7 +155,8 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 		clear_items(partner_name) 
 
 		# Populate if no items exist
-		grab(partner_name)
+		if fname:
+			grab(partner_name, fname)
 
 
 
@@ -182,4 +191,28 @@ class DeleteHandler(webapp2.RequestHandler):
 			result.key.delete()
 
 		self.redirect('/viewpartners')	    	
+
+class MenuHandler(webapp2.RequestHandler):
+	def get(self):
+		template_values ={
+		}
+
+		template = JINJA_ENVIRONMENT.get_template('templates/admin/addmenu.html')
+		self.response.write(template.render(template_values))
+
+	def post(self):
+		partner_name = self.request.get('partner_name')
+		fname = self.request.get('filename')
+		
+		grab(partner_name, fname)
+
+		template_values ={
+		}
+
+		template = JINJA_ENVIRONMENT.get_template('templates/admin/addmenu.html')
+		self.response.write(template.render(template_values))
+
+
+
+
 

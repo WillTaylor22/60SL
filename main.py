@@ -37,7 +37,7 @@ from bin import postcode
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
-    extensions=['jinja2.ext.autoescape'],
+    extensions=['jinja2.ext.autoescape', "jinja2.ext.do"],
     autoescape=True)
 
 def datetimeformat(value, format='%H:%M / %d-%m-%Y'):
@@ -72,7 +72,7 @@ def nicedates(value):
 	elif value.isoweekday() == 7:
 		return 'Sunday'
 
-
+e = jinja2.Environment()
 JINJA_ENVIRONMENT.filters['datetimeformat'] = datetimeformat
 JINJA_ENVIRONMENT.filters['currencyformat'] = currencyformat
 JINJA_ENVIRONMENT.filters['nicedates'] = nicedates
@@ -93,8 +93,6 @@ class MainHandler(webapp2.RequestHandler):
 
 class ListingsHandler(webapp2.RequestHandler):
 	def get(self):
-
-		
 
 		mypostcode = self.request.get('postcode')
 		if mypostcode=="":
@@ -340,13 +338,13 @@ app = webapp2.WSGIApplication([
     ('/submitted', SubmitHandler),
     
     ('/add', 'admin.InputHandler'),
+    ('/addmenu', 'admin.MenuHandler'),
     ('/upload', 'admin.UploadHandler'),
     ('/delete', 'admin.DeleteHandler'),
     ('/viewpartners', 'admin.ServeHandler'),
 
     ('/partner-login', 'partner.PartnerLoginHandler'),
     ('/partner-dashboard', 'partner.PartnerDashboardHandler'),
-    ('/partner-new-order', 'partner.PartnerNewOrderHandler'),
     ('/partner-info', 'partner.PartnerInfoHandler'),
     ('/partner-menu', 'partner.PartnerMenuHandler'),
 

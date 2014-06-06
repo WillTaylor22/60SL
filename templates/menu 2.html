@@ -19,12 +19,12 @@
 			</div>
 			<div id="partner_facts" style="float: left; width: 270px;">
 				<h4>{{ partner.name }}</h4>
-				<div id="partner_facts_deeper" style="float: left; width: 270px;">
+				<div id="partner_facts_deeper" style="float: left;">
 					<h5>{{ partner.address}}</h5>
 					<h5>Min order: £{{ partner.minimum_order }}</h5>
 					<h5>{{ partner.delivery_cost }}</h5>
 				</div>
-			<form action="collection" method="get" style="float:right; margin-top: -45px;">
+			<form action="collection" method="get" style="float:right; margin-top: 45px;">
 					<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
 					<input type="submit" class="btn btn-success" value="Book Collection >">
 			</form>
@@ -37,93 +37,37 @@
 		
 	</div>
 
-
 <div> <!-- content: tab headings, tab contents -->
 <ul class="nav nav-pills nav-justified" data-tabs="tabs"> <!-- tab headings -->
 {% set prevtabname = '' %}
 {% set i = 0 %}
-{% set i_counter = [] %}
 {% set length = 0 %}
 
+
 {% for item in menuitems %}
-
-	{% if item.tabname != prevtabname: %}
+   	{% if item.tabname != prevtabname: %}
 		{% set prevtabname = item.tabname %}
-		{% do i_counter.append(1) %}
-
-	{% endif %}
-
-{% endfor %}
-{% set i = i_counter|length %}
-
-{% set sameday_counter = [] %}
-
-{% if i == 2 %}
-
-	{% set j = 0 %}
-
-	{% set prevtabname = '' %}
-	{% for item in menuitems %}
-	   	{% if item.tabname != prevtabname: %}
-			{% set prevtabname = item.tabname %}
-			{% set j = j+1 %}
-			{% if j == 1: %}
-
-	    		<li class="active"><a data-toggle="tab" href="#T{{ j }}">{{ item.tabname }}</a></li>
-			{% else %}
-				<li><a data-toggle="tab" href="#T{{ j }}">{{ item.tabname }}</a></li>
-			{% endif %}
-		{% endif %}
-	{% endfor %}
-	</ul>
-
-{% else %}
-
-	{% set j = 0 %}
-	{% set prevtabname = '' %}
-	{% for item in menuitems %}
-		{% if item.tabname != prevtabname: %}
-			{% set prevtabname = item.tabname %}
-			{% set j = j+1 %}
-
-			{% if j == 1 %}
-
-				<li class="active"><a data-toggle="tab" href="#T{{ j }}">{{ item.tabname }}</a></li>
-			{% elif j == 2 %}
-				<li><a data-toggle="tab" href="#T{{ j }}">{{ item.tabname }}</a></li>
-			{% else %}
-				
-				{% if j == 3 %}
-					<li class="dropdown">
+		{% set i = i+1 %}
+		{% if i == 1: %}
+    		<li class="active"><a data-toggle="tab" href="#T{{ i }}">{{ item.tabname }}</a></li>
+		{% else %}
+			{% if length > 200 %}
+				<li class="dropdown">
 					    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-					      <span class="glyphicon glyphicon-plus"></span>
+					      More <span class="caret"></span>
 					    </a>
-					    <ul class="dropdown-menu" style="right: 0; left: auto;">
-				{% endif %}
-				
-							<li><a data-toggle="tab" href="#T{{ j }}">{{ item.tabname }}</a></li>
-				{% if j == i %}	
-						</ul>
-					</li>
-				{% endif %}
-
+					    <ul class="dropdown-menu">
 			{% endif %}
-
+						<li><a data-toggle="tab" href="#T{{ i }}">{{ item.tabname }}</a></li>
+			{% if length > 200 %}
+				</ul>
+			{% endif %}
 		{% endif %}
-
-	{% if item.time == "Same Day" %}
-		{% do sameday_counter.append(1) %}
+		{% set length = length + 30 + item.tabname|length*5 %}
 	{% endif %}
+{% endfor %}
+</ul>
 
-	{% endfor %}
-	</ul>
-
-{% endif %}
-
-{% if sameday_counter %}
-<br>
-<i>*For same-day service, pick collection before 11am, delivery after 5pm when you book</i>
-{% endif %}
 
 <div class="tab-content"> <!-- tab content -->
 	
@@ -158,15 +102,12 @@
 	{% set prev_item = item.item %}
 
 	<td class='subitemcolumn'>{{ item.subitem }}</td>
-
-	{% if item.price != 0.0 %}
-		
+	
+	{% if item.price != 0 %}
 		<td class="pricecolumn">{{ item.price|currencyformat }}</td>
-	{% elif item.pricemin != 0.0 and item.pricemax == 0.0 %}
-		
+	{% elif item.pricemin != 0 and item.pricemin == 0 %}
 		<td class="pricecolumn">From {{ item.pricemin|currencyformat }}</td>
 	{% else %}
-		
 		<td class="pricecolumn">{{ item.pricemin|currencyformat }} - {{ item.pricemax|currencyformat }}</td>
 	{% endif %}
 	<td class="turnaroundcolumn">{{ item.time|capitalize }}</td>

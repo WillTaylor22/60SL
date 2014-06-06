@@ -1,6 +1,8 @@
 from google.appengine.ext import ndb
 from google.appengine.api import images
 import string
+from google.appengine.api import mail
+
 
 DEFAULT_PARTNER_NAME = 'default_name'
 DEFAULT_PARTNER_OUTCODES = 'default_outcode'
@@ -28,7 +30,10 @@ class Partner(ndb.Model):
 	delivery_cost = ndb.StringProperty()
 
 	phonenumber = ndb.StringProperty()
+	phonenumber_2 = ndb.StringProperty()
 	email = ndb.StringProperty()
+	email_2 = ndb.StringProperty()
+	email_3 = ndb.StringProperty()
 
 	# Out of date
 	start_day = ndb.IntegerProperty() # Sunday = 0, Saturday = 6
@@ -44,6 +49,11 @@ class Partner(ndb.Model):
 	window_size = ndb.IntegerProperty()
 	start_day = ndb.IntegerProperty()
 	end_day = ndb.IntegerProperty()
+
+	last_orders_hr = ndb.IntegerProperty()
+	last_orders_min = ndb.IntegerProperty()
+	end_of_morning_hr = ndb.IntegerProperty()
+	end_of_morning_min = ndb.IntegerProperty()
 
 	delivery_slots = ndb.StringProperty(repeated=True)
 
@@ -188,16 +198,17 @@ class order(ndb.Model):
 		return self.key.id()
 
 	def send_txt_to_cleaner(self):
-		print "SENT TXT TO CLEANER"
-		print "order:"
-		print self
-		print "---"
-
 		partner = get_partner(self.service_partner)
 
+		self.send_cleaner_order_txt(partner.phonenumber)
+		
+		if partner.phonenumber_2:
+			self.send_cleaner_order_txt(partner.phonenumber_2)
+		
+	def send_cleaner_order_txt(self, partner_phonenumber):
 		username = '853av'
 		password = '552cu'
-		to = partner.phonenumber
+		to = partner_phonenumber
 		originator = '60SeLaundry'
 		
 		# [NEW ORDER] Will Taylor, 17 Corsham Street N1 6DR, Friday 30th May 14:00 - 15:00
@@ -231,14 +242,19 @@ class order(ndb.Model):
 		print "TXT RESPONSE: ", result
 
 
-
 	def send_email_to_cleaner(self):
-
-		print "SENT EMAIL TO CLEANER"
 
 		partner = get_partner(self.service_partner)
 
-		from google.appengine.api import mail
+		self.send_cleaner_email(partner.name, partner.email)
+
+		if partner.email_2:
+			self.send_cleaner_email(partner.name, partner.email_2)
+
+		if partner.email_3:
+			self.send_cleaner_email(partner.name, partner.email_3)
+
+	def send_cleaner_email(self, partner_name, partner_email):
 
 		sender_string = "60 Second Laundry <orders@60secondlaundry.com>"
 
@@ -246,8 +262,8 @@ class order(ndb.Model):
 		subject_string = "New Order: " + self.first_name + " " + self.last_name \
 		+ " @ " + self.collection_time_date
 		
-		to_string = partner.name + " <" + partner.email + ">"
-		body_string = "Dear " + partner.name + """:
+		to_string = partner_name + " <" + partner_email + ">"
+		body_string = "Dear " + partner_name + """:
 
 		You have received an order!
 

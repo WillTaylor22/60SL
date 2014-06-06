@@ -27,15 +27,6 @@ class PartnerDashboardHandler(webapp2.RequestHandler):
 		template = JINJA_ENVIRONMENT.get_template('templates/partner/dashboard.html')
 		self.response.write(template.render(template_values))
 
-
-class PartnerNewOrderHandler(webapp2.RequestHandler):
-	def get(self):
-		template_values ={
-		}
-
-		template = JINJA_ENVIRONMENT.get_template('templates/partner/new_order.html')
-		self.response.write(template.render(template_values))
-
 class PartnerInfoHandler(webapp2.RequestHandler):
 	def get(self):
 		template_values ={

@@ -332,10 +332,6 @@ function c_date_change(collection_date){
 
 		// --- interactions ---
 
-	
-
-
-
 
 		// disable d_date buttons/calendar before c_date
 		// MUST HAPPEN BEFORE HIDING PREV DATES, BELOW
@@ -344,18 +340,18 @@ function c_date_change(collection_date){
 		// compare button dates to c_date -> disable if earlier
 		$("input[name='delivery_day']").each(function(){
 			d_date = new Date($(this).val())
-
 			if(d_date < collection_date){
 				$(this).parent().attr("disabled", true) // disable d_date
 			}else{
-				$(this).parent().attr("hidden", false) // enable d_date
+				$(this).parent().attr("disabled", false) // enable d_date
 			}
 		})
+
 
 		// disable today button and calendar option if no deliveries possible today
 		
 		// first, check that today is available
-
+		
 		if (today_available()){
 			// second, find out if it's empty.
 			// do this by comparing earliest collection time to last delivery time
@@ -432,6 +428,36 @@ function c_date_change(collection_date){
 				}
 			}
 		}
+
+
+		// if time > last_orders, and c_date = tomorrow, hide time<morning_end
+		if (collection_date - today == 86400000){
+			var now = new Date()
+			var now_time = now.getHours()*60 + now.getMinutes()
+			var last_orders_hr = {{ partner.last_orders_hr }}
+			var last_orders_min = {{ partner.last_orders_min }}
+			var last_orders = last_orders_hr*60 + last_orders_min
+			if (now_time > last_orders){
+
+				var this_time = 0
+				var end_of_morning_hr = {{ partner.end_of_morning_hr }}
+				var end_of_morning_min = {{ partner.end_of_morning_min }}
+				var end_of_morning = end_of_morning_min + end_of_morning_hr*60
+
+				$("input[name='collection_time']").each(function(){
+					this_time = get_time(this.value)
+
+
+					if(this_time < end_of_morning){
+						$(this).parent().addClass('hidden') // disable d_date
+					}else{
+						$(this).parent().removeClass('hidden') // enable d_date
+					}
+				})
+
+			}
+		}
+
 
 	}
 };
@@ -522,6 +548,7 @@ function hide_earlier_collection_times(){
 			reset_c_time()
 		}
 	}
+
 }
 
 function reset_c_time(){

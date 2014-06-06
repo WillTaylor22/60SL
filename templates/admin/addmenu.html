@@ -1,0 +1,18 @@
+{% extends "templates/base.html" %}
+{% block content %}
+<h1>Add Menu</h1>
+
+{% if success %}
+Succeeded!
+{% endif %}
+
+<form action="/addmenu" method="POST">
+	Partner Name:
+	<input id="searchbar" type="text" name="partner_name">
+	<br>
+	File Name:
+	<input id="searchbar" type="text" name="filename">
+	<br><br>
+	<input id="searchbutton" class="btn btn-success" type="submit" value="Add menu">
+</form>
+{% endblock %}

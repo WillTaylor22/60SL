@@ -14,6 +14,7 @@
 					{{ a }}
 				{% endfor %}
 			<br />Day Start: {{partner.start_hr}}:{{partner.start_min}}. End: {{partner.end_hr}}:{{partner.end_min}}
+			<br/ >Last Orders: {{partner.last_orders_hr}}:{{partner.last_orders_min}}. Morning End: {{partner.end_of_morning_hr}}:{{partner.end_of_morning_min}}
 			<br />
 			<br />
 			Days: {% for day in partner.days %}{{ day }} {% endfor %}

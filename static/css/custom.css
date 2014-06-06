@@ -105,8 +105,13 @@ td{
     width: 100%;
 }
 
+.menutable td{
+    vertical-align: top;
+}
+
 .itemcolumn{
     padding-right: 10px;
+    max-width: 120px;
 }
 
 .subitemcolumn{

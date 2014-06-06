@@ -15,12 +15,12 @@
 			</div>
 			<div id="partner_facts" style="float: left; width: 270px;">
 				<h4>{{ partner.name }}</h4>
-				<div id="partner_facts_deeper" style="float: left;">
+				<div id="partner_facts_deeper" style="float: left; width: 270px;">
 					<h5>{{ partner.address}}</h5>
 					<h5>Min order: £{{ partner.minimum_order }}</h5>
 					<h5>{{ partner.delivery_cost }}</h5>
 				</div>
-			<form action="menu" method="get" style="float:right; margin-top: 45px;">
+			<form action="menu" method="get" style="float:right; margin-top: -45px;">
 					<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
 					<input type="submit" class="btn btn-success" value="View Menu >"></input>
 			</form>
@@ -33,6 +33,5 @@
 		
 	</div>
 
-	{% include "templates/footer.html" %}
 {% endfor %}
 {% endblock %}
