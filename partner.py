@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import jinja2
 from google.appengine.ext import ndb
 
@@ -13,21 +15,97 @@ from webapp2_extras.auth import InvalidPasswordError
 
 
 from string import split
+import csv # for reading the csv
+
 
 from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
 
-import mymodels
+import model
+import paypal
+import logging
+
+try:
+  import simplejson as json
+except (ImportError,):
+  import json
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+def currencyformat(value):
+  if(value % 1 == 0):
+    result = "£{:,.0f}".format(value)
+  else:
+    result = "£{:,.2f}".format(value)
+  result = result.decode("utf8")
+  return result
+
 def datetimeformat(value, format='%H:%M %d-%b'):
     return value.strftime(format)
-JINJA_ENVIRONMENT.filters['datetimeformat'] = datetimeformat
 
+JINJA_ENVIRONMENT.filters['datetimeformat'] = datetimeformat
+JINJA_ENVIRONMENT.filters['currencyformat'] = currencyformat
+
+def grab(partner_name):
+  #This section grabs the data
+  fname = "WashingtonDryCleaners.csv"
+  
+
+  __location__ = os.path.realpath(
+      os.path.join(os.getcwd(), os.path.dirname(__file__)))
+  fpath = os.path.join(__location__, "menus", fname)
+  # you now have a filepath that you can open the file with
+
+  #open the file, the opened file is called importfile
+  with open(fpath, 'rU') as importfile:
+    dataimport = csv.reader(importfile, quotechar='"')
+    # dataimport then reads opened file
+
+    # for each row opened, print a comma, then the row.
+    for row in dataimport:
+      # adds entry
+      print "New Entry -------"
+      print partner_name
+      myItem = model.menuitem(parent=model.partner_key(partner_name))
+      print "loading: " + row[0]
+      myItem.itemid = int(row[0])     
+      print "loading: " + row[1]
+      myItem.tabname = row[1]
+      print "loading: " + row[2]
+      myItem.item = row[2]
+      print "loading: " + row[3]
+      myItem.subitem = row[3]
+      print "loading price: ", row[4]
+      if (row[4] == ""):
+        row[4] = 0
+      print "loading price: ", row[4]
+      myItem.price = float(row[4])
+      print "loading: ", row[5]
+      if (row[5] == ""):
+        row[5] = 0
+      print "reloading from pricemin: ", row[5]
+      myItem.pricemin = float(row[5])
+      print "loading: ", row[6]
+      if (row[6] == ""):
+        row[6] = 0
+      print "reloading from pricemax: ", row[6]
+      myItem.pricemax = float(row[6])
+      print "loading: ", row[7]
+      myItem.time = row[7]
+      myItem.put()
+
+      # prints to screen
+      print row
+  print 'DONE'
+
+def clear_items(partner_name):
+  print "IN CLEAR_ITEMS"
+  query = model.menuitem.query(ancestor=model.partner_key(partner_name))
+  partners = query.fetch(keys_only=True)
+  ndb.delete_multi(partners)
 
 def user_required(handler):
   """
@@ -279,16 +357,8 @@ class DashboardHandler(BaseHandler):
   def get(self):
     user = self.user
 
-    partner = mymodels.Partner.get_by_email(user.email_address)
-    orders = mymodels.order.get_by_partner_email(user.email_address)
-
-    # verification_url = self.uri_for('partner-verification', type='v', user_id=user_id,
-    #   signup_token=token, _full=True)
- 
-    # msg = 'Send an email to user in order to verify their address. \
-    #       They will be able to do so by visiting  <a href="{url}">{url}</a>'
- 
-    # self.display_message(msg.format(url=verification_url))
+    partner = model.Partner.get_by_email(user.email_address)
+    orders = model.order.get_by_partner_email(user.email_address)
 
     params = {
       'partner': partner,
@@ -296,33 +366,106 @@ class DashboardHandler(BaseHandler):
     }
     self.render_template('dashboard.html', params)
 
-class PartnerLoginHandler(webapp2.RequestHandler):
-  def get(self):
-    template_values ={}
+class ViewOrderHandler(BaseHandler):
+  
+  @user_required
+  def get(self, *args, **kwargs):
+    
+    user = self.user
 
-    template = JINJA_ENVIRONMENT.get_template('templates/partner/login.html')
-    self.response.write(template.render(template_values))
+    partner = model.Partner.get_by_email(user.email_address)
+    order_id = kwargs['ordernumber']
 
-class PartnerDashboardHandler(webapp2.RequestHandler):
-  def get(self):
-    query = mymodels.Partner.query(mymodels.Partner.name == partner_name)
-    partner = query.fetch(1)[0]
+    order = model.order.get_by_name_id(partner.name, order_id)
 
+    menuitems = model.menuitem.get_by_partner_name(partner.name)
 
     template_values ={
+      'menuitems': menuitems,
+      'order': order
+    }
+
+    template = JINJA_ENVIRONMENT.get_template('templates/partner/order.html')
+    self.response.write(template.render(template_values))
+
+class SubmitOrderHandler(BaseHandler):
+  @user_required
+  def post(self):
+
+    json_string = self.request.get('json')
+
+    client_cart = json.loads(json_string)
+
+    user = self.user
+
+    partner = model.Partner.get_by_email(user.email_address)
+
+    order_number = int(self.request.get('ordernumber'))
+
+    order = ndb.Key('Partner', partner.name, 'order', order_number).get()
+
+    servercart = create_server_cart(client_cart, order.key)
+    print "servercart"
+    print servercart
+
+    print "order:"
+    print order
+
+    print "List of preapprovals:"
+    preapprovals = model.Preapproval.query().fetch(100)
+    print preapprovals # Requires preapproval to be set up for this order.
+
+    
+    item = model.Preapproval.query(model.Preapproval.order == order.key).get()
+    print "Preapproval for this order_key"
+    print item
+
+    print "servercart.total"
+    print servercart.total
+    print "item.preapproval_key"
+    print item.preapproval_key
+
+    pay = paypal.PayWithPreapproval( amount=servercart.total, preapproval_key=item.preapproval_key )
+    if pay.status() == 'COMPLETED':
+      message = "settling transaction: done"
+      logging.info( message ) 
+      order.charged = True
+      order.put()
+    else:
+      message = "settling transaction: failed"
+      logging.info( message ) 
+    
+    orders = model.order.get_by_partner_email(user.email_address)
+
+    params = {
+      'message': message,
       'partner': partner,
+      'orders': orders
     }
+    self.render_template('dashboard.html', params)
 
-    template = JINJA_ENVIRONMENT.get_template('templates/partner/dashboard.html')
-    self.response.write(template.render(template_values))
+def create_server_cart(client_cart, orderkey):
 
-class PartnerNewOrderHandler(webapp2.RequestHandler):
-  def get(self):
-    template_values ={
-    }
+  cart = model.cart(parent=orderkey)
 
-    template = JINJA_ENVIRONMENT.get_template('templates/partner/new_order.html')
-    self.response.write(template.render(template_values))
+  cart_key = cart.key
+
+  for row in client_cart:
+    id = int(row[0])
+
+    # check if regular item
+    quantity = 1
+    quantity = int(row[5])
+    i = 1
+    while i<=quantity: # add once per 'item' in quantity
+      cart.items.append(id)
+      i += 1
+      if i>1000:
+        break
+
+  cart.calculate_price()
+
+  return cart
 
 class PartnerInfoHandler(webapp2.RequestHandler):
   def get(self):
@@ -344,7 +487,11 @@ class PartnerMenuHandler(webapp2.RequestHandler):
 
 class InputHandler(webapp2.RequestHandler):
   def get(self): # this page is ONLY for input of partners
-    
+    upload_url = blobstore.create_upload_url('/upload')
+
+    template_values ={
+      'upload_url': upload_url
+    }
 
     template = JINJA_ENVIRONMENT.get_template('templates/admin/add.html')
     self.response.write(template.render(template_values))
@@ -360,7 +507,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 
     partner_name = self.request.get('name')
     # Create a new "Partner" with a new partner key
-    partner = mymodels.Partner(parent=mymodels.partner_key(partner_name))
+    partner = model.Partner(parent=model.partner_key(partner_name))
 
     
     partner_outcodes = self.request.get('outcodes')
@@ -409,7 +556,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 class ServeHandler(blobstore_handlers.BlobstoreDownloadHandler):
   def get(self):
     #search query, for displaying partners
-    partner_query = mymodels.Partner.query()
+    partner_query = model.Partner.query()
     partners = partner_query.fetch(50)
 
     template_values ={
@@ -423,12 +570,11 @@ class DeleteHandler(webapp2.RequestHandler):
   def post(self): # this page is ONLY for input of partners
     partner_name = self.request.get('partner_name')
 
-    q = mymodels.Partner.query(mymodels.Partner.name == partner_name)
+    q = model.Partner.query(model.Partner.name == partner_name)
     results = q.fetch(10)
     
     for result in results:
       result.key.delete()
 
     self.redirect('/viewpartners')        
-
 

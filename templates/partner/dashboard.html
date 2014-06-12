@@ -3,28 +3,32 @@
 
 <h1>Your Dashboard: {{ partner.name }}</h1>
 <hr>
+
+{% if message %}
+<div class="alert alert-info">{{ message }}</div>
+<hr>
+{% endif %}
 <h4>Orders</h4>
 <table id="list_orders_table">
 	<tr>
 		<td><strong>ID</strong></td>
+		<td><strong>Customer</strong></td>
 		<td><strong>Received</strong></td>
 		<td><strong>Pickup</strong></td>
 		<td><strong>Collection</strong></td>
-		<td><strong>Items</strong></td>
 		<td><strong>Billed</strong></td>
-		<td><strong>Paid</strong></td>
 		<td><strong>See Order</strong></td>
 	</tr>
 {% for order in orders %}
 	<tr>
 		<td>{{ order.ordernumber }}</td>
+		<td>{{ order.first_name }} {{ order.last_name }}</td>
 		<td>{{ order.ordertime|datetimeformat }}</td>
 		<td>{{ order.collection_time_date }}</td>
 		<td>{{ order.delivery_time_date }}</td>
-		<td>No</td>
-		<td>No</td>
-		<td>No</td>
-		<td><button type="submit" class="btn btn-success" formmethod="GET" formaction="/partner">See Order</button></td>
+		<td>{{ order.charged }}</td>
+		<td><form method="GET" action="/partner/orders/{{ order.ordernumber }}"><input type="submit" class="btn btn-success" value="See Order"></form>
+		</td>
 	</tr>
 {% endfor %}
 </table>

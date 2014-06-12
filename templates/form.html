@@ -16,7 +16,7 @@
 
 
 	<div id="collectioninfo">
-		<form action="revieworder" method="post" onsubmit="return validateForm()">
+		<form action="review" method="post" onsubmit="return validateForm()">
 			<fieldset>
 				<legend>Where Do We Collect & Deliver?</legend>
 				<input class="collectionform input-lg" name="Address_line_1" type="text" name="searchquery"
@@ -176,6 +176,7 @@ $(document).ready(function() {
 	$('#c_date_div').datepicker('setDate', $("#storedCDate").attr("value"))
 	$('#d_date_div').datepicker('setDate', $("#storedDDate").attr("value"))
 
+	hide_all_times()
 });
 
 function initialise_datepickers(){
@@ -499,6 +500,9 @@ function hide_earlier_collection_times(){
 			$(this).parent().addClass('hidden')
 			hide_count += 1
 		}
+		else{
+			$(this).parent().removeClass('hidden')
+		}
 	})
 	if (hide_count == total_count){
 		document.getElementById("c_warning_div").style.display = "none";
@@ -648,6 +652,16 @@ function hide_earlier_delivery_times(){
 			}
 		}
 	}
+}
+
+function hide_all_times(){
+	$("input[name='collection_time']").each(function(){
+		$(this).parent().addClass('hidden')
+	})
+
+	$("input[name='delivery_time']").each(function(){
+		$(this).parent().addClass('hidden')
+	})
 }
 
 function show_earlier_delivery_times(){

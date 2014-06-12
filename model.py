@@ -19,12 +19,16 @@ DEFAULT_PARTNER_KEY = 'default_partner_key'
 def partner_key(partner_name=DEFAULT_PARTNER_NAME):
   return ndb.Key('Partner', partner_name)
 
+def order_key_by_number(ordernumber=DEFAULT_ORDER_ID):
+  query = order.query(order.id() == ordernumber)
+  return query.fetch(1)[0]
+
 def partner_key_by_email(partner_email):
   partner = Partner.get_by_email(partner_email)
   return ndb.Key('Partner', partner.name)
 
-def order_key(partner_name=DEFAULT_PARTNER_NAME):
-  return ndb.Key('Partner', partner_name)
+def order_key(partner_name, ordernumber):
+  return ndb.Key('Partner', partner_name, 'order', ordernumber)
 
 def get_partner(partner_name):
   query = Partner.query(Partner.name == partner_name)
@@ -215,7 +219,29 @@ class menuitem(ndb.Model):
   pricemax = ndb.FloatProperty()
   time = ndb.StringProperty()
 
+  def create_item(cls, parent, id, category, item, subitem, price, pricemin, pricemax, time):
+    myItem = cls(parent=parent)
+    myItem.itemid = id     
+    myItem.tabname = category
+    myItem.item = item
+    myItem.subitem = subitem
+    myItem.price = price
+    myItem.pricemin = pricemin
+    myItem.pricemax = pricemax
+    myItem.time = time
+
+    return myitem
+
+  @classmethod
+  def get_by_partner_name(cls, partner_name):
+    print "IN GET_BY_P"
+    query = cls.query(
+      ancestor=partner_key(partner_name)).order(ndb.GenericProperty("itemid"))
+    return query.fetch(300)
+
 class order(ndb.Model):
+  # parent=partner_k
+
   # an individual order
   ordertime = ndb.DateTimeProperty(auto_now_add=True)
 
@@ -232,6 +258,8 @@ class order(ndb.Model):
   delivery_time_date = ndb.StringProperty()
   service_partner = ndb.StringProperty()
   submitted = ndb.BooleanProperty(default=False)
+  charged = ndb.BooleanProperty(default=False)
+  approx_cost = ndb.StringProperty()
 
   @property 
   def ordernumber(self):
@@ -249,6 +277,10 @@ class order(ndb.Model):
   def get_by_email(cls, partner_email):
     query = cls.query(Partner.email == partner_email)
     return query.fetch(1)[0]
+
+  @classmethod
+  def get_by_name_id(cls, partner_name, id):
+    return ndb.Key('Partner', partner_name, 'order', int(id)).get()
 
   def send_txt_to_cleaner(self):
     print "SENT TXT TO CLEANER"
@@ -397,5 +429,52 @@ class feedback(ndb.Model):
   feedback = ndb.StringProperty()
   page = ndb.StringProperty()
   time = ndb.DateTimeProperty(auto_now_add=True)
+
+class cart(ndb.Model):
+  # parent=orderkey
+  # order has parent of partner
+
+  # a cart is made of several cartitems, plus custom cartitems
+  # logic:
+  # receives an array
+  # for each default menuitem, find the menuitem and 
+  # for each custom menuitem, create a new menuitem
+  items = ndb.IntegerProperty(repeated = True)
+  total = ndb.FloatProperty
+  partner_earnings = ndb.FloatProperty
+  commission = ndb.FloatProperty
+
+  def calculate_other_values(self):
+    self.partner_earnings = cart_price * (1 - 0.1)
+    self.commission = cart_price * (0.1)
+    self.put()
+
+  def calculate_price(self):
+
+    self.total = 0
+
+    order_key = self.key.parent()
+    partner_key = order_key.parent()
+
+    for item in self.items:
+
+      # retreive the 
+      # print menuitem.query(menuitem.subitem == 'Hung').fetch(10)[0]
+      itemfound = menuitem.query(menuitem.itemid == item, ancestor=partner_key).get()
+      self.total += max(itemfound.price, itemfound.pricemin)
+
+    self.put()
+
+class Preapproval( ndb.Model ):
+  '''track interaction with paypal'''
+  order = ndb.KeyProperty(kind=order)
+  created = ndb.DateTimeProperty(auto_now_add=True)
+  status = ndb.StringProperty( choices=( 'NEW', 'CREATED', 'ERROR', 'CANCELLED', 'COMPLETED' ) )
+  status_detail = ndb.StringProperty()
+  secret = ndb.StringProperty() # to verify return_url
+  debug_request = ndb.TextProperty()
+  debug_response = ndb.TextProperty()
+  preapproval_key = ndb.StringProperty()
+  amount = ndb.IntegerProperty() # cents
 
 

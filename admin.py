@@ -17,6 +17,63 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+def grab(partner_name):
+  #This section grabs the data
+  fname = "WashingtonDryCleaners.csv"
+  
+
+  __location__ = os.path.realpath(
+      os.path.join(os.getcwd(), os.path.dirname(__file__)))
+  fpath = os.path.join(__location__, "menus", fname)
+  # you now have a filepath that you can open the file with
+
+  #open the file, the opened file is called importfile
+  with open(fpath, 'rU') as importfile:
+    dataimport = csv.reader(importfile, quotechar='"')
+    # dataimport then reads opened file
+
+    # for each row opened, print a comma, then the row.
+    for row in dataimport:
+      # adds entry
+      print "New Entry -------"
+      print partner_name
+      myItem = model.menuitem(parent=model.partner_key(partner_name))
+      print "loading: " + row[0]
+      myItem.itemid = int(row[0])     
+      print "loading: " + row[1]
+      myItem.tabname = row[1]
+      print "loading: " + row[2]
+      myItem.item = row[2]
+      print "loading: " + row[3]
+      myItem.subitem = row[3]
+      print "loading price: ", row[4]
+      if (row[4] == ""):
+        row[4] = 0
+      print "loading price: ", row[4]
+      myItem.price = float(row[4])
+      print "loading: ", row[5]
+      if (row[5] == ""):
+        row[5] = 0
+      print "reloading from pricemin: ", row[5]
+      myItem.pricemin = float(row[5])
+      print "loading: ", row[6]
+      if (row[6] == ""):
+        row[6] = 0
+      print "reloading from pricemax: ", row[6]
+      myItem.pricemax = float(row[6])
+      print "loading: ", row[7]
+      myItem.time = row[7]
+      myItem.put()
+
+      # prints to screen
+      print row
+  print 'DONE'
+
+def clear_items(partner_name):
+  print "IN CLEAR_ITEMS"
+  query = model.menuitem.query(ancestor=model.partner_key(partner_name))
+  partners = query.fetch(keys_only=True)
+  ndb.delete_multi(partners)
 
 def user_required(handler):
   """
@@ -277,7 +334,7 @@ class AdminLoginHandler(webapp2.RequestHandler):
 
 class AdminDashboardHandler(webapp2.RequestHandler):
 	def get(self):
-		query = mymodels.Admin.query(mymodels.Admin.name == Admin_name)
+		query = model.Admin.query(model.Admin.name == Admin_name)
 		Admin = query.fetch(1)[0]
 
 		template_values ={
@@ -286,4 +343,5 @@ class AdminDashboardHandler(webapp2.RequestHandler):
 
 		template = JINJA_ENVIRONMENT.get_template('templates/Admin/dashboard.html')
 		self.response.write(template.render(template_values))
+
 

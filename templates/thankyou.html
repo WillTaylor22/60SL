@@ -1,7 +1,7 @@
 {% extends "templates/base.html" %}
 {% block content %}
 
-<a href="/"><img src="static/img/Logo_width300.png" alt="Sixty Second Laundry" style=" margins: auto; margin-top: 30px; margin-left: 50px;"></a>
+<a href="/"><img src="/static/img/Logo_width300.png" alt="Sixty Second Laundry" style=" margins: auto; margin-top: 30px; margin-left: 50px;"></a>
 {% if timetaken %}
 <h3>You just did your laundry in {{ timetaken }} {{ timeunit }}. Feels good, man.</h3>
 <hr>{% endif %}
@@ -9,13 +9,13 @@
 
 <h4>Order Received</h4>
 
-Nice one {{ order.first_name }}. We've emailed you a receipt. What's next:
+Nice one {{ order.first_name }}. We've emailed you a booking receipt. What's next:
 <br><br>
 <ul>
 	<li>On <strong>{{ order.collection_time_date }}</strong>, <strong>{{ order.service_partner }}</strong> pick up your clothes</li>
-	<li>They confirm what you are giving them and the price</li>
+	<li>They confirm what you are giving them and the price. (Payment happens automatically through PayPal and we will email you a a full receipt)</li>
 	<li>They clean your clothes professionally</li>
-	<li>On <strong>{{ order.delivery_time_date }}</strong> they return your clothes - fresh and beautiful. You pay in cash.</li>
+	<li>On <strong>{{ order.delivery_time_date }}</strong> they return your clothes - fresh and beautiful.</li>
 </ul>
 <br>
 <h5>Changes or cancellations?</h5>
@@ -36,7 +36,7 @@ Nice one {{ order.first_name }}. We've emailed you a receipt. What's next:
 <p>Want to say hello? Email us at contact@60secondlaundry.com. If you have a question about your order, call your cleaner.</p>
 
 <p>Have an amazing day.</p>
-<img src="static/img/Will_Signature.png" alt="Will's Signature">
+<img src="/static/img/Will_Signature.png" alt="Will's Signature">
 <p>Will Taylor</p>
 <h5>Founder, <span style="color:red;">60 Second</span> <span style="color:darkblue;">Laundry</span></h5>
 

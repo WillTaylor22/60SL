@@ -7,14 +7,18 @@
 // you can change the quantity of the items in the cart using +/- buttons
 // you can go to the "review order" page by hitting "order" 
 
-var cart = new Array(); // id, cat, item, subitem, price OR pricemin, qty
+var cart = new Array(); // id, cat, item, subitem, price OR pricemin, turnaround, qty
 var runningtotal = 0
 var formattedtotal = 0
+
+$(document).ready(function(){
+	build_cart_html_table()	
+})
 
 // this adds an item to the basket
 // takes all the info it needs from the HTML in the page - no server queries!
 
-function item_added(id, cat, item, subitem, price, pricemin, amount){ 
+function item_added(id, cat, item, subitem, price, pricemin, turnaround, amount){ 
 	// check if item is in cart
 	// if item exists, get it's index in the cart array. Otherwise returns -1
 	var myIndex = cart.map(function(cart){return cart[0];}).indexOf(id)
@@ -31,6 +35,7 @@ function item_added(id, cat, item, subitem, price, pricemin, amount){
 		item,
 		subitem,
 		cart_price,
+		turnaround,
 		1])
 
 		add_to_total(cart_price)
@@ -56,10 +61,10 @@ function print_cart_to_console(){
 function change_quantity_by_id(id, change){
 	var myIndex = cart.map(function(cart){return cart[0];}).indexOf(id)
 	
-	cart[myIndex][5] += change
+	cart[myIndex][6] += change
 	add_to_total(cart[myIndex][4]*change)
 
-	if (cart[myIndex][5] <= 0) {
+	if (cart[myIndex][6] <= 0) {
 		cart.splice(myIndex, 1);
 	}
 	build_cart_html_table()
@@ -72,8 +77,6 @@ function add_to_total(amount){
 
 function build_cart_html_table(){
 
-	console.log(cart)
-
 	// clear old table
 	var tablediv = document.getElementById("ordertablediv")
 	tablediv.innerHTML = ""
@@ -83,6 +86,7 @@ function build_cart_html_table(){
 	//setup table
 	var tbl=document.createElement('table');
 	tbl.id = 'ordertable'
+	tbl.style = 'width: 100%;'
 
 	var tbdy=document.createElement('tbody');
 	
@@ -123,27 +127,78 @@ function build_cart_html_table(){
 
 	add_total_to_title()
 
+	add_custom_button(tablediv)
+
 	add_order_button(tablediv)
 }
 
-function add_order_button(tablediv){
+function add_custom_button(tablediv){
 	tablediv.appendChild(document.createElement("br"))
-	var OrderButton = document.createElement("button");
-	var t = document.createTextNode("Order")
-	var OrderButtonIcon = document.createElement("span")
-	OrderButtonIcon.className = "glyphicon glyphicon-play"
-	OrderButton.className = "btn btn-default btn-primary btn-lg btn-block"
-	OrderButton.onclick = function(){
-		window.sessionStorage.setItem("cart", JSON.stringify(cart)); // Saving
-		window.location.href = "/revieworder";
+	var CustomButton = document.createElement("button")
+	var t = document.createTextNode("Add Custom Item")
+	var CustomButtonIcon = document.createElement("span")
+	CustomButtonIcon.className = "glyphicon glyphicon-plus"
+	CustomButton.className = "btn btn-default btn-block"
+
+	CustomButton.onclick = function(){
+		addCustomForm(tablediv)
+	}
+
+	CustomButton.appendChild(t)
+	CustomButton.id = "CustomButton"
+	tablediv.appendChild(CustomButton)
+}
+
+custom_id = 2000
+function add_custom_item(){
+	var id = custom_id.toString()
+	custom_id += 1
+	var cat = "Extras"
+	var item = $("#type").val()
+	var subitem = $("#subtype").val()
+	var price = $("#price").val()
+	if(price){
+		if (price.charAt(0) == '£'){
+			price = price.substr(1)
+		}
+	}
+	price = parseFloat(price)
+	var turnaround = $("#turnaround").val()
+	var pricemin = 0
+	var amount = 1
+
+	item_added(id, cat, item, subitem, price, pricemin, turnaround, amount) 
+	$("#newItem").attr("hidden", true)
+	return false
+}
+
+function addCustomForm(tablediv){
+	$("#newItem").attr("hidden", false)
+}
+
+function add_order_button(tablediv){
+	// tablediv.appendChild(document.createElement("br"))
+	// var OrderButton = document.createElement("button");
+	// var t = document.createTextNode("Submit Order")
+	// var OrderButtonIcon = document.createElement("span")
+	// OrderButtonIcon.className = "glyphicon glyphicon-play"
+	// OrderButton.className = "btn btn-default btn-primary btn-lg btn-block"
+	// OrderButton.onclick = submit_order()
+
+	// function(){
+	// 	window.sessionStorage.setItem("cart", JSON.stringify(cart)); // Saving
+	// 	// verify
+		// send using AJAX
+
+
 		// document.getElementById("hiddenform").submit()
 		// var cart2 = sessionStorage.getItem( "cart" );
 		// $("#test").text(cart2)
-	}
-	OrderButton.appendChild(t)
-	OrderButton.id = "OrderButton"
-	tablediv.appendChild(OrderButton)
-	tablediv.appendChild(document.createElement("br"))
+	// }
+	// OrderButton.appendChild(t)
+	// OrderButton.id = "OrderButton"
+	// tablediv.appendChild(OrderButton)
+	// tablediv.appendChild(document.createElement("br"))
 }
 
 function add_total_to_title(){
@@ -164,8 +219,8 @@ function create_item_row(i){
 		td.appendChild(document.createTextNode(cart[i][3]))
 		td.appendChild(document.createTextNode(")"))
 	}
-	if (cart[i][5] != 1){
-		var qtytext = " x" + cart[i][5]
+	if (cart[i][6] != 1){
+		var qtytext = " x" + cart[i][6]
 		td.appendChild(document.createTextNode(qtytext))
 	}
 
@@ -178,7 +233,7 @@ function create_item_row(i){
 	var priceparsed = document.createTextNode(cart[i][4])
 	td.appendChild(priceparsed)
 	td.id = 'ordertable_unitprice'
-	if (cart[i][5] != 1){
+	if (cart[i][6] != 1){
 		var qtytext = " each"
 		td.appendChild(document.createTextNode(qtytext))
 	}
@@ -193,7 +248,7 @@ function create_item_row(i){
 	}
 
 	var addbuttonicon = document.createElement("i")
-	addbuttonicon.className = "fa fa-plus"
+	addbuttonicon.className = "glyphicon glyphicon-plus"
 	addbutton.appendChild(addbuttonicon);
 	td.appendChild(addbutton);
 	tr.appendChild(td);
@@ -207,7 +262,7 @@ function create_item_row(i){
 	}
 
 	var removebuttonicon = document.createElement("i")
-	removebuttonicon.className = "fa fa-minus"
+	removebuttonicon.className = "glyphicon glyphicon-minus"
 	removebutton.appendChild(removebuttonicon);
 	td.appendChild(removebutton);
 	tr.appendChild(td);
@@ -229,4 +284,53 @@ function create_total_row(){
 			th.appendChild(td2);
 		}
 	return th
+}
+
+function submit_order(){
+	// bootbox.confirm("Are you sure you want to submit this?", function(result) {
+ 	// if(result){
+
+		var escaped_cart = []
+ 	 	for (var i=0; i<cart.length; i++){
+ 	 		escaped_cart[i] = $.map(cart[i], function(n){
+ 	 			return escape(n)
+ 	 		})
+ 	 	}
+
+ 	 	json_string = JSON.stringify(escaped_cart)
+ 	 	console.log(json_string)
+ 	 	var ordernumber = $("#ordernumber").val()
+
+ 	 	$.ajax({
+ 	 		type: "POST",
+ 	 		url: '/partner/submitorder',
+ 	 		data: 'json='+json_string+'&ordernumber='+ordernumber
+ 	 	})
+
+ 	 // }
+	// }); 
+}
+
+function post(path, params, method) {
+    method = method || "post"; // Set method to post by default if not specified.
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+
+            form.appendChild(hiddenField);
+         }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
 }

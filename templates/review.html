@@ -19,33 +19,33 @@
 </ol>
 
 
-<h3>Here's Your Order</h3>
-<h5>Please check that it is correct<br><br>
-
+<h3>Your Order</h3>
+<h5>Please check that it is correct</h5>
+<hr>
 <table class="review_table">
 <tr>
-	<td class='review_left review_space_below'>Your Name:</td>
-	<td class='review_space_below review_bold'>{{ order.first_name }} {{ order.last_name }}</td>
+	<td class='review_left'>Collection from:</td>
+	<td class='review_bold'>{{ order.first_name }} {{ order.last_name }}</td>
 </tr>
 <tr>
-	<td class='review_left'>Your Address:</td>
-	<td class='review_bold'>{{ order.address1 }}</td>
+	<td class='review_left'></td>
+	<td>{{ order.address1 }}</td>
 </tr>
 {% if order.address2 %}
 <tr>
 	<td class='review_left'></td>
-	<td class='review_bold'>{{ order.address2 }}</td>
+	<td>{{ order.address2 }}</td>
 </tr>
 {% endif %}
 {% if order.address3 %}
 <tr>
 	<td class='review_left'></td>
-	<td class='review_bold'>{{ order.address3 }}</td>
+	<td>{{ order.address3 }}</td>
 </tr>
 {% endif %}
 <tr>
 	<td class='review_left'></td>
-	<td class='review_bold'>{{ order.postcode }}</td>
+	<td>{{ order.postcode }}</td>
 </tr>
 {% if order.collectioninstructions %}
 <tr>
@@ -55,23 +55,29 @@
 {% endif %}
 <tr>
 	<td class='review_left'>Phone Number:</td>
-	<td class='review_bold'>{{ order.phonenumber }}</td>
+	<td>{{ order.phonenumber }}</td>
 </tr>
 <tr>
 	<td class='review_left review_space_below'>Email:</td>
 	<td class='review_space_below review_bold'>{{ order.email }}</td>
 </tr>
+<tr><td><hr></td><td><hr></td>
 <tr>
-	<td class='review_left'>Cleaning & Delivery Courtesy Of:</td>
-	<td class='review_bold'>{{ partner_name }}</td>
+	<td class='review_left'>Cleaning & Delivery:</td>
+	<td>{{ partner_name }}</td>
 </tr>
 <tr>
 	<td class='review_left'>Collection Time:</td>
-	<td class='review_bold'>{{ order.collection_time_date }}</td>
+	<td>{{ order.collection_time_date }}</td>
 </tr>
 <tr>
 	<td class='review_left'>Delivery Time:</td>
-	<td class='review_bold'>{{ order.delivery_time_date }}</td>
+	<td>{{ order.delivery_time_date }}</td>
+</tr>
+</tr>
+<tr>
+	<td class='review_left'>Order Price:</td>
+	<td>Agreed when clothes are collected</td>
 </tr>
 <!-- <tr>
 	<td>TEST: submitted?:</td>
@@ -82,13 +88,15 @@
 	<td>{{ order.ordernumber }}</td>
 </tr> -->
 </table>
-<br>
+<hr>
 </h5>
-<div id="submitorder">
-	<button id="back_button" onclick="goBack()" class="btn btn-default" style="float: left;">Go Back</button>
-	<form action="submitted" method="post">
+<p style="text-align: right;">Continue to PayPal to complete your order.
+	You are billed when your cleaner confirms the price</p>
+<div>
+	<button id="back_button" onclick="goBack()" class="btn btn-default" style="float: left; ">Go Back</button>
+	<form action="buy" method="post">
 		<input value="{{ order.ordernumber }}" type="hidden" name="order_key">
-		<input id="place_order_button" class="btn btn-success btn-lg" type="submit" value="Place Order" style="float: right; width: 40%;">
+		<input id="place_order_button" class="btn btn-success btn-lg" type="submit" value="Continue" style="float: right; width: 40%;">
 	</form>
 </div>
 <br><br><br><br><br><br><br><br><br><br>

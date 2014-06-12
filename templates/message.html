@@ -1,0 +1,24 @@
+{% extends "templates/base.html" %}
+{% block content %}
+
+<a href="/"><img src="static/img/Logo_width300.png" alt="Sixty Second Laundry" style=" margins: auto; margin-top: 30px; margin-left: 50px;"></a>
+{% if message %}
+<h3>Message:</h3>
+
+<p>{{ message }}</p>
+
+{% endif %}
+
+<div class="input-group" style="width: 400px;">
+	<input type="hidden" id="meta" value="Sent from the 'message' page">
+	<textarea id="feedback" class="collectionform input-sm" style="border-color: lightgrey; width: 320px;"placeholder="Help us make 60 Second Landry better. Type here to send anonymous feedback. What's good? What's bad? suggestions welcome."></textarea>
+	<span class="input-grousp-btn" style="float:right;">
+		<button id="feedback_button" class="btn btn-default" style="color:#999999; width: 80px; height: 48px;">Send</button>
+	</span>
+	</div>
+
+{% endblock %}{% block endscripts %}
+<!-- feedback -->
+<script src="static/js/feedbackbar.js"></script>
+
+{% endblock %}
