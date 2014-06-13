@@ -135,6 +135,9 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 		partner.end_of_morning_hr = int(self.request.get('end_of_morning_hr'))
 		partner.end_of_morning_min = int(self.request.get('end_of_morning_min'))
 
+		partner.last_orders_same_day_hr = int(self.request.get('last_orders_same_day_hr'))
+		partner.last_orders_same_day_min = int(self.request.get('last_orders_same_day_min'))
+
 		days = self.request.get('days')
 		day_list = days.split()
 		day_list = map(int, day_list)

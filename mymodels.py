@@ -54,6 +54,9 @@ class Partner(ndb.Model):
 	last_orders_min = ndb.IntegerProperty()
 	end_of_morning_hr = ndb.IntegerProperty()
 	end_of_morning_min = ndb.IntegerProperty()
+	last_orders_same_day_hr = ndb.IntegerProperty()
+	last_orders_same_day_min = ndb.IntegerProperty()
+
 
 	delivery_slots = ndb.StringProperty(repeated=True)
 

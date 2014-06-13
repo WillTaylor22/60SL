@@ -429,6 +429,22 @@ function c_date_change(collection_date){
 			}
 		}
 
+		// if time > last_orders_same_day, and c_date = today, hide all times
+		if (collection_date - today == 0){
+			var now = new Date()
+			var now_time = now.getHours()*60 + now.getMinutes()
+			var None = 24
+			var last_orders_same_day_hr = {{ partner.last_orders_same_day_hr }}
+			var last_orders_same_day_min = {{ partner.last_orders_same_day_min }}
+			var last_orders = last_orders_same_day_hr*60 + last_orders_same_day_min
+			if(now_time>last_orders){
+				$("input[name='collection_time']").each(function(){
+					$(this).parent().addClass('hidden')
+				})
+				document.getElementById("c_warning_div").style.display = "none";
+				document.getElementById("c_empty_div").style.display = "block";
+			}
+		}
 
 		// if time > last_orders, and c_date = tomorrow, hide time<morning_end
 		if (collection_date - today == 86400000){

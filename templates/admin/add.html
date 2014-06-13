@@ -24,20 +24,35 @@
 	<label for="email">Email 3 (Optional)</label>
 	<input id="searchbar" type="text" name="email_3"><br>
 	<hr>
-	<input id="searchbar" type="text" name="start_hr" placeholder="Delivery Start Time (Hour, 24 hour clock)" value='7'><br>
-	<input id="searchbar" type="text" name="start_min" placeholder="Delivery Start Time (Minute)" value='0'><br>
-	<input id="searchbar" type="text" name="end_hr" placeholder="Delivery End Time (Hour, 24 hour clock)" value='22'><br>
-	<input id="searchbar" type="text" name="end_min" placeholder="Delivery End Time (Minute)" value='0'><br>
-	<input id="searchbar" type="text" name="window_size" placeholder="Window (in minutes)" value='60'>
+	<label>Delivery Start Time (Hour, 24 hour clock)</label>
+	<input id="searchbar" type="text" name="start_hr" placeholder="" value='7'><br>
+	<label>Delivery Start Time (Minute)</label>
+	<input id="searchbar" type="text" name="start_min" placeholder="" value='0'><br>
+	<label>Delivery End Time (Hour, 24 hour clock)</label>
+	<input id="searchbar" type="text" name="end_hr" placeholder="" value='22'><br>
+	<label>Delivery End Time (Minute)</label>
+	<input id="searchbar" type="text" name="end_min" placeholder="" value='0'><br>
+	<label>Window (in minutes)</label>
+	<input id="searchbar" type="text" name="window_size" value='60'>
 	<hr>
-	<input id="searchbar" type="text" name="last_orders_hr" placeholder="Last Orders for pickup tomorrow morning (Hour, 24 hour clock)" value='19'><br>
-	<input id="searchbar" type="text" name="last_orders_min" placeholder="Last Orders for pickup tomorrow morning (Minute)" value='0'><br>
-	<input id="searchbar" type="text" name="end_of_morning_hr" placeholder="Morning End Time (Hour, 24 hour clock)" value='10'><br>
-	<input id="searchbar" type="text" name="end_of_morning_min" placeholder="Morning End Time (Minute)" value='0'><br>
-
+	<label>Last Orders for tomorrow morning (Hour, 24 hour clock)</label>
+	<input id="searchbar" type="text" name="last_orders_hr" placeholder="" value='19'><br>
+	<label>Last Orders for pickup tomorrow morning (Minute)</label>
+	<input id="searchbar" type="text" name="last_orders_min" value='0'><br>
+	<label>Morning End Time (Hour, 24 hour clock)</label>
+	<input id="searchbar" type="text" name="end_of_morning_hr" placeholder="" value='10'><br>
+	<label>Morning End Time (Minute)</label>
+	<input id="searchbar" type="text" name="end_of_morning_min" placeholder="" value='0'><hr>
+	<label>Last orders for same evening deliveries</label>
+	<label>(Hour, 24 hour clock)</label>
+	<input id="searchbar" type="text" name="last_orders_same_day_hr" placeholder="" value='23'><br>
+	<label>(Minute)</label>
+	<input id="searchbar" type="text" name="last_orders_same_day_min" placeholder="" value='0'><br>
 	<br><br>
 	Days Available For Delivery: Enter string of numbers seperated by spaces, where Sunday = 0, Monday = 1, etc
 	<input id="searchbar" type="text" name="days" placeholder="" value='0 1 2 3 4 5 6'><br><br>
 	<input id="searchbutton" class="btn btn-success" type="submit" value="Add to database">
+	<br><br>
+	
 </form>
 {% endblock %}
