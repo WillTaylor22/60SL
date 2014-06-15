@@ -287,8 +287,8 @@ function create_total_row(){
 }
 
 function submit_order(){
-	// bootbox.confirm("Are you sure you want to submit this?", function(result) {
- 	// if(result){
+	bootbox.confirm("Are you sure you want to submit this?", function(result) {
+ 	if(result){
 
 		var escaped_cart = []
  	 	for (var i=0; i<cart.length; i++){
@@ -301,14 +301,13 @@ function submit_order(){
  	 	console.log(json_string)
  	 	var ordernumber = $("#ordernumber").val()
 
- 	 	$.ajax({
- 	 		type: "POST",
- 	 		url: '/partner/submitorder',
- 	 		data: 'json='+json_string+'&ordernumber='+ordernumber
+ 	 	post('/partner/submitorder', {
+ 	 		json: json_string,
+ 	 		ordernumber: ordernumber
  	 	})
 
- 	 // }
-	// }); 
+ 	 }
+	}); 
 }
 
 function post(path, params, method) {

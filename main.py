@@ -45,33 +45,33 @@ def datetimeformat(value, format='%H:%M / %d-%m-%Y'):
     return value.strftime(format)
 
 def currencyformat(value):
-	if(value % 1 == 0):
-		result = "£{:,.0f}".format(value)
-	else:
-		result = "£{:,.2f}".format(value)
-	result = result.decode("utf8")
-	return result
+    if(value % 1 == 0):
+        result = "£{:,.0f}".format(value)
+    else:
+        result = "£{:,.2f}".format(value)
+    result = result.decode("utf8")
+    return result
 
 def nicedates(value):
-	today = date.today()
-	if value == today:
-		return 'Today'
-	elif value == (today + timedelta(1)):
-		return'Tomorrow'
-	elif value.isoweekday() == 1:
-		return 'Monday'
-	elif value.isoweekday() == 2:
-		return 'Tuesday'
-	elif value.isoweekday() == 3:
-		return 'Wednesday'
-	elif value.isoweekday() == 4:
-		return 'Thursday'
-	elif value.isoweekday() == 5:
-		return'Friday'
-	elif value.isoweekday() == 6:
-		return 'Saturday'
-	elif value.isoweekday() == 7:
-		return 'Sunday'
+    today = date.today()
+    if value == today:
+        return 'Today'
+    elif value == (today + timedelta(1)):
+        return'Tomorrow'
+    elif value.isoweekday() == 1:
+        return 'Monday'
+    elif value.isoweekday() == 2:
+        return 'Tuesday'
+    elif value.isoweekday() == 3:
+        return 'Wednesday'
+    elif value.isoweekday() == 4:
+        return 'Thursday'
+    elif value.isoweekday() == 5:
+        return'Friday'
+    elif value.isoweekday() == 6:
+        return 'Saturday'
+    elif value.isoweekday() == 7:
+        return 'Sunday'
 
 
 JINJA_ENVIRONMENT.filters['datetimeformat'] = datetimeformat
@@ -82,154 +82,159 @@ JINJA_ENVIRONMENT.filters['nicedates'] = nicedates
 
 # Handlers (Views)
 class Main(webapp2.RequestHandler):
-	def get(self):
-		
-		session = get_current_session()
-		session['starttime'] = datetime.today()
+    def get(self):
+        
+        session = get_current_session()
+        session['starttime'] = datetime.today()
 
-		template_values = {}
+        template_values = {}
 
-		template = JINJA_ENVIRONMENT.get_template('templates/index.html')
-		self.response.write(template.render(template_values))
+        template = JINJA_ENVIRONMENT.get_template('templates/index.html')
+        self.response.write(template.render(template_values))
 
 class Listings(webapp2.RequestHandler):
-	def get(self):
+    def get(self):
 
-		session = get_current_session()
+        session = get_current_session()
 
-		this_postcode = self.request.get('postcode')
+        this_postcode = self.request.get('postcode')
 
-		session['postcode'] = this_postcode
+        session['postcode'] = this_postcode
 
-		# analytics
-		postcode_attempt = model.postcode_attempt(postcode = this_postcode)
-		postcode_attempt.put()
+        # analytics
+        postcode_attempt = model.postcode_attempt(postcode = this_postcode)
+        postcode_attempt.put()
 
-		try:
-			outcode = postcode.parse_uk_postcode(this_postcode)[0]
+        try:
+            outcode = postcode.parse_uk_postcode(this_postcode)[0]
 
-			partners = model.Partner.query(model.Partner.outcodes == outcode).fetch(10)
+            partners = model.Partner.query(model.Partner.outcodes == outcode).fetch(10)
 
-			if partners[0]:
-				template_values = {
-					'postcode' : this_postcode,
-					'partners' : partners
-				}
-				template = JINJA_ENVIRONMENT.get_template('templates/listings.html')
+            if partners[0]:
+                template_values = {
+                    'postcode' : this_postcode,
+                    'partners' : partners
+                }
+                template = JINJA_ENVIRONMENT.get_template('templates/listings.html')
 
-		except IndexError:
-			errormessage = "No supplier at this postcode. We've noted your postcode (" + this_postcode +") and will look for a cleaner near you!"
-			template_values = {
-				'error_message': errormessage
-			}
-			template = JINJA_ENVIRONMENT.get_template('templates/index.html')
-		except ValueError:
-			errormessage = "Postcode not recognised"
-			template_values = {
-				'error_message': errormessage
-			}
-			template = JINJA_ENVIRONMENT.get_template('templates/index.html')
-		
-		self.response.write(template.render(template_values))
+        except IndexError:
+            errormessage = "No supplier at this postcode. We've noted your postcode (" + this_postcode +") and will look for a cleaner near you!"
+            template_values = {
+                'error_message': errormessage
+            }
+            template = JINJA_ENVIRONMENT.get_template('templates/index.html')
+        except ValueError:
+            errormessage = "Postcode not recognised"
+            template_values = {
+                'error_message': errormessage
+            }
+            template = JINJA_ENVIRONMENT.get_template('templates/index.html')
+        
+        self.response.write(template.render(template_values))
 
 
 class Menu(webapp2.RequestHandler):
-	def get(self):
-		
-		session = get_current_session()
+    def get(self):
+        
+        session = get_current_session()
 
-		partner_name = self.request.get('partner_name')
-		
-		session['partner'] = partner_name
+        partner_name = self.request.get('partner_name')
+        
+        session['partner'] = partner_name
 
-		if session.has_key('postcode'):
-			postcode = session['postcode']
+        if session.has_key('postcode'):
+            postcode = session['postcode']
 
-		template_values = {
-			'postcode': postcode,
-			'partner' : model.get_partner(partner_name),
-			'menuitems' : model.menuitem.query(
-			ancestor=model.partner_key(partner_name)).order(ndb.GenericProperty("itemid")).fetch(300)
-		}
+        template_values = {
+            'postcode': postcode,
+            'partner' : model.get_partner(partner_name),
+            'menuitems' : model.menuitem.query(
+            ancestor=model.partner_key(partner_name)).order(ndb.GenericProperty("itemid")).fetch(300)
+        }
 
-		template = JINJA_ENVIRONMENT.get_template('templates/menu.html')
-		self.response.write(template.render(template_values))
+        template = JINJA_ENVIRONMENT.get_template('templates/menu.html')
+        self.response.write(template.render(template_values))
 
 class Form(webapp2.RequestHandler):
-	def get(self):
+    def get(self):
 
-		partner_name = self.request.get('partner_name')
+        partner_name = self.request.get('partner_name')
 
-		session = get_current_session()
+        session = get_current_session()
 
-		if session.has_key('postcode'):
-			postcode = session['postcode']
-		else:
-			postcode = ''
+        if session.has_key('postcode'):
+            postcode = session['postcode']
+        else:
+            postcode = ''
 
-		if session.has_key('partner'):
-			partner = session['partner']
-		else:
-			partner = ""
+        if session.has_key('partner'):
+            partner = session['partner']
+        else:
+            partner = ""
 
-		partner = model.get_partner(partner_name)
+        partner = model.get_partner(partner_name)
 
-		next_three_days = partner.get_next_three_days()
+        next_three_days = partner.get_next_three_days()
 
-		template_values = {
-			"next_three_days": next_three_days,
-			"partner_name" : partner_name,
-			"postcode": postcode,
-			"partner": partner,
-		}
-		template = JINJA_ENVIRONMENT.get_template('templates/form.html')
-		self.response.write(template.render(template_values))
+        template_values = {
+            "next_three_days": next_three_days,
+            "partner_name" : partner_name,
+            "postcode": postcode,
+            "partner": partner,
+        }
+        template = JINJA_ENVIRONMENT.get_template('templates/form.html')
+        self.response.write(template.render(template_values))
 
 class Review(webapp2.RequestHandler):
-	
+    
+    # Receives info from Collection(form)
+    # then sends user to review the order
+    def post(self):
+
+        #creates new order and associates it with the partner
+        partner_name = self.request.get('partner_name')
+
+        partner_k = model.partner_key(partner_name)
+        myOrder = model.order(parent=partner_k)
+
+        # get order info and load it into a model
+        myOrder.first_name = self.request.get('first_name')
+        myOrder.last_name = self.request.get('last_name')
+        myOrder.address1 = self.request.get('Address_line_1')
+        myOrder.address2 = self.request.get('Address_line_2')
+        myOrder.address3 = self.request.get('Address_line_3')
+        myOrder.postcode = self.request.get('Postcode')
+        myOrder.collectioninstructions = self.request.get('Collect_instructions')
+        myOrder.phonenumber = self.request.get('Phone_number')
+        myOrder.email = self.request.get('Email')
+        myOrder.collection_time_date = self.request.get('collection_day_output') + ', ' + self.request.get('collection_time_output')
+        myOrder.delivery_time_date = self.request.get('delivery_day_output') + ', ' + self.request.get('delivery_time_output')
+        myOrder.service_partner = partner_name
+        myOrder.approx_cost = "Agreed when cleaner sees your clothes"
+
+        myOrder.put()
+
+        session = get_current_session()
+        session['ordernumber'] = myOrder.key.id()
+        session['partnername'] = partner_name
 
 
-	# Receives info from Collection(form)
-	# then sends user to review the order
-	def post(self):
-
-		#creates new order and associates it with the partner
-		partner_name = self.request.get('partner_name')
-
-		partner_k = model.partner_key(partner_name)
-		myOrder = model.order(parent=partner_k)
-
-		# get order info and load it into a model
-		myOrder.first_name = self.request.get('first_name')
-		myOrder.last_name = self.request.get('last_name')
-		myOrder.address1 = self.request.get('Address_line_1')
-		myOrder.address2 = self.request.get('Address_line_2')
-		myOrder.address3 = self.request.get('Address_line_3')
-		myOrder.postcode = self.request.get('Postcode')
-		myOrder.collectioninstructions = self.request.get('Collect_instructions')
-		myOrder.phonenumber = self.request.get('Phone_number')
-		myOrder.email = self.request.get('Email')
-		myOrder.collection_time_date = self.request.get('collection_day_output') + ', ' + self.request.get('collection_time_output')
-		myOrder.delivery_time_date = self.request.get('delivery_day_output') + ', ' + self.request.get('delivery_time_output')
-		myOrder.service_partner = partner_name
-		myOrder.approx_cost = "Agreed when cleaner sees your clothes"
-
-		myOrder.put()
-
-		session = get_current_session()
-		session['ordernumber'] = myOrder.key.id()
-		session['partnername'] = partner_name
-
-
-		template_values = {
-			"order" : myOrder,
-			"partner_name" : partner_name
-		}
-		template = JINJA_ENVIRONMENT.get_template('templates/review.html')
-		self.response.write(template.render(template_values))
+        template_values = {
+            "order" : myOrder,
+            "partner_name" : partner_name
+        }
+        template = JINJA_ENVIRONMENT.get_template('templates/review.html')
+        self.response.write(template.render(template_values))
 
 
 class Buy(webapp2.RequestHandler):
+    def get(self):
+        template_values = {
+            'message': 'You have cancelled your order'
+        }
+        template = JINJA_ENVIRONMENT.get_template('templates/message.html')
+        self.response.write(template.render(template_values))
+
     # The order has been created and reviewed and submitted
     def post(self):
 
@@ -258,7 +263,7 @@ class Buy(webapp2.RequestHandler):
         preapproval = paypal.Preapproval(
           amount=amount,
           return_url="%s/success/%s/%s/" % ( self.request.uri, item.key.id(), item.secret ),
-          cancel_url="/review",
+          cancel_url="%s" % self.request.url,
           remote_address=self.request.remote_addr )
 
         item.debug_request = preapproval.raw_request
@@ -312,7 +317,7 @@ class Success(webapp2.RequestHandler):
           return
 
         item.status = 'COMPLETED'
-    	item.put()
+        item.put()
 
         timestart = ''
         timetaken = ''
@@ -343,9 +348,9 @@ class Success(webapp2.RequestHandler):
             myOrder.submitted = True
             myOrder.put()
             if settings.DEBUG == False:
-	            myOrder.send_txt_to_cleaner()
-	            myOrder.send_email_to_cleaner()
-	            myOrder.send_email_to_customer()
+                myOrder.send_txt_to_cleaner()
+                myOrder.send_email_to_cleaner()
+                myOrder.send_email_to_customer()
 
         template_values = {
             "partner_phone_number" : partner_phone_number,
@@ -358,23 +363,23 @@ class Success(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 
 class CleanerLoginHandler(webapp2.RequestHandler):
-	def get(self):
-		template_values = {}
-		template = JINJA_ENVIRONMENT.get_template('templates/cleanerlogin.html')
-		self.response.write(template.render(template_values))
+    def get(self):
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('templates/cleanerlogin.html')
+        self.response.write(template.render(template_values))
 
 class FeedbackHandler(webapp2.RequestHandler):
-	def post(self):
-		myFeedback = model.feedback()
-		myFeedback.page = self.request.get('feedback_page')
-		myFeedback.feedback = self.request.get('feedback_content')
-		myFeedback.put()
+    def post(self):
+        myFeedback = model.feedback()
+        myFeedback.page = self.request.get('feedback_page')
+        myFeedback.feedback = self.request.get('feedback_content')
+        myFeedback.put()
 
 class TestHandler(webapp2.RequestHandler):
-	def get(self):
-		template_values = {}
-		template = JINJA_ENVIRONMENT.get_template('templates/test.html')
-		self.response.write(template.render(template_values))
+    def get(self):
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('templates/test.html')
+        self.response.write(template.render(template_values))
 
 
 

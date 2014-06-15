@@ -26,7 +26,7 @@
 		<td>{{ order.ordertime|datetimeformat }}</td>
 		<td>{{ order.collection_time_date }}</td>
 		<td>{{ order.delivery_time_date }}</td>
-		<td>{{ order.charged }}</td>
+		<td>{{ order.charged|yesnoformat }}</td>
 		<td><form method="GET" action="/partner/orders/{{ order.ordernumber }}"><input type="submit" class="btn btn-success" value="See Order"></form>
 		</td>
 	</tr>

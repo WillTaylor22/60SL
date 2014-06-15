@@ -15,3 +15,5 @@ PAYPAL_EMAIL = 'will.taylor-facilitator@60secondlaundry.com'
 PREAPPROVAL_PERIOD = 182 # days to ask for in a preapproval
 
 DEBUG = True # No outbound texts or emails.
+
+PAYPAL_COMMISSION = 0.1

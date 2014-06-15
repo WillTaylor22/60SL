@@ -14,7 +14,7 @@
 						<td><strong>{{ order.first_name }} {{ order.last_name }}</strong></td>
 					</tr>
 					<tr>
-						<td>Address</td>
+						<td style="width: 110px;">Address</td>
 						<td>{{ order.address1 }}</td>
 					</tr>
 					<tr>
@@ -56,6 +56,11 @@
 					<tr>
 						<td>Order #</td>
 						<td>{{ order.ordernumber }}</td>
+						<input type="hidden" id="ordernumber" value="{{ order.ordernumber }}">
+					</tr>
+					<tr>
+						<td>Billed</td>
+						<td>{{ order.charged|yesnoformat }}</td>
 						<input type="hidden" id="ordernumber" value="{{ order.ordernumber }}">
 					</tr>
 					
@@ -181,8 +186,6 @@
 			</div> <!-- end tab-content --> 
 
 		</div>
-
-	
 	</div>
 </div>
 

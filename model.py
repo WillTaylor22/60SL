@@ -443,6 +443,7 @@ class cart(ndb.Model):
   total = ndb.FloatProperty
   partner_earnings = ndb.FloatProperty
   commission = ndb.FloatProperty
+  permanent_item_list = ndb.TextProperty
 
   def calculate_other_values(self):
     self.partner_earnings = cart_price * (1 - 0.1)
@@ -458,10 +459,53 @@ class cart(ndb.Model):
 
     for item in self.items:
 
-      # retreive the 
-      # print menuitem.query(menuitem.subitem == 'Hung').fetch(10)[0]
       itemfound = menuitem.query(menuitem.itemid == item, ancestor=partner_key).get()
       self.total += max(itemfound.price, itemfound.pricemin)
+
+    self.put()
+
+  def __init__(self, client_cart, orderkey):
+    super(cart).__init__(self)
+    print "client_cart"
+    print client_cart
+
+    print "orderkey"
+    print orderkey
+
+    for row in client_cart:
+      item_id = int(row[0])
+      print "item_id"
+      print item_id
+
+      # check if regular item
+      quantity = 1
+      quantity = int(row[5])
+      i = 1
+      while i<=quantity: # add once per 'item' in quantity
+        self.items.append(item_id)
+        print "here"
+        print self.items
+        i += 1
+        if i>1000:
+          break
+
+      partner_key = orderkey.parent()
+      print "partner_key"
+      print partner_key
+      # print cart
+    
+      for item in self.items:
+
+        itemfound = menuitem.query(menuitem.itemid == item, ancestor=partner_key).get()
+        print "float, self.total"
+        print float(max(itemfound.price, itemfound.pricemin))
+        print self.total
+        self.total += max(itemfound.price, itemfound.pricemin)
+        self.permanent_item_list += itemfound.tabname + " "\
+          + itemfound.item + " "\
+          + itemfound.subitem + " "\
+          + str(max(itemfound.price, itemfound.pricemin)) + " "\
+          + itemfound.time + " /"
 
     self.put()
 

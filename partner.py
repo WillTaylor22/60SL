@@ -30,6 +30,8 @@ try:
 except (ImportError,):
   import json
 
+""" UTILITIES """
+
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -43,69 +45,20 @@ def currencyformat(value):
   result = result.decode("utf8")
   return result
 
+def yesnoformat(value):
+  if(value == True):
+    result = "Yes"
+  else:
+    result = "No"
+  return result
+
 def datetimeformat(value, format='%H:%M %d-%b'):
     return value.strftime(format)
 
 JINJA_ENVIRONMENT.filters['datetimeformat'] = datetimeformat
 JINJA_ENVIRONMENT.filters['currencyformat'] = currencyformat
+JINJA_ENVIRONMENT.filters['yesnoformat'] = yesnoformat
 
-def grab(partner_name):
-  #This section grabs the data
-  fname = "WashingtonDryCleaners.csv"
-  
-
-  __location__ = os.path.realpath(
-      os.path.join(os.getcwd(), os.path.dirname(__file__)))
-  fpath = os.path.join(__location__, "menus", fname)
-  # you now have a filepath that you can open the file with
-
-  #open the file, the opened file is called importfile
-  with open(fpath, 'rU') as importfile:
-    dataimport = csv.reader(importfile, quotechar='"')
-    # dataimport then reads opened file
-
-    # for each row opened, print a comma, then the row.
-    for row in dataimport:
-      # adds entry
-      print "New Entry -------"
-      print partner_name
-      myItem = model.menuitem(parent=model.partner_key(partner_name))
-      print "loading: " + row[0]
-      myItem.itemid = int(row[0])     
-      print "loading: " + row[1]
-      myItem.tabname = row[1]
-      print "loading: " + row[2]
-      myItem.item = row[2]
-      print "loading: " + row[3]
-      myItem.subitem = row[3]
-      print "loading price: ", row[4]
-      if (row[4] == ""):
-        row[4] = 0
-      print "loading price: ", row[4]
-      myItem.price = float(row[4])
-      print "loading: ", row[5]
-      if (row[5] == ""):
-        row[5] = 0
-      print "reloading from pricemin: ", row[5]
-      myItem.pricemin = float(row[5])
-      print "loading: ", row[6]
-      if (row[6] == ""):
-        row[6] = 0
-      print "reloading from pricemax: ", row[6]
-      myItem.pricemax = float(row[6])
-      print "loading: ", row[7]
-      myItem.time = row[7]
-      myItem.put()
-
-      # prints to screen
-      print row
-  print 'DONE'
-
-def clear_items(partner_name):
-  print "IN CLEAR_ITEMS"
-  query = model.menuitem.query(ancestor=model.partner_key(partner_name))
-  partners = query.fetch(keys_only=True)
-  ndb.delete_multi(partners)
 
 def user_required(handler):
   """
@@ -120,7 +73,6 @@ def user_required(handler):
       return handler(self, *args, **kwargs)
  
   return check_login
-
 
 class BaseHandler(webapp2.RequestHandler):
   @webapp2.cached_property
@@ -190,6 +142,8 @@ class BaseHandler(webapp2.RequestHandler):
       finally:
           # Save all sessions.
           self.session_store.save_sessions(self.response)
+
+""" User Handlers """
 
 class PartnerHomeHandler(BaseHandler):
   def get(self):
@@ -351,6 +305,8 @@ class SetPasswordHandler(BaseHandler):
     
     self.display_message('Password updated')
 
+""" Profile Handlers """
+
 class DashboardHandler(BaseHandler):
   
   @user_required
@@ -380,18 +336,30 @@ class ViewOrderHandler(BaseHandler):
 
     menuitems = model.menuitem.get_by_partner_name(partner.name)
 
+    if order.charged == True:
+      cart = model.cart.query(ancestor=order.key).get()
+    else:
+      cart = None
+
+    print "cart:"
+    print cart
+    for item in cart.items:
+      print "item"
+      print item
+
     template_values ={
       'menuitems': menuitems,
-      'order': order
+      'order': order,
+      'cart': cart
     }
 
     template = JINJA_ENVIRONMENT.get_template('templates/partner/order.html')
     self.response.write(template.render(template_values))
 
 class SubmitOrderHandler(BaseHandler):
+
   @user_required
   def post(self):
-
     json_string = self.request.get('json')
 
     client_cart = json.loads(json_string)
@@ -404,16 +372,16 @@ class SubmitOrderHandler(BaseHandler):
 
     order = ndb.Key('Partner', partner.name, 'order', order_number).get()
 
-    servercart = create_server_cart(client_cart, order.key)
-    print "servercart"
-    print servercart
+    servercart = model.cart(client_cart, order.key)
+    # print "servercart"
+    # print servercart
 
-    print "order:"
-    print order
+    # print "order:"
+    # print order
 
-    print "List of preapprovals:"
+    # print "List of preapprovals:"
     preapprovals = model.Preapproval.query().fetch(100)
-    print preapprovals # Requires preapproval to be set up for this order.
+    # print preapprovals # Requires preapproval to be set up for this order.
 
     
     item = model.Preapproval.query(model.Preapproval.order == order.key).get()
@@ -425,16 +393,20 @@ class SubmitOrderHandler(BaseHandler):
     print "item.preapproval_key"
     print item.preapproval_key
 
-    pay = paypal.PayWithPreapproval( amount=servercart.total, preapproval_key=item.preapproval_key )
-    if pay.status() == 'COMPLETED':
-      message = "settling transaction: done"
-      logging.info( message ) 
-      order.charged = True
-      order.put()
+    if order.charged == False:
+      pay = paypal.PayWithPreapproval( amount=servercart.total, preapproval_key=item.preapproval_key )
+      if pay.status() == 'COMPLETED':
+        message = "Customer has been billed."
+        logging.info( message ) 
+        order.charged = True
+        order.put()
+      else:
+        message = "ERROR: Customer has not been billed. Please email will.taylor@60secondlaundry.com or call 07772622352"
+        logging.info( message ) 
     else:
-      message = "settling transaction: failed"
+      message = "Customer been billed previously. This bill was not sent."
       logging.info( message ) 
-    
+
     orders = model.order.get_by_partner_email(user.email_address)
 
     params = {
@@ -442,47 +414,71 @@ class SubmitOrderHandler(BaseHandler):
       'partner': partner,
       'orders': orders
     }
-    self.render_template('dashboard.html', params)
 
-def create_server_cart(client_cart, orderkey):
+    template = JINJA_ENVIRONMENT.get_template('templates/partner/dashboard.html')
+    self.response.write(template.render(params))
 
-  cart = model.cart(parent=orderkey)
 
-  cart_key = cart.key
 
-  for row in client_cart:
-    id = int(row[0])
+""" BELOW HERE ARE ADMIN TASKS """
 
-    # check if regular item
-    quantity = 1
-    quantity = int(row[5])
-    i = 1
-    while i<=quantity: # add once per 'item' in quantity
-      cart.items.append(id)
-      i += 1
-      if i>1000:
-        break
+def grab(partner_name):
+  #This section grabs the data
+  fname = "WashingtonDryCleaners.csv"
+  
 
-  cart.calculate_price()
+  __location__ = os.path.realpath(
+      os.path.join(os.getcwd(), os.path.dirname(__file__)))
+  fpath = os.path.join(__location__, "menus", fname)
+  # you now have a filepath that you can open the file with
 
-  return cart
+  #open the file, the opened file is called importfile
+  with open(fpath, 'rU') as importfile:
+    dataimport = csv.reader(importfile, quotechar='"')
+    # dataimport then reads opened file
 
-class PartnerInfoHandler(webapp2.RequestHandler):
-  def get(self):
-    template_values ={
-    }
+    # for each row opened, print a comma, then the row.
+    for row in dataimport:
+      # adds entry
+      print "New Entry -------"
+      print partner_name
+      myItem = model.menuitem(parent=model.partner_key(partner_name))
+      print "loading: " + row[0]
+      myItem.itemid = int(row[0])     
+      print "loading: " + row[1]
+      myItem.tabname = row[1]
+      print "loading: " + row[2]
+      myItem.item = row[2]
+      print "loading: " + row[3]
+      myItem.subitem = row[3]
+      print "loading price: ", row[4]
+      if (row[4] == ""):
+        row[4] = 0
+      print "loading price: ", row[4]
+      myItem.price = float(row[4])
+      print "loading: ", row[5]
+      if (row[5] == ""):
+        row[5] = 0
+      print "reloading from pricemin: ", row[5]
+      myItem.pricemin = float(row[5])
+      print "loading: ", row[6]
+      if (row[6] == ""):
+        row[6] = 0
+      print "reloading from pricemax: ", row[6]
+      myItem.pricemax = float(row[6])
+      print "loading: ", row[7]
+      myItem.time = row[7]
+      myItem.put()
 
-    template = JINJA_ENVIRONMENT.get_template('templates/partner/info.html')
-    self.response.write(template.render(template_values))
+      # prints to screen
+      print row
+  print 'DONE'
 
-class PartnerMenuHandler(webapp2.RequestHandler):
-  def get(self):
-    
-    template_values ={
-    }
-
-    template = JINJA_ENVIRONMENT.get_template('templates/partner/menu.html')
-    self.response.write(template.render(template_values))
+def clear_items(partner_name):
+  print "IN CLEAR_ITEMS"
+  query = model.menuitem.query(ancestor=model.partner_key(partner_name))
+  partners = query.fetch(keys_only=True)
+  ndb.delete_multi(partners)
 
 
 class InputHandler(webapp2.RequestHandler):

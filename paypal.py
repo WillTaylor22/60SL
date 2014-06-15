@@ -28,7 +28,7 @@ class Pay( object ):
     }
 
     data = {
-      'currencyCode': 'USD',
+      'currencyCode': 'GBP',
       'returnUrl': return_url,
       'cancelUrl': cancel_url,
       'requestEnvelope': { 'errorLanguage': 'en_US' },
@@ -107,7 +107,7 @@ class IPN( object ):
       return
 
     (currency, amount) = request.get( "transaction[0].amount" ).split(' ')
-    if currency != 'USD':
+    if currency != 'GBP':
       self.error = 'Incorrect currency %s' % currency
       return
 
@@ -172,7 +172,7 @@ class Preapproval( object ):
       'endingDate': expiry.isoformat() + "+00:00",
       'startingDate': now.isoformat() + "+00:00",
       'maxTotalAmountOfAllPayments': '%.2f' % amount,
-      'currencyCode': 'USD',
+      'currencyCode': 'GBP',
       'returnUrl': return_url,
       'cancelUrl': cancel_url,
       'requestEnvelope': { 'errorLanguage': 'en_US' },
@@ -214,7 +214,7 @@ class PayWithPreapproval( object ):
       'actionType': 'PAY',
       'amount': '%.2f' % amount,
       'preapprovalKey': preapproval_key,
-      'currencyCode': 'USD',
+      'currencyCode': 'GBP',
       'returnUrl': 'http://dummy',
       'cancelUrl': 'http://dummy',
       'requestEnvelope': { 'errorLanguage': 'en_US' },
