@@ -191,6 +191,7 @@ class Review(webapp2.RequestHandler):
     # then sends user to review the order
     def post(self):
 
+        print "IN REVIEW"
         #creates new order and associates it with the partner
         partner_name = self.request.get('partner_name')
 
@@ -211,6 +212,7 @@ class Review(webapp2.RequestHandler):
         myOrder.delivery_time_date = self.request.get('delivery_day_output') + ', ' + self.request.get('delivery_time_output')
         myOrder.service_partner = partner_name
         myOrder.approx_cost = "Agreed when cleaner sees your clothes"
+        myOrder.payment_method = self.request.get('payment_method')
 
         myOrder.put()
 
@@ -218,8 +220,14 @@ class Review(webapp2.RequestHandler):
         session['ordernumber'] = myOrder.key.id()
         session['partnername'] = partner_name
 
+        continue_message = ''
+        if myOrder.payment_method == 'cash':
+            continue_message = 'You are paying in cash when your cleaned clothes are delivered. Continue to review your order'
+        elif myOrder.payment_method == 'paypal':
+            continue_message = 'Continue to PayPal to complete your order. You are billed when your cleaner confirms the price'
 
         template_values = {
+            "continue_message": continue_message,
             "order" : myOrder,
             "partner_name" : partner_name
         }
@@ -238,14 +246,6 @@ class Buy(webapp2.RequestHandler):
     # The order has been created and reviewed and submitted
     def post(self):
 
-        ''' start preapproval
-        Rather than being associated with a user, each preapproval is associated with an order 
-
-        item        : preapproval_model
-        preapproval : preapproval_request
-
-        '''
-
         session = get_current_session()
         if session.has_key('ordernumber'):
             ordernumber = session['ordernumber']
@@ -255,8 +255,22 @@ class Buy(webapp2.RequestHandler):
         myOrder_k = ndb.Key('Partner', partnername, 'order', ordernumber)
         myOrder = myOrder_k.get()
 
-        amount = 100 #max payment to take
-        item = model.Preapproval( order=myOrder.key, status="NEW", secret=util.random_alnum(16), amount=int(amount*100) )
+        if myOrder.payment_method == 'paypal':
+            self._start_preapproval(ordernumber, partnername, myOrder)
+        if myOrder.payment_method == 'cash':
+            self.redirect(self.uri_for('success-cash'))
+
+    def _start_preapproval(self, ordernumber, partnername, myOrder):
+        ''' start preapproval
+        Rather than being associated with a user, each preapproval is associated with an order 
+
+        item        : preapproval_model
+        preapproval : preapproval_request
+
+        '''
+
+        amount = 200 # max payment to take, £
+        item = model.Preapproval( order=myOrder.key, status="NEW", secret=util.random_alnum(16), amount=amount )
         item.put()
 
         # get key
@@ -289,8 +303,11 @@ class Buy(webapp2.RequestHandler):
         template = JINJA_ENVIRONMENT.get_template('templates/message.html')
         self.response.write(template.render(template_values))
 
+class SuccessCash(webapp2.RequestHandler):
+    def get(self):
+        _display_success_page(self)
 
-class Success(webapp2.RequestHandler):
+class SuccessPayPal(webapp2.RequestHandler):
     def get(self, item_id, secret):
 
         logging.info( "returned from paypal" )
@@ -302,12 +319,12 @@ class Success(webapp2.RequestHandler):
           self.error(404)
           return
 
-        # if item.status != 'CREATED':
-        #   item.status_detail = 'Unexpected status %s' % item.status
-        #   item.status = 'ERROR'
-        #   item.put()
-        #   self.error(501)
-        #   return
+        if item.status != 'CREATED':
+          item.status_detail = 'Unexpected status %s' % item.status
+          item.status = 'ERROR'
+          item.put()
+          self.error(501)
+          return
           
         if item.secret != secret:
           item.status_detail = 'Incorrect secret %s' % secret
@@ -319,48 +336,51 @@ class Success(webapp2.RequestHandler):
         item.status = 'COMPLETED'
         item.put()
 
-        timestart = ''
-        timetaken = ''
-        timeunit = 'seconds'
-        session = get_current_session()
-        if session.has_key('starttime'):
-            timestart = session['starttime']
-            timetaken = int((datetime.today() - timestart).total_seconds())
-            if timetaken > 60:
-                timeunit = "minute"
-                if timetaken > 120:
-                    timeunit = "minutes"
-                timetaken = timetaken/60
-        
-        if session.has_key('ordernumber'):
-            ordernumber = session['ordernumber']
-        if session.has_key('partnername'):
-            partnername = session['partnername']
+        _display_success_page(self)
+    
+def _display_success_page(rq):
+    timestart = ''
+    timetaken = ''
+    timeunit = 'seconds'
+    session = get_current_session()
+    if session.has_key('starttime'):
+        timestart = session['starttime']
+        timetaken = int((datetime.today() - timestart).total_seconds())
+        if timetaken > 60:
+            timeunit = "minute"
+            if timetaken > 120:
+                timeunit = "minutes"
+            timetaken = timetaken/60
+    
+    if session.has_key('ordernumber'):
+        ordernumber = session['ordernumber']
+    if session.has_key('partnername'):
+        partnername = session['partnername']
 
-        myOrder_k = ndb.Key('Partner', partnername, 'order', ordernumber)
-        myOrder = myOrder_k.get()
+    myOrder_k = ndb.Key('Partner', partnername, 'order', ordernumber)
+    myOrder = myOrder_k.get()
 
-        query = model.Partner.query(model.Partner.name == myOrder.service_partner)
-        partner = query.fetch(1)[0]
-        partner_phone_number = partner.phonenumber
+    query = model.Partner.query(model.Partner.name == myOrder.service_partner)
+    partner = query.fetch(1)[0]
+    partner_phone_number = partner.phonenumber
 
-        if myOrder:
-            myOrder.submitted = True
-            myOrder.put()
-            if settings.DEBUG == False:
-                myOrder.send_txt_to_cleaner()
-                myOrder.send_email_to_cleaner()
-                myOrder.send_email_to_customer()
+    if myOrder:
+        myOrder.submitted = True
+        myOrder.put()
+        if settings.DEBUG == False:
+            myOrder.send_txt_to_cleaner()
+            myOrder.send_email_to_cleaner()
+            myOrder.send_email_to_customer()
 
-        template_values = {
-            "partner_phone_number" : partner_phone_number,
-            "order" : myOrder,
-            "timetaken" : timetaken,
-            "timeunit" : timeunit,
-        }
+    template_values = {
+        "partner_phone_number" : partner_phone_number,
+        "order" : myOrder,
+        "timetaken" : timetaken,
+        "timeunit" : timeunit,
+    }
 
-        template = JINJA_ENVIRONMENT.get_template('templates/thankyou.html')
-        self.response.write(template.render(template_values))
+    template = JINJA_ENVIRONMENT.get_template('templates/thankyou.html')
+    rq.response.write(template.render(template_values))
 
 class CleanerLoginHandler(webapp2.RequestHandler):
     def get(self):
@@ -401,7 +421,8 @@ app = webapp2.WSGIApplication([
     ('/collection', Form),
     ('/review', Review),
     ('/buy', Buy),
-    ('/buy/success/([^/]*)/([^/]*)/.*', Success),
+    webapp2.Route('/buy/success', handler=SuccessCash, name="success-cash"),
+    ('/buy/success/([^/]*)/([^/]*)/.*', SuccessPayPal),
     
     ('/add', 'partner.InputHandler'),
     ('/upload', 'partner.UploadHandler'),

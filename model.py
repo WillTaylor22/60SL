@@ -20,7 +20,7 @@ def partner_key(partner_name=DEFAULT_PARTNER_NAME):
   return ndb.Key('Partner', partner_name)
 
 def order_key_by_number(ordernumber=DEFAULT_ORDER_ID):
-  query = order.query(order.id() == ordernumber)
+  query = order.query(order.key.id == ordernumber)
   return query.fetch(1)[0]
 
 def partner_key_by_email(partner_email):
@@ -260,6 +260,8 @@ class order(ndb.Model):
   submitted = ndb.BooleanProperty(default=False)
   charged = ndb.BooleanProperty(default=False)
   approx_cost = ndb.StringProperty()
+  cost = ndb.IntegerProperty() # Pence
+  payment_method = ndb.StringProperty()
 
   @property 
   def ordernumber(self):
@@ -268,7 +270,7 @@ class order(ndb.Model):
   @classmethod
   def get_by_partner_email(cls, partner_email):
     query = cls.query(
-      ancestor=partner_key_by_email(partner_email)).order(ndb.GenericProperty("ordertime"))
+      ancestor=partner_key_by_email(partner_email)).filter(cls.submitted == True).order(ndb.GenericProperty("ordertime"))
     orders = query.fetch(300)
 
     return orders
@@ -389,9 +391,9 @@ class order(ndb.Model):
       sender="60 Second Laundry <orders@60secondlaundry.com>",
         subject="Receipt For Your Order On " + self.collection_time_date)
 
-    message.to = "Will Taylor <wrftaylor@gmail.com>"
+    message.to = self.first_name + " " + self.last_name + " <" + self.email + ">"
     message.body = """
-    Dear Will:
+    Dear """ + self.first_name + """:
 
     Thank you for your order!
 
@@ -399,24 +401,40 @@ class order(ndb.Model):
     """ + partner.phonenumber + """
 
     Order details:
-    Your Name (in case you forget): """ + self.first_name + " " + self.last_name + """
-    Address: """ + self.address1 + """
-    """ + self.address2 + """
-    """ + self.address3 + """
-    """ + self.postcode + """
-    Order Instructions: """ + self.collectioninstructions + """
-    Customer Phone Number: """ + self.phonenumber + """
-    Customer Email: """ + self.email + """
+    """ + self.first_name + " " + self.last_name + """
+    """ + self.address1
+
+    if self.address2:
+      body_string += """
+    """ + self.address2
+
+    if self.address3:
+      body_string += """
+    """ + self.address3
+
+    
+    body_string += """
+    """ + self.postcode
+
+    if self.collectioninstructions:
+      body_string += """
+    """ + self.collectioninstructions
+
+    body_string += """
+    Your Phone Number: """ + self.phonenumber + """
+    Your Email: """ + self.email + """
 
     Collection Time: """ + self.collection_time_date + """
     Delivery Time: """ + self.delivery_time_date + """
-    (We do ask cleaners to call 30 mins in advance of arrival to let you know they are coming)
+    (We ask cleaners to call 30 mins in advance of arrival to let you know they are coming)
 
+    Order Reference Number: """ + self.key.id() + """
 
     If you enjoyed our service, please email Will on will.taylor@60secondlaundry.com
 
+
     The 60 Second Laundry Team
-    We Love Cleaners!
+    We love cleaners!
     """
 
     message.send()
@@ -464,50 +482,7 @@ class cart(ndb.Model):
 
     self.put()
 
-  def __init__(self, client_cart, orderkey):
-    super(cart).__init__(self)
-    print "client_cart"
-    print client_cart
 
-    print "orderkey"
-    print orderkey
-
-    for row in client_cart:
-      item_id = int(row[0])
-      print "item_id"
-      print item_id
-
-      # check if regular item
-      quantity = 1
-      quantity = int(row[5])
-      i = 1
-      while i<=quantity: # add once per 'item' in quantity
-        self.items.append(item_id)
-        print "here"
-        print self.items
-        i += 1
-        if i>1000:
-          break
-
-      partner_key = orderkey.parent()
-      print "partner_key"
-      print partner_key
-      # print cart
-    
-      for item in self.items:
-
-        itemfound = menuitem.query(menuitem.itemid == item, ancestor=partner_key).get()
-        print "float, self.total"
-        print float(max(itemfound.price, itemfound.pricemin))
-        print self.total
-        self.total += max(itemfound.price, itemfound.pricemin)
-        self.permanent_item_list += itemfound.tabname + " "\
-          + itemfound.item + " "\
-          + itemfound.subitem + " "\
-          + str(max(itemfound.price, itemfound.pricemin)) + " "\
-          + itemfound.time + " /"
-
-    self.put()
 
 class Preapproval( ndb.Model ):
   '''track interaction with paypal'''

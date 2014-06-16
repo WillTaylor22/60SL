@@ -171,7 +171,7 @@ class Preapproval( object ):
     data = {
       'endingDate': expiry.isoformat() + "+00:00",
       'startingDate': now.isoformat() + "+00:00",
-      'maxTotalAmountOfAllPayments': '%.2f' % amount,
+      'maxTotalAmountOfAllPayments': '%.2f' % amount, # pounds
       'currencyCode': 'GBP',
       'returnUrl': return_url,
       'cancelUrl': cancel_url,

@@ -9,12 +9,14 @@ import webapp2
  
 from webapp2_extras import auth
 from webapp2_extras import sessions
+
 from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
-from google.appengine.api.urlfetch import DownloadError
+
 
 from string import split
 import csv # for reading the csv
+
 
 from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
@@ -22,8 +24,6 @@ from google.appengine.ext.webapp import blobstore_handlers
 import model
 import paypal
 import logging
-
-from google.appengine.api import mail
 
 try:
   import simplejson as json
@@ -150,7 +150,7 @@ class PartnerHomeHandler(BaseHandler):
     if self.user != None:
       self.redirect(self.uri_for('partner-dashboard'))
 
-    self.redirect(self.uri_for('partner-login'))
+    self.render_template('home.html')
 
 class PartnerSignupHandler(BaseHandler):
   def get(self):
@@ -181,46 +181,32 @@ class PartnerSignupHandler(BaseHandler):
     verification_url = self.uri_for('partner-verification', type='v', user_id=user_id,
       signup_token=token, _full=True)
  
-    # OLD
     msg = 'Send an email to user in order to verify their address. \
           They will be able to do so by visiting  <a href="{url}">{url}</a>'
-
-    # NEW
-    # msg = 'We have sent an email to %s with a link that will \
-    # enable you to reset your password' % user.email_address
-
-    # partner = get_partner(self.service_partner)
-
-    # from google.appengine.api import mail
-
-    # sender_string = "60 Second Laundry <orders@60secondlaundry.com>"
-
-    # # E.g. New Order: Will Taylor @ 29th May 17:00 - 18:00
-    # subject_string = "60 Second Laundry Password Reset"
-    
-    # to_string = user.email_address
-    # body_string = """Hello,
-
-    # Please follow this link to reset your password:
-
-    # <a href="{url}">{url}</a>
-
-    # Any questions about 60 Second Laundry, contact Will on will.taylor@60secondlaundry or call him on 07772622352.
-
-    # The 60 Second Laundry Team
-    # We love cleaners!
-    # """
-
-    # message = mail.EmailMessage(
-    #   sender=sender_string,
-    #     subject=subject_string)
-
-    # message.to = to_string
-    # message.body = body_string
-
-    # message.send()
  
     self.display_message(msg.format(url=verification_url))
+
+class LoginHandler(BaseHandler):
+  def get(self):
+    self._serve_page()
+ 
+  def post(self):
+    username = self.request.get('username')
+    password = self.request.get('password')
+    try:
+      u = self.auth.get_user_by_password(username, password, remember=True)
+      self.redirect(self.uri_for('partner-home'))
+    except (InvalidAuthIdError, InvalidPasswordError) as e:
+      logging.info('Login failed for user %s because of %s', username, type(e))
+      self._serve_page(True)
+ 
+  def _serve_page(self, failed=False):
+    username = self.request.get('username')
+    params = {
+      'username': username,
+      'failed': failed
+    }
+    self.render_template('login.html', params)
 
 class LogoutHandler(BaseHandler):
   def get(self):
@@ -289,39 +275,8 @@ class ForgotPasswordHandler(BaseHandler):
     verification_url = self.uri_for('partner-verification', type='p', user_id=user_id,
       signup_token=token, _full=True)
 
-    # msg = 'Send an email to user in order to reset their password. \
-    #       They will be able to do so by visiting <a href="{url}">{url}</a>'
-
-    msg = 'We have sent an email to %s with a link that will \
-    enable you to reset your password' % user.email_address
-
-    partner = get_partner(self.service_partner)
-
-    from google.appengine.api import mail
-
-    sender_string = "60 Second Laundry <orders@60secondlaundry.com>"
-    subject_string = "60 Second Laundry Password Reset"    
-    to_string = user.email_address
-    body_string = """Hello,
-
-    Please follow this link to reset your password:
-
-    <a href="{url}">{url}</a>
-
-    Any questions about 60 Second Laundry, contact Will on will.taylor@60secondlaundry or call him on 07772622352.
-
-    The 60 Second Laundry Team
-    We love cleaners!
-    """
-
-    message = mail.EmailMessage(
-      sender=sender_string,
-        subject=subject_string)
-
-    message.to = to_string
-    message.body = body_string
-
-    message.send()
+    msg = 'Send an email to user in order to reset their password. \
+          They will be able to do so by visiting <a href="{url}">{url}</a>'
 
     self.display_message(msg.format(url=verification_url))
   
@@ -384,193 +339,77 @@ class ViewOrderHandler(BaseHandler):
 
     menuitems = model.menuitem.get_by_partner_name(partner.name)
 
-    message = ''
+    if order.charged == True:
+      cart = model.cart.query(ancestor=order.key).get()
+    else:
+      cart = None
+
+    print "cart:"
+    print cart
+    for item in cart.items:
+      print "item"
+      print item
 
     template_values ={
-      'message': message,
+      'menuitems': menuitems,
       'order': order,
-      'menuitems': menuitems
+      'cart': cart
     }
 
     template = JINJA_ENVIRONMENT.get_template('templates/partner/order.html')
     self.response.write(template.render(template_values))
 
-class LoginHandler(BaseHandler):
-  def get(self):
-    self._serve_page()
- 
-  def post(self):
-    username = self.request.get('username')
-    password = self.request.get('password')
-    try:
-      u = self.auth.get_user_by_password(username, password, remember=True)
-      self.redirect(self.uri_for('partner-dashboard'))
-    except (InvalidAuthIdError, InvalidPasswordError) as e:
-      logging.info('Login failed for user %s because of %s', username, type(e))
-      self._serve_page(True)
- 
-  def _serve_page(self, failed=False, message=None):
-    username = self.request.get('username')
-    print "self.request.get('failed')"
-    print self.request.get('failed')
-    params = {
-      'message': self.request.get('message'),
-      'username': username,
-      'failed': failed
-    }
-    self.render_template('login.html', params)
-
 class SubmitOrderHandler(BaseHandler):
 
   @user_required
   def post(self):
+    json_string = self.request.get('json')
+
+    client_cart = json.loads(json_string)
 
     user = self.user
-    username = user.auth_ids[0]
-    password = self.request.get('pw')
-    ordernumber = self.request.get('ordernumber')
-    amount = float(self.request.get('amount'))/100 # receives pence, turns to £
 
-    """ check password """
-    try:
-      u = self.auth.get_user_by_password(username, password, remember=True)
-    except (InvalidAuthIdError, InvalidPasswordError) as e:
-      logging.info('Login failed for user %s because of %s', username, type(e))
-      params = {
-        'password_fail': True,
-        'username': username,
-      }
-      self.render_template('login.html', params)
-    """ password accepted """
-
-    """ mis """
-    user = self.user
     partner = model.Partner.get_by_email(user.email_address)
-    order = model.order.get_by_name_id(partner.name, ordernumber)
-    preapproval = model.Preapproval.query(model.Preapproval.order == order.key).get()
 
-    """ charge & receipt customer """
-    if order.payment_method == 'cash':
-      message = self._charge_cash(order, partner)
-    elif order.payment_method == 'paypal':
-      message = self._charge_paypal(order, amount, preapproval, partner)
+    order_number = int(self.request.get('ordernumber'))
 
-    """ display dashboard again """
-    self._display_page(partner, message, user)
+    order = ndb.Key('Partner', partner.name, 'order', order_number).get()
 
+    servercart = model.cart(client_cart, order.key)
+    # print "servercart"
+    # print servercart
 
-  def _charge_cash(self, order, partner):
+    # print "order:"
+    # print order
+
+    # print "List of preapprovals:"
+    preapprovals = model.Preapproval.query().fetch(100)
+    # print preapprovals # Requires preapproval to be set up for this order.
+
+    
+    item = model.Preapproval.query(model.Preapproval.order == order.key).get()
+    print "Preapproval for this order_key"
+    print item
+
+    print "servercart.total"
+    print servercart.total
+    print "item.preapproval_key"
+    print item.preapproval_key
+
     if order.charged == False:
-      message = "Customer has been sent receipt."
+      pay = paypal.PayWithPreapproval( amount=servercart.total, preapproval_key=item.preapproval_key )
+      if pay.status() == 'COMPLETED':
+        message = "Customer has been billed."
+        logging.info( message ) 
+        order.charged = True
+        order.put()
+      else:
+        message = "ERROR: Customer has not been billed. Please email will.taylor@60secondlaundry.com or call 07772622352"
+        logging.info( message ) 
+    else:
+      message = "Customer been billed previously. This bill was not sent."
       logging.info( message ) 
-      order.charged = True
-      order.put()
-      self._email_receipt_to_customer(order, partner)
-    else:
-      message = "Customer been billed previously. This bill was not sent."
-      logging.info( message )
 
-  def _charge_paypal(self, order, amount, preapproval, partner):
-    if order.charged == False:
-      try:
-        pay = paypal.PayWithPreapproval( amount=amount, preapproval_key=preapproval.preapproval_key )
-        if pay.status() == 'COMPLETED':
-          message = "Customer has been billed."
-          logging.info( message ) 
-          order.charged = True
-          order.put()
-          self._email_receipt_to_customer(order, partner)
-        else:
-          print "pay_'ok' response:"
-          print pay.response
-          message = "ERROR: Customer has not been billed. Please email will.taylor@60secondlaundry.com or call 07772622352"
-          logging.info( message )
-      except DownloadError:
-        message = "ERROR: Unable to connect to internet. Customer has not been billed."
-        logging.info( message )
-      except:
-        print "pay_fail response:"
-        print pay.response
-        import sys
-        print sys.exc_info()[0]
-        message = "ERROR: Customer has not been billed. Please email will.taylor@60secondlaundry.com or call 07772622352. Error status:"+ str(sys.exc_info()[0])
-        logging.info( message )
-    else:
-      message = "Customer been billed previously. This bill was not sent."
-      logging.info( message )
-
-    return message
-
-  def _email_receipt_to_customer(self, order, partner):
-
-    sender_string = "60 Second Laundry <orders@60secondlaundry.com>"
-
-    subject_string = "Payment Receipt"
-    
-    order_price = float(order.cost) / 100
-
-    to_string = order.email
-    body_string = """
-    Hello """ + order.first_name + """,
-
-    Your cleaner has billed you £""" + order_price + """ for your order. """
-    
-    if order.payment_method == "cash":
-      body_string += "You have chosen to pay in cash when your clothes are returned. "
-    if order.payment_method == "paypal":
-      body_string += "You have chosen to pay by PayPal, so this amount is automatically paid and you do not need to do anything. "
-
-    body_string += """
-
-    Delivery is on """ + self.delivery_time_date + """, unless you have rescheduled with your cleaner.
-
-    If you have any questions or changes with your order, contact your cleaner directly on:
-    """ + partner.phonenumber + """
-
-
-    Order details:
-    """ + self.first_name + " " + self.last_name + """
-    """ + self.address1
-
-    if self.address2:
-      body_string += """
-    """ + self.address2
-
-    if self.address3:
-      body_string += """
-    """ + self.address3
-
-    body_string += """
-    """ + self.postcode
-
-    if self.collectioninstructions:
-      body_string += """
-    """ + self.collectioninstructions
-
-    body_string += """
-    Your Phone Number: """ + self.phonenumber + """
-    Your Email: """ + self.email + """
-    Delivery Time: """ + self.delivery_time_date + """
-    Order Reference Number: """ + self.key.id() + """
-
-
-    If you enjoyed our service, please email Will on will.taylor@60secondlaundry.com
-
-
-    The 60 Second Laundry Team
-    We love cleaners!
-    """
-
-    message = mail.EmailMessage(
-      sender=sender_string,
-        subject=subject_string)
-
-    message.to = to_string
-    message.body = body_string
-
-    message.send()
-
-  def _display_page(self, partner, message, user):
     orders = model.order.get_by_partner_email(user.email_address)
 
     params = {

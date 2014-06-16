@@ -9,6 +9,10 @@
 
 {% endif %}
 
+{% if password_fail %}
+<strong>Password failed.</strong> Order not submitted. Logging you out for security reasons.
+{% endif %}
+
 <div>
 	<form class="form" action="/partner-login" method="POST" >
 		<table>

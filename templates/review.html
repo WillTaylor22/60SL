@@ -90,11 +90,10 @@
 </table>
 <hr>
 </h5>
-<p style="text-align: right;">Continue to PayPal to complete your order.
-	You are billed when your cleaner confirms the price</p>
+<p style="text-align: right;">{{ continue_message }}</p>
 <div>
 	<button id="back_button" onclick="goBack()" class="btn btn-default" style="float: left; ">Go Back</button>
-	<form action="buy" method="post">
+	<form action="buy" onsubmit="return submit_order()" method="post">
 		<input value="{{ order.ordernumber }}" type="hidden" name="order_key">
 		<input id="place_order_button" class="btn btn-success btn-lg" type="submit" value="Continue" style="float: right; width: 40%;">
 	</form>
@@ -120,6 +119,13 @@ function goBack()
   {
   window.history.back()
   }
+
+function submit_order(){
+	$("#place_order_button").attr("value", "Loading...");
+	$("#place_order_button").attr("disabled", "disabled");
+	return true 
+}
+				
 </script>
 
 

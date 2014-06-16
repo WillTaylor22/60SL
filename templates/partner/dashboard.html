@@ -2,35 +2,112 @@
 {% block content %}
 
 <h1>Your Dashboard: {{ partner.name }}</h1>
-<hr>
 
 {% if message %}
 <div class="alert alert-info">{{ message }}</div>
-<hr>
 {% endif %}
-<h4>Orders</h4>
-<table id="list_orders_table">
-	<tr>
-		<td><strong>ID</strong></td>
-		<td><strong>Customer</strong></td>
-		<td><strong>Received</strong></td>
-		<td><strong>Pickup</strong></td>
-		<td><strong>Collection</strong></td>
-		<td><strong>Billed</strong></td>
-		<td><strong>See Order</strong></td>
-	</tr>
-{% for order in orders %}
-	<tr>
-		<td>{{ order.ordernumber }}</td>
-		<td>{{ order.first_name }} {{ order.last_name }}</td>
-		<td>{{ order.ordertime|datetimeformat }}</td>
-		<td>{{ order.collection_time_date }}</td>
-		<td>{{ order.delivery_time_date }}</td>
-		<td>{{ order.charged|yesnoformat }}</td>
-		<td><form method="GET" action="/partner/orders/{{ order.ordernumber }}"><input type="submit" class="btn btn-success" value="See Order"></form>
-		</td>
-	</tr>
-{% endfor %}
-</table>
+<!-- <h4>Orders</h4>
+ -->
+<ul class="nav nav-tabs" data-tabs="tabs">
+    		<li class="active" style="width: 131px; text-align: center;"><a data-toggle="tab" href="#Orders">Orders</a></li>
+    		<li style="width: 131px; text-align: center;"><a data-toggle="tab" href="#Menu">Menu</a></li>
+    		<li style="width: 131px; text-align: center;"><a data-toggle="tab" href="#Reviews">Reviews</a></li>
+    		<li style="width: 131px; text-align: center;"><a data-toggle="tab" href="#Info">Info</a></li>
+    		<li style="width: 131px; text-align: center;"><a data-toggle="tab" href="#Settings">Settings</a></li>
+</ul>
+
+<div class="tab-content">
+	<div class="tab-pane active" id="Orders">
+		<table id="list_orders_table" style="margin-top:10px;">
+			<tr>
+				<td><strong>ID</strong></td>
+				<td><strong>Customer</strong></td>
+				<td><strong>Received</strong></td>
+				<td><strong>Pickup</strong></td>
+				<td><strong>Collection</strong></td>
+				<td><strong>Payment</strong></td>
+				<td><strong>Billed</strong></td>
+				<td><strong>See Order</strong></td>
+			</tr>
+		{% for order in orders %}
+			<tr>
+				<td>{{ order.ordernumber }}</td>
+				<td>{{ order.first_name }} {{ order.last_name }}</td>
+				<td>{{ order.ordertime|datetimeformat }}</td>
+				<td>{{ order.collection_time_date }}</td>
+				<td>{{ order.delivery_time_date }}</td>
+				<td>{{ order.payment_method|capitalize }}</td>
+				<td>{{ order.charged|yesnoformat }}</td>
+				<td><form method="GET" action="/partner/orders/{{ order.ordernumber }}"><input type="submit" class="btn btn-success" value="See Order"></form>
+				</td>
+			</tr>
+		{% endfor %}
+		</table>
+	</div>
+	<div class="tab-pane" id="Menu">
+		{% set prevtabname = 'first' %}
+
+	<div class="tab-pane active" id="Menu">
+	<!-- START TABLE -->
+
+	<table class='menutable' border="0" style="margin-top:5px;">
+		<br>
+		<p style="text-align: center;"><i>Feature in development</i> </p>
+		{% for item in menuitems %}
+			{% if item.tabname != prevtabname: %}
+				<tr style="height: 2.7em; vertical-align: bottom;">
+					<th>{{ item.tabname }}</th>
+				</tr>
+			{% endif %}
+
+			<tr>
+				{% if item.item != prev_item %}
+					<td class='firstitem itemcolumn'>{{ item.item }}</td>
+				{% else %}
+					<td class="itemcolumn"></td>
+				{% endif %}
+
+				{% set prev_item = item.item %}
+
+					<td class='subitemcolumn'>{{ item.subitem }}</td>
+				
+				{% if item.price != 0 %}
+					<td class="pricecolumn" style="text-align:right;">{{ item.price|currencyformat }}</td>
+				{% elif item.pricemax == 0 %}
+					<td class="pricecolumn" style="text-align:right;">From {{ item.pricemin|currencyformat }}</td>
+				{% else %}
+					<td class="pricecolumn" style="text-align:right;">{{ item.pricemin|currencyformat }} - {{ item.pricemax|currencyformat }}</td>
+				{% endif %}
+
+			</tr>
+
+			{% set prevtabname = item.tabname %}
+		{% endfor %}
+	</table></div> <!-- end final table and table's div --> 
+
+	</div>
+	<div class="tab-pane" id="Reviews">
+		<br>
+		<h5 style="text-align: center;">You have not had any reviews yet</h5>
+
+	</div>
+	<div class="tab-pane" id="Info">
+		<br>
+		<p style="text-align: center;"><i>Feature in development</i> </p>
+		<h5 style="text-align: center;">You has not added information for customers yet</h5>
+
+	</div>
+	<div class="tab-pane" id="Settings">
+		<br>
+		<p style="text-align: center;"><i>Feature in development</i> </p>
+	</div>
+{% endblock %}
+{% block endscripts %}
+
+<script type="text/javascript">
+
+
+
+</script>
 
 {% endblock %}

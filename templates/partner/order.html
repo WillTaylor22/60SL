@@ -14,7 +14,7 @@
 						<td><strong>{{ order.first_name }} {{ order.last_name }}</strong></td>
 					</tr>
 					<tr>
-						<td style="width: 110px;">Address</td>
+						<td style="width: 130px;">Address</td>
 						<td>{{ order.address1 }}</td>
 					</tr>
 					<tr>
@@ -58,22 +58,61 @@
 						<td>{{ order.ordernumber }}</td>
 						<input type="hidden" id="ordernumber" value="{{ order.ordernumber }}">
 					</tr>
+					
+					<tr>
+						<td>Payment Method:</td>
+						<td>{{ order.payment_method|capitalize }}</td>
+						<input type="hidden" id="payment_method" value="{{ order.payment_method }}">
+					</tr>
 					<tr>
 						<td>Billed</td>
 						<td>{{ order.charged|yesnoformat }}</td>
-						<input type="hidden" id="ordernumber" value="{{ order.ordernumber }}">
 					</tr>
+					{% if order.charged %}
+					<tr>
+						<td>Final Price</td>
+						<td>{{ order.cost }}</td>
+					</tr>
+					{% endif %}
 					
 				</table>
 			</div>
 
 			<div style="background-color: #FCFCFC;">
-				<h3>The Order<span id="order_amount"></span></h3>
-				<div id="ordertablediv"></div>
-				<br>
-				<button class="btn btn-primary btn-lg btn-block" onclick="submit_order()">Submit Order</button>
+				<form onsubmit="return submit_order()">
+					<h3>The Order</h3>
+					<div class="input-group input-group-lg">
+						<label for="amount" style="width: 170px;">Final billable amount: £</label>
+						<input type="text" id="amount_pounds" class="input-sm" name="amount_pounds" style="width: 40px;">.
+						<input type="text" id="amount_pence" class="input-sm" name="amount_pence" style="width: 40px;"><br>
+					</div>
+					<div class="input-group input-group-lg">
+						<label for="pw" style="width: 170px;">Your Password: </label>
+						<input type="password" class="input-sm" id="pw" name="pw" style="width: 87px;"><br>
+					</div>
+
+					{% if order.payment_method == "cash" %}
+					<ul>
+						<li>You are paid in cash when you deliver.</li>
+						<li>The customer will receive a receipt and will be asked to leave a review.</li>
+						<li>60 Second Laundry contact some customers to improve our service.</li>
+						<li>Make sure your customer expects <span id="amount_span">this amount</span> to be billed before you bill them!!</li>
+					</ul>
+					{% endif %}
+
+					{% if order.payment_method == "paypal" %}
+					<ul>
+						<li>This will charge the customer<span id="amount_span"></span> through PayPal.</li>
+						<li>The customer will receive a receipt and will be asked to leave a review when they have received their clothes back.</li>
+						<li>60 Second Laundry contact some customers to improve our service.</li>
+						<li>Make sure your customer expects <span id="amount_span">this amount</span> to be billed before you bill them!!</li>
+					</ul>
+					{% endif %}
+					<input type="submit" id="submit_button" class="btn btn-primary" value="Bill Customer">
+				</form>
 				<br>
 			</div> 
+			<br>
 			<div id="newItem" hidden>
 				<form onsubmit="return add_custom_item()">
 					<fieldset>
@@ -97,7 +136,7 @@
 			</div>
 		</div>
 		<div class="col-md-8">
-
+			<h3>Your Menu</h3>
 			<div style="background-color: #FCFCFC; "> <!-- content: tab headings, tab contents -->
 			<ul class="nav nav-pills nav-justified" data-tabs="tabs"> <!-- tab headings -->
 			{% set prevtabname = '' %}
@@ -151,8 +190,8 @@
 				<td class="subitemcolumn"></td>   
 				<td class="pricecolumn"><strong>Price</strong></td>
 				<td class="turnaroundcolumn"><strong>Turn-around</strong></td>
-				<td class="add"><strong>Add</strong></td>
-			</tr>
+<!-- 				<td class="add"><strong>Add</strong></td>
+ -->			</tr>
 			{% endif %}
 			<tr>
 				{% if item.item != prev_item %}
@@ -174,8 +213,8 @@
 				<td class="turnaroundcolumn">{{ item.time|capitalize }}</td>
 
 				
-				<td><button class="btn btn-default btn-primary btn-xs" onclick="item_added('{{ item.itemid }}', '{{ item.tabname }}', '{{ item.item }}', '{{ item.subitem }}', '{{ item.price }}', '{{ item.pricemin }}', 1)"><i class="gylphicon glyphicon-plus"></i></button><td>
-			</tr>
+<!-- 				<td><button class="btn btn-default btn-primary btn-xs" onclick="item_added('{{ item.itemid }}', '{{ item.tabname }}', '{{ item.item }}', '{{ item.subitem }}', '{{ item.price }}', '{{ item.pricemin }}', 1)"><i class="gylphicon glyphicon-plus"></i></button><td>
+ -->			</tr>
 
 
 
@@ -200,7 +239,133 @@
 <script src="/static/js/accounting.js/accounting.min.js"></script>
 <script src="/static/js/bootbox/bootbox.min.js"></script>
 
-<script src="/static/js/custom/table.js"></script>
+<script type="text/javascript">
 
+valid_amount = false
+amount = 0  // pence
+string = ''
+
+function submit_order(){
+
+	if(valid_amount){
+		question_string = "Are you sure you want to submit this order for " + string + "?"
+		console.log(question_string)
+		bootbox.confirm(question_string, function(result) {
+			if(result){
+				$("#submit_button").attr("value", "Billing...");
+				$("#submit_button").attr("disabled", "disabled"); 
+				var ordernumber = $("#ordernumber").val()
+		 	 	var pw = $("#pw").val()
+
+		 	 	post('/partner/submitorder', {
+		 	 		pw: pw,
+		 	 		amount: amount, // pence
+		 	 		ordernumber: ordernumber
+		 	 	})
+			}
+			
+		})
+	}
+	return false
+
+
+}
+
+
+$(function(){
+	$('#amount_pounds').change(function(){
+		change_val()
+	})
+
+})
+
+$(function(){
+	$('#amount_pence').change(function(){
+		change_val()
+	})
+})
+
+function change_val(){
+	// load
+	var pounds = $("#amount_pounds").val()
+	if (pounds == ''){
+		pounds = 0
+	}
+	pounds = parseInt(pounds)
+	var pence = $("#amount_pence").val()
+	if (pence == ''){
+		pence = 0
+	}
+	pence = parseInt(pence)
+
+	// validate
+	valid_amount = true
+	if(!is_int(pence)){
+		alert("pence entered not valid")
+		valid_amount = false
+	}
+	if(!is_int(pounds)){
+		alert("pounds entered not valid")
+		valid_amount = false
+	}
+	if(pence > 99){
+		alert("pence entered not valid")
+		valid_amount = false		
+	}
+	
+	// output string
+	if (pence < 10 && pence != ''){
+		pence = pence + '0'
+	}
+	if (pounds != '' && pence != ''){
+		string = ' £' + pounds + '.' + pence
+	}
+	else if (pence == ''){
+		string = ' £' + pounds + '.00'
+	}
+	else if (pounds == '' && pence != ''){
+		string = ' ' + pence + 'p'
+	}
+	else if (pounds == '' && pence == ''){
+		string = ''
+	}
+	$("#amount_span").html(string)
+	amount = parseInt(pounds)*100 + parseInt(pence)
+	console.log(valid_amount)
+}
+
+function is_int(string){
+	return (typeof string==='number' && (string%1)===0);
+}
+
+function post(path, params, method) {
+    method = method || "post"; // Set method to post by default if not specified.
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+
+            form.appendChild(hiddenField);
+         }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
+
+</script>
+
+<!-- 
+<script src="/static/js/custom/table.js"></script>
+ -->
 
 {% endblock %}
