@@ -97,7 +97,11 @@ class Listings(webapp2.RequestHandler):
 
         session = get_current_session()
 
+        # Load from session if using breadcrumb
         this_postcode = self.request.get('postcode')
+        if this_postcode == '':
+            if session.has_key('postcode'):
+                this_postcode = session['postcode']
 
         session['postcode'] = this_postcode
 
@@ -106,7 +110,7 @@ class Listings(webapp2.RequestHandler):
         postcode_attempt.put()
 
         try:
-            outcode = postcode.parse_uk_postcode(this_postcode)[0]
+            outcode = postcode.parse_uk_postcode(this_postcode, strict=True, incode_mandatory=False)[0]
 
             partners = model.Partner.query(model.Partner.outcodes == outcode).fetch(10)
 
@@ -132,13 +136,17 @@ class Listings(webapp2.RequestHandler):
         
         self.response.write(template.render(template_values))
 
-
 class Menu(webapp2.RequestHandler):
     def get(self):
         
         session = get_current_session()
 
         partner_name = self.request.get('partner_name')
+
+        # Load from session if using breadcrumb
+        if partner_name == '':
+            if session.has_key('partner'):
+                partner_name = session['partner']
         
         session['partner'] = partner_name
 

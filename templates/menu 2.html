@@ -11,15 +11,6 @@
 	<li class="active">Cleaner</li>
 </ol>
 
-<!-- <p style="text-align: center; color: grey;">Like this? Book now, pay when you get your clothes back.</p> -->
- <p style="text-align: center; color: grey;">What next? You don't add socks to a cart. Just read about the cleaner, book collection, pay after your clothes are returned. Super fast.</p>
-<form action="collection" method="get">
-					<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
-					<input type="submit" class="btn btn-success btn-lg btn-block" value="Got It. Let's Book Collection">
-			</form>
-
-<hr>
-
 	<div id="partnerinfo">
 		
 		<div id="quickviewdiv">
@@ -36,7 +27,16 @@
 			</div>
 		</div>
 	</div>
-		<hr>
+
+<hr>
+<p style="text-align: center; color: grey;">Like this? Book now, pay when you get your clothes back.</p>
+<form action="collection" method="get">
+					<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
+					<input type="submit" class="btn btn-success btn-lg btn-block" value="Got It. Let's Book Collection">
+			</form>
+		
+<hr>
+<h5 style="text-align: center;">About Your Cleaner</h5>
 <div> <!-- content: tab headings, tab contents -->
 <ul class="nav nav-pills" data-tabs="tabs"> <!-- tab headings -->
     		<li class="active" style="width: 131px; text-align: center;"><a data-toggle="tab" href="#Menu">Menu</a></li>

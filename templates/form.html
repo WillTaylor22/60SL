@@ -14,11 +14,11 @@
 		<li class="active">Booking</li>
 	</ol>
 
-	<h5 style="text-align: center;">Your Booking Details</h5>
+	<h5 style="text-align: center;">Your Booking</h5>
 	<div id="collectioninfo">
 		<form action="review" method="post" onsubmit="return validateForm()">
 			<fieldset>
-				<legend style="text-align: center;">Collection & Delivery Location</legend>
+				<legend style="text-align: center;">Collect & Deliver Here:</legend>
 				<input class="collectionform input-lg" name="Address_line_1" type="text" name="searchquery"
 				placeholder="Address Line 1" required><br>
 				<input class="collectionform input-lg" name="Address_line_2" type="text" name="searchquery"
@@ -56,7 +56,7 @@
 				No slots available
 			</div>
 
-			<p style="text-align: center; color: grey;" >Select a day to see  available times</p>
+			<p style="text-align: center; color: grey;" >Select a day to see  available times for {{ partner_name }}</p>
 			<div class="btn-group btn-group-justified" data-toggle="buttons">
 				{% set i = 0 %}
 				{% for day_label in next_three_days %}
@@ -130,7 +130,7 @@
         		<legend style="text-align: center;">Payment Method</legend>
         		<div>
         			<img src="/static/img/paypal.png" style='margin-left: 25px;'>
-        			<p style="color:grey; width: 299px; float: right">Paid when your clothes are returned to you. We use PayPal for safe online transactions.</p>
+        			<p style="color:grey; width: 299px; float: right">Paid when your clothes are returned to you. Paying online? You setup now, pay after. We use PayPal for safe online transactions. </p>
         		</div>
 
         		<br>

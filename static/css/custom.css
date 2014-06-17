@@ -204,9 +204,10 @@ body {
 }
 
 #howtotable table, #howtotable th, #howtotable td{
-    text-align: center;
-    padding-left: 30px;
-    padding-right: 30px;
+/*    border: black 1px solid;
+*/    text-align: center;
+    padding-left: 25px;
+    padding-right: 25px;
 }
 
 .glyphicon-home, .glyphicon-time, .glyphicon-heart {
