@@ -356,8 +356,37 @@ function c_date_change(collection_date){
 
 		// --- interactions ---
 
-	
 
+
+		// INTERACTION 1: NO DELIVERIES LEFT TODAY
+		// disable today button and calendar option if no deliveries possible today
+		
+		// first, check that today is available
+		
+		if (today_available()){
+			// second, find out if it's empty.
+			// do this by comparing earliest collection time to last delivery time
+
+			// earliest collection time:
+			var now = new Date()
+			var now_time = now.getHours()*60 + now.getMinutes()
+			var earliest_d_from_now = now_time + 60 + (60 * fastest_cleaning_time_hrs)
+
+			var last_d_available = 0
+			$("input[name='delivery_time']").each(function(){
+				last_d_available = this.value
+			})
+			last_d_available = get_time(last_d_available)
+
+			if (earliest_d_from_now > last_d_available){
+				// d_date = today would be empty
+				$("#d_day_0").parent().attr("disabled", true)
+			} else{
+				$("#d_day_0").parent().attr("disabled", false) // enable d_date
+			}
+		}
+
+		// INTERACTION 2: INVALIDATION OF D_TIMES
 		// if d_date or d_time now invalid
 		// then reset the d_day and d_time
 
@@ -412,33 +441,55 @@ function c_date_change(collection_date){
 			}
 		}
 
-		// disable today button and calendar option if no deliveries possible today
-		
-		// first, check that today is available
 
-		if (today_available()){
-			// second, find out if it's empty.
-			// do this by comparing earliest collection time to last delivery time
-
-			// earliest collection time:
+		// INTERACTION 3: LAST ORDERS SAME DAY LOGIC
+		// if time > last_orders_same_day, and c_date = today, hide all times
+		if (collection_date - today == 0){
 			var now = new Date()
 			var now_time = now.getHours()*60 + now.getMinutes()
-			var earliest_d_from_now = now_time + 60 + (60 * fastest_cleaning_time_hrs)
-
-			var last_d_available = 0
-			$("input[name='delivery_time']").each(function(){
-				last_d_available = this.value
-			})
-			last_d_available = get_time(last_d_available)
-
-			if (earliest_d_from_now > last_d_available){
-				// d_date = today would be empty
-				$("#d_day_0").parent().attr("disabled", true)
-			} else{
-				$("#d_day_0").parent().attr("disabled", false) // enable d_date
+			var None = 24
+			var last_orders_same_day_hr = {{ partner.last_orders_same_day_hr }}
+			var last_orders_same_day_min = {{ partner.last_orders_same_day_min }}
+			var last_orders = last_orders_same_day_hr*60 + last_orders_same_day_min
+			if(now_time>last_orders){
+				$("input[name='collection_time']").each(function(){
+					$(this).parent().addClass('hidden')
+				})
+				document.getElementById("c_warning_div").style.display = "none";
+				document.getElementById("c_empty_div").style.display = "block";
 			}
 		}
 
+		// INTERACTION 4: LAST ORDERS NEXT DAY LOGIC
+		// if time > last_orders, and c_date = tomorrow, hide time<morning_end
+		if (collection_date - today == 86400000){
+			var now = new Date()
+			var now_time = now.getHours()*60 + now.getMinutes()
+			var last_orders_hr = {{ partner.last_orders_hr }}
+			var last_orders_min = {{ partner.last_orders_min }}
+			var last_orders = last_orders_hr*60 + last_orders_min
+			if (now_time > last_orders){
+
+				var this_time = 0
+				var end_of_morning_hr = {{ partner.end_of_morning_hr }}
+				var end_of_morning_min = {{ partner.end_of_morning_min }}
+				var end_of_morning = end_of_morning_min + end_of_morning_hr*60
+
+				$("input[name='collection_time']").each(function(){
+					this_time = get_time(this.value)
+
+
+					if(this_time < end_of_morning){
+						$(this).parent().addClass('hidden') // disable d_date
+					}else{
+						$(this).parent().removeClass('hidden') // enable d_date
+					}
+				})
+
+			}
+		}
+
+		// INTERACTION 5: HIDE EARLIER D DATES
 		// disable d_date buttons/calendar before c_date
 
 		// - set earliest calandar d_date to selected c_date
@@ -453,7 +504,6 @@ function c_date_change(collection_date){
 				$(this).parent().attr("disabled", false) // enable d_date
 			}
 		})
-
 	}
 };
 
@@ -546,6 +596,7 @@ function hide_earlier_collection_times(){
 			reset_c_time()
 		}
 	}
+
 }
 
 function reset_c_time(){

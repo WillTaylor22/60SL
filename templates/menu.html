@@ -19,7 +19,7 @@
 			</div>
 			<div id="partner_facts" style="float: left; width: 270px;">
 				<h4>{{ partner.name }}</h4>
-				<div id="partner_facts_deeper" style="float: left;">
+				<div id="partner_facts_deeper" style="float: left; width: 270px;">
 					<h5>{{ partner.address}}</h5>
 					<h5>Min order: £{{ partner.minimum_order }}</h5>
 					<h5>{{ partner.delivery_cost }}</h5>
@@ -27,6 +27,7 @@
 			</div>
 		</div>
 	</div>
+
 <hr>
 <form action="collection" method="get">
 					<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
@@ -43,43 +44,42 @@
 </ul>
 
 <div class="tab-content"> <!-- tab content -->
-
-{% set prevtabname = 'first' %}
-
+	{% set prevtabname = 'first' %}
 	<div class="tab-pane active" id="Menu">
-	<!-- START TABLE -->
-	<table class='menutable' border="0" style="margin-top:5px;">
-		{% for item in menuitems %}
-			{% if item.tabname != prevtabname: %}
-				<tr style="height: 2.7em; vertical-align: bottom;">
-					<th>{{ item.tabname }}</th>
+		<!-- START TABLE -->
+		<table class='menutable' border="0" style="margin-top:5px;">
+			{% for item in menuitems %}
+				{% if item.tabname != prevtabname: %}
+					<tr style="height: 2.7em; vertical-align: bottom;">
+						<th>{{ item.tabname }}</th>
+					</tr>
+				{% endif %}
+
+				<tr>
+					{% if item.item != prev_item %}
+						<td class='firstitem itemcolumn'>{{ item.item }}</td>
+					{% else %}
+						<td class="itemcolumn"></td>
+					{% endif %}
+
+					{% set prev_item = item.item %}
+
+						<td class='subitemcolumn'>{{ item.subitem }}</td>
+					
+					{% if item.price != 0 %}
+						<td class="pricecolumn" style="text-align:right;">{{ item.price|currencyformat }}</td>
+					{% elif item.pricemax == 0 %}
+						<td class="pricecolumn" style="text-align:right;">From {{ item.pricemin|currencyformat }}</td>
+					{% else %}
+						<td class="pricecolumn" style="text-align:right;">{{ item.pricemin|currencyformat }} - {{ item.pricemax|currencyformat }}</td>
+					{% endif %}
+
 				</tr>
-			{% endif %}
 
-			<tr>
-				{% if item.item != prev_item %}
-					<td class='firstitem itemcolumn'>{{ item.item }}</td>
-				{% else %}
-					<td class="itemcolumn"></td>
-				{% endif %}
-
-				{% set prev_item = item.item %}
-
-					<td class='subitemcolumn'>{{ item.subitem }}</td>
-				
-				{% if item.price != 0 %}
-					<td class="pricecolumn" style="text-align:right;">{{ item.price|currencyformat }}</td>
-				{% elif item.pricemax == 0 %}
-					<td class="pricecolumn" style="text-align:right;">From {{ item.pricemin|currencyformat }}</td>
-				{% else %}
-					<td class="pricecolumn" style="text-align:right;">{{ item.pricemin|currencyformat }} - {{ item.pricemax|currencyformat }}</td>
-				{% endif %}
-
-			</tr>
-
-			{% set prevtabname = item.tabname %}
-		{% endfor %}
-	</table></div> <!-- end final table and table's div --> 
+				{% set prevtabname = item.tabname %}
+			{% endfor %}
+		</table>
+	</div> <!-- end final table and table's div --> 
 
 	<div class="tab-pane" id="Reviews">
 		<br>

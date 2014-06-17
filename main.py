@@ -38,7 +38,7 @@ from bin import postcode
 # Template Settings
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
-    extensions=['jinja2.ext.autoescape'],
+    extensions=['jinja2.ext.autoescape', "jinja2.ext.do"],
     autoescape=True)
 
 def datetimeformat(value, format='%H:%M / %d-%m-%Y'):
@@ -73,7 +73,7 @@ def nicedates(value):
     elif value.isoweekday() == 7:
         return 'Sunday'
 
-
+e = jinja2.Environment()
 JINJA_ENVIRONMENT.filters['datetimeformat'] = datetimeformat
 JINJA_ENVIRONMENT.filters['currencyformat'] = currencyformat
 JINJA_ENVIRONMENT.filters['nicedates'] = nicedates
@@ -141,6 +141,7 @@ class Menu(webapp2.RequestHandler):
         partner_name = self.request.get('partner_name')
         
         session['partner'] = partner_name
+
 
         if session.has_key('postcode'):
             postcode = session['postcode']
@@ -428,10 +429,10 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/buy/success', handler=SuccessCash, name="success-cash"),
     ('/buy/success/([^/]*)/([^/]*)/.*', SuccessPayPal),
     
-    ('/add', 'partner.InputHandler'),
-    ('/upload', 'partner.UploadHandler'),
-    ('/delete', 'partner.DeleteHandler'),
-    ('/viewpartners', 'partner.ServeHandler'),
+    ('/add', 'admin.InputHandler'),
+    ('/upload', 'admin.UploadHandler'),
+    ('/delete', 'admin.DeleteHandler'),
+    ('/viewpartners', 'admin.ServeHandler'),
 
     webapp2.Route('/partner', 'partner.PartnerHomeHandler', name="partner-home"),
     webapp2.Route('/partner-signup', 'partner.PartnerSignupHandler'),
@@ -444,17 +445,6 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/partner-dashboard', 'partner.DashboardHandler', name='partner-dashboard'),
     webapp2.Route('/partner/orders/<ordernumber:\d+>', 'partner.ViewOrderHandler', name='partner-view-order'),
     webapp2.Route('/partner/submitorder', 'partner.SubmitOrderHandler', name='partner-submit-order'),
-
-
-    webapp2.Route('/admin', 'admin.AdminHomeHandler', name="admin-home"),
-    webapp2.Route('/admin-signup', 'admin.AdminSignupHandler'),
-    webapp2.Route('/admin-verify/<type:v|p>/<user_id:\d+>-<signup_token:.+>',
-  handler='admin.VerificationHandler', name='admin-verification'),
-    webapp2.Route('/admin-password', 'admin.SetPasswordHandler'),
-    webapp2.Route('/admin-login', 'admin.LoginHandler', name='admin-login'),
-    webapp2.Route('/admin-logout', 'admin.LogoutHandler', name='admin-logout'),
-    webapp2.Route('/admin-forgot', 'admin.ForgotPasswordHandler', name='admin-forgot'),
-    webapp2.Route('/admin-dashboard', 'admin.AuthenticatedHandler', name='admin-authenticated'),
 
     ('/feedback', FeedbackHandler),
 

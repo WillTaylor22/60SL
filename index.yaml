@@ -18,10 +18,5 @@ indexes:
 - kind: order
   ancestor: yes
   properties:
-  - name: ordertime
-
-- kind: order
-  ancestor: yes
-  properties:
   - name: submitted
   - name: ordertime
