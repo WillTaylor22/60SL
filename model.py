@@ -260,7 +260,7 @@ class order(ndb.Model):
   submitted = ndb.BooleanProperty(default=False)
   charged = ndb.BooleanProperty(default=False)
   approx_cost = ndb.StringProperty()
-  cost = ndb.IntegerProperty() # Pence
+  cost = ndb.FloatProperty() # Pence
   payment_method = ndb.StringProperty()
 
   @property 

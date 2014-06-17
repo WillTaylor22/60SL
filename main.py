@@ -323,6 +323,8 @@ class SuccessPayPal(webapp2.RequestHandler):
           item.status_detail = 'Unexpected status %s' % item.status
           item.status = 'ERROR'
           item.put()
+          logging.info( item.status )
+          logging.info( item.status_detail )
           self.error(501)
           return
           
@@ -330,6 +332,8 @@ class SuccessPayPal(webapp2.RequestHandler):
           item.status_detail = 'Incorrect secret %s' % secret
           item.status = 'ERROR'
           item.put()
+          logging.info( item.status )
+          logging.info( item.status_detail )
           self.error(501)
           return
 

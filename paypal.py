@@ -222,11 +222,17 @@ class PayWithPreapproval( object ):
     } 
 
     self.raw_request = json.dumps(data)
+    print "self.raw_request"
+    print self.raw_request
     self.raw_response = url_request( "%s%s" % ( settings.PAYPAL_ENDPOINT, "Pay" ), data=self.raw_request, headers=headers ).content() 
+    print "self.raw_response"
+    print self.raw_response
     logging.debug( "response was: %s" % self.raw_response )
     self.response = json.loads( self.raw_response )
 
   def status( self ):
+    print "self.paymentExecStatus"
+    print self.response['paymentExecStatus']
     if self.response.has_key( 'paymentExecStatus' ):
       return self.response['paymentExecStatus']
     else:

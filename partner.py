@@ -451,7 +451,7 @@ class SubmitOrderHandler(BaseHandler):
 
     """ charge & receipt customer """
     if order.payment_method == 'cash':
-      message = self._charge_cash(order, partner)
+      message = self._charge_cash(order, partner, amount)
     elif order.payment_method == 'paypal':
       message = self._charge_paypal(order, amount, preapproval, partner)
 
@@ -459,11 +459,12 @@ class SubmitOrderHandler(BaseHandler):
     self._display_page(partner, message, user)
 
 
-  def _charge_cash(self, order, partner):
+  def _charge_cash(self, order, partner, amount):
     if order.charged == False:
       message = "Customer has been sent receipt."
       logging.info( message ) 
       order.charged = True
+      order.cost = amount
       order.put()
       self._email_receipt_to_customer(order, partner)
     else:
@@ -471,13 +472,17 @@ class SubmitOrderHandler(BaseHandler):
       logging.info( message )
 
   def _charge_paypal(self, order, amount, preapproval, partner):
-    if order.charged == False:
-      try:
-        pay = paypal.PayWithPreapproval( amount=amount, preapproval_key=preapproval.preapproval_key )
-        if pay.status() == 'COMPLETED':
+        # if order.charged == False:
+        #   try:
+        #     pay = paypal.PayWithPreapproval( amount=amount, preapproval_key=preapproval.preapproval_key )
+        if True:
+        #     if pay.status() == 'COMPLETED':
           message = "Customer has been billed."
           logging.info( message ) 
           order.charged = True
+          order.cost = amount
+          print "order.cost"
+          print order.cost
           order.put()
           self._email_receipt_to_customer(order, partner)
         else:
@@ -485,35 +490,41 @@ class SubmitOrderHandler(BaseHandler):
           print pay.response
           message = "ERROR: Customer has not been billed. Please email will.taylor@60secondlaundry.com or call 07772622352"
           logging.info( message )
-      except DownloadError:
-        message = "ERROR: Unable to connect to internet. Customer has not been billed."
-        logging.info( message )
-      except:
-        print "pay_fail response:"
-        print pay.response
-        import sys
-        print sys.exc_info()[0]
-        message = "ERROR: Customer has not been billed. Please email will.taylor@60secondlaundry.com or call 07772622352. Error status:"+ str(sys.exc_info()[0])
-        logging.info( message )
-    else:
-      message = "Customer been billed previously. This bill was not sent."
-      logging.info( message )
+        # except DownloadError:
+        #   message = "ERROR: Unable to connect to internet. Customer has not been billed."
+        #   logging.info( message )
+        # except:
+          # import sys
+          # print sys.exc_info()[0]
+          # message = "ERROR: Customer has not been billed. Please email will.taylor@60secondlaundry.com or call 07772622352. Error status:"+ str(sys.exc_info()[0])
+          # logging.info( message )
+    # else:
+    #   message = "Customer been billed previously. This bill was not sent."
+    #   logging.info( message )
 
-    return message
+    # return message
 
   def _email_receipt_to_customer(self, order, partner):
 
     sender_string = "60 Second Laundry <orders@60secondlaundry.com>"
 
     subject_string = "Payment Receipt"
-    
-    order_price = float(order.cost) / 100
+
+    order_cost = str(order.cost)
+    print "type(order_cost)"
+    print type(order_cost)
 
     to_string = order.email
     body_string = """
-    Hello """ + order.first_name + """,
+    Hello """ 
+    body_string += order.first_name
+    body_string += """,
 
-    Your cleaner has billed you £""" + order_price + """ for your order. """
+    Your cleaner has billed you """
+
+    body_string += ""
+    body_string += order_cost
+    body_string += " pounds for your order. "
     
     if order.payment_method == "cash":
       body_string += "You have chosen to pay in cash when your clothes are returned. "
@@ -522,36 +533,36 @@ class SubmitOrderHandler(BaseHandler):
 
     body_string += """
 
-    Delivery is on """ + self.delivery_time_date + """, unless you have rescheduled with your cleaner.
+    Delivery is on """ + order.delivery_time_date + """, unless you have rescheduled with your cleaner.
 
     If you have any questions or changes with your order, contact your cleaner directly on:
     """ + partner.phonenumber + """
 
 
     Order details:
-    """ + self.first_name + " " + self.last_name + """
-    """ + self.address1
+    """ + order.first_name + " " + order.last_name + """
+    """ + order.address1
 
-    if self.address2:
+    if order.address2:
       body_string += """
-    """ + self.address2
+    """ + order.address2
 
-    if self.address3:
+    if order.address3:
       body_string += """
-    """ + self.address3
+    """ + order.address3
 
     body_string += """
-    """ + self.postcode
+    """ + order.postcode
 
-    if self.collectioninstructions:
+    if order.collectioninstructions:
       body_string += """
-    """ + self.collectioninstructions
+    """ + order.collectioninstructions
 
     body_string += """
-    Your Phone Number: """ + self.phonenumber + """
-    Your Email: """ + self.email + """
-    Delivery Time: """ + self.delivery_time_date + """
-    Order Reference Number: """ + self.key.id() + """
+    Your Phone Number: """ + order.phonenumber + """
+    Your Email: """ + order.email + """
+    Delivery Time: """ + order.delivery_time_date + """
+    Order Reference Number: """ + str(order.key.id()) + """
 
 
     If you enjoyed our service, please email Will on will.taylor@60secondlaundry.com
