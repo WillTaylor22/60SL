@@ -400,7 +400,7 @@ class order(ndb.Model):
         subject="Receipt For Your Order On " + self.collection_time_date)
 
     message.to = self.first_name + " " + self.last_name + " <" + self.email + ">"
-    message.body = """
+    body_string = """
     Dear """ + self.first_name + """:
 
     Thank you for your order!
@@ -436,7 +436,7 @@ class order(ndb.Model):
     Delivery Time: """ + self.delivery_time_date + """
     (We ask cleaners to call 30 mins in advance of arrival to let you know they are coming)
 
-    Order Reference Number: """ + self.key.id() + """
+    Order Reference Number: """ + str(self.key.id()) + """
 
     If you enjoyed our service, please email Will on will.taylor@60secondlaundry.com
 
@@ -444,6 +444,8 @@ class order(ndb.Model):
     The 60 Second Laundry Team
     We love cleaners!
     """
+
+    message.body = body_string
 
     message.send()
 
