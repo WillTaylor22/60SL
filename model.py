@@ -243,7 +243,6 @@ class menuitem(ndb.Model):
 
   @classmethod
   def get_by_partner_name(cls, partner_name):
-    print "IN GET_BY_P"
     query = cls.query(
       ancestor=partner_key(partner_name)).order(ndb.GenericProperty("itemid"))
     return query.fetch(300)

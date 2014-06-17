@@ -434,7 +434,6 @@ app = webapp2.WSGIApplication([
     ('/delete', 'admin.DeleteHandler'),
     ('/viewpartners', 'admin.ServeHandler'),
 
-    webapp2.Route('/partner', 'partner.PartnerHomeHandler', name="partner-home"),
     webapp2.Route('/partner-signup', 'partner.PartnerSignupHandler'),
     webapp2.Route('/partner-verify/<type:v|p>/<user_id:\d+>-<signup_token:.+>',
   handler='partner.VerificationHandler', name='partner-verification'),
@@ -442,7 +441,7 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/partner-login', 'partner.LoginHandler', name='partner-login'),
     webapp2.Route('/partner-logout', 'partner.LogoutHandler', name='partner-logout'),
     webapp2.Route('/partner-forgot', 'partner.ForgotPasswordHandler', name='partner-forgot'),
-    webapp2.Route('/partner-dashboard', 'partner.DashboardHandler', name='partner-dashboard'),
+    webapp2.Route('/partner', 'partner.DashboardHandler', name='partner'),
     webapp2.Route('/partner/orders/<ordernumber:\d+>', 'partner.ViewOrderHandler', name='partner-view-order'),
     webapp2.Route('/partner/submitorder', 'partner.SubmitOrderHandler', name='partner-submit-order'),
 

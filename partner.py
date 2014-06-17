@@ -145,13 +145,6 @@ class BaseHandler(webapp2.RequestHandler):
 
 """ User Handlers """
 
-class PartnerHomeHandler(BaseHandler):
-  def get(self):
-    if self.user != None:
-      self.redirect(self.uri_for('partner-dashboard'))
-
-    self.redirect(self.uri_for('partner-login'))
-
 class PartnerSignupHandler(BaseHandler):
   def get(self):
     self.render_template('signup.html')
@@ -225,7 +218,7 @@ class PartnerSignupHandler(BaseHandler):
 class LogoutHandler(BaseHandler):
   def get(self):
     self.auth.unset_session()
-    self.redirect(self.uri_for('partner-home'))
+    self.redirect(self.uri_for('partner-login'))
 
 class VerificationHandler(BaseHandler):
   def get(self, *args, **kwargs):
@@ -295,7 +288,7 @@ class ForgotPasswordHandler(BaseHandler):
     msg = 'We have sent an email to %s with a link that will \
     enable you to reset your password' % user.email_address
 
-    partner = get_partner(self.service_partner)
+    partner = model.partner_key_by_email(user.email_address).get()
 
     from google.appengine.api import mail
 
@@ -404,7 +397,7 @@ class LoginHandler(BaseHandler):
     password = self.request.get('password')
     try:
       u = self.auth.get_user_by_password(username, password, remember=True)
-      self.redirect(self.uri_for('partner-dashboard'))
+      self.redirect(self.uri_for('partner'))
     except (InvalidAuthIdError, InvalidPasswordError) as e:
       logging.info('Login failed for user %s because of %s', username, type(e))
       self._serve_page(True)
