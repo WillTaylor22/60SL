@@ -130,21 +130,20 @@
         		<legend style="text-align: center;">Payment Method</legend>
         		<div>
         			<img src="/static/img/paypal.png" style='margin-left: 25px;'>
-        			<p style="color:grey; width: 299px; float: right">Paid when your clothes are returned to you. Paying online? You setup now, pay after. We use PayPal for safe online transactions. </p>
+        			<p style="color:grey; width: 299px; float: right">You pay when your clothes are returned to you. Coming soon, PayPal for safe online transactions. <button style="color:grey; float:right;" class="btn btn-default btn-sm" onclick="return how_does_payment_work()">Tell me more</button></p>
         		</div>
 
         		<br>
         		<div class="btn-group btn-group-justified" data-toggle="buttons">
-        			<label class="btn btn-default">
+        			<label class="btn btn-default" disabled>
 						<input type='radio' name="payment_method" id="paypal" value="paypal">Pay Online With PayPal
 					</label>
 					<label class="btn btn-default">
-						<input type='radio' name="payment_method" id="cash" value="cash">Cash
+						<input type='radio' name="payment_method" id="cash" value="cash" checked>Cash
 					</label>
 				</label>
         		</div>
         	</fieldset>
-        	
 		
 				<input value="{{ partner_name }}" type="hidden" name="partner_name">
 				<input value="" type="hidden" name="collection_day_output">
@@ -176,6 +175,21 @@
 {% endblock %}
 
 {% block endscripts %}
+
+<script src="/static/js/bootbox/bootbox.min.js"></script>
+
+<script type="text/javascript">
+
+function how_does_payment_work(){
+	console.log("here")
+	var question_string = "Cash: pay on delivery. Paying with PayPal: you sign up now. You agree on the price when the dry cleaner picks up the clothes. He bills you the agreed amount when the clothes have been cleaned."
+		bootbox.alert(question_string)
+	}
+
+
+
+</script>
+
 <!-- feedback -->
 <script src="static/js/feedbackbar.js"></script>
 
@@ -192,6 +206,7 @@ $(document).ready(function() {
 	$("input[name='collection_time']:checked").click()
 	$("input[name='delivery_day']:checked").click()
 	$("input[name='delivery_time']:checked").click()
+	$("input[name='payment_method']:checked").click()
 
 	initialise_datepickers()
 
