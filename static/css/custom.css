@@ -1,10 +1,10 @@
 #imagediv{
     width: 400px;
-    height: 100px;
+    /*height: 100px;*/
     background-color: white;
 
     position: absolute;
-    top:-250px;
+    top:-200px;
     bottom: 0;
     left: 0;
     right: 0;
@@ -72,7 +72,7 @@
 }
 
 img#toplogo{
-    margin: 10% 10px 10px 10%;
+    margin: 10% 10px 10px;
 }
 
 div#partnerlogo{
@@ -164,6 +164,7 @@ td{
 
 .review_left{
     /*margin-right: 10px;*/
+    width: 100px;
     padding-right: 10px;
 }
 
@@ -211,9 +212,25 @@ body {
 }
 
 .glyphicon-home, .glyphicon-time, .glyphicon-heart {
-    transform:scale(2.0,2.0);
-    -ms-transform:scale(2.0,2.0); /* IE 9 */
-    -moz-transform:scale(2.0,2.0); /* Firefox */
-    -webkit-transform:scale(2.0,2.0); /* Safari and Chrome */
-    -o-transform:scale(2.0,2.0); /* Opera */
+    transform:scale(2.5,2.5);
+    -ms-transform:scale(2.5,2.5); /* IE 9 */
+    -moz-transform:scale(2.5,2.5); /* Firefox */
+    -webkit-transform:scale(2.5,2.5); /* Safari and Chrome */
+    -o-transform:scale(2.5,2.5); /* Opera */
 }
+
+form p{
+/*    text-align: center;
+*/    color:grey;
+    font-size: 130%;
+}
+
+form legend{
+/*    text-align: center;*/
+}
+
+.partnerlogo{
+/*    border: 2px solid;*/
+    border-radius: 20px;
+}
+

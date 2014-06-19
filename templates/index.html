@@ -8,7 +8,7 @@
 		</div>
 		{% endif %}
 		<form action="near" method="get">
-			<input id="searchbar" type="text" name="postcode"
+			<input class="collectionform input-lg" type="text" name="postcode"
 			placeholder="What's Your Postcode?">
 			<br>
 			<br>
@@ -19,15 +19,17 @@
 		<table id="howtotable">
 			<tr>
 				<td style="width:132px;"><span class="glyphicon glyphicon-time"></span><br><br></td>
-				<td style="width:132px;"><span class="glyphicon glyphicon-home"></span><br><br></td>
+				<td style="width:132px; "><span class="glyphicon glyphicon-home"></span><br><br></td>
 				<td style="width:132px;"><span class="glyphicon glyphicon-heart"></span><br><br></td>
 			</tr>
 			<tr>
-				<td style="vertical-align: top;">Book free <strong>collection</strong> and delivery</td>
-				<td style="vertical-align: top;">Collection from your <strong>doorstep</strong></td>
-				<td style="vertical-align: top;">Pay the <strong>same prices</strong> as normal!</td>
+				<td style="vertical-align: top;"><p>Book free <strong>collection</strong> and delivery</p></td>
+				<td style="vertical-align: top;"><p>Collection from your <strong>doorstep</strong></p></td>
+				<td style="vertical-align: top;"><p>Pay the <strong>same prices</strong> as normal!</p></td>
 			</tr>
 		</table>
+
+
 		<br>
 		<br>
 		<br>
@@ -39,4 +41,16 @@
 
 
 	
+{% endblock %}
+
+{% block endscripts %}
+
+<script>
+  $(document).ready(function(){
+    $('.carousel').carousel({
+    	interval: 3000
+    });
+  });
+</script>
+
 {% endblock %}

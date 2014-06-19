@@ -195,7 +195,7 @@ class Form(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 
 class Review(webapp2.RequestHandler):
-    
+
     # Receives info from Collection(form)
     # then sends user to review the order
     def post(self):
@@ -231,9 +231,9 @@ class Review(webapp2.RequestHandler):
 
         continue_message = ''
         if myOrder.payment_method == 'cash':
-            continue_message = 'You are paying in cash when your cleaned clothes are delivered. Continue to review your order'
+            continue_message = 'You are paying in cash when your cleaned clothes are delivered.'
         elif myOrder.payment_method == 'paypal':
-            continue_message = 'Continue to PayPal to complete your order. You are billed when your cleaner confirms the price'
+            continue_message = 'You are billed automatically when your cleaner confirms the price. Continue to PayPal to complete your order. '
 
         template_values = {
             "continue_message": continue_message,
@@ -384,6 +384,7 @@ def _display_success_page(rq):
             myOrder.send_txt_to_cleaner()
             myOrder.send_email_to_cleaner()
             myOrder.send_email_to_customer()
+            myOrder.send_email_to_will()
 
     template_values = {
         "partner_phone_number" : partner_phone_number,
@@ -395,11 +396,18 @@ def _display_success_page(rq):
     template = JINJA_ENVIRONMENT.get_template('templates/thankyou.html')
     rq.response.write(template.render(template_values))
 
-class CleanerLoginHandler(webapp2.RequestHandler):
+class PrivacyHandler(webapp2.RequestHandler):
     def get(self):
         template_values = {}
-        template = JINJA_ENVIRONMENT.get_template('templates/cleanerlogin.html')
+        template = JINJA_ENVIRONMENT.get_template('templates/privacy.html')
         self.response.write(template.render(template_values))
+
+class TermsHandler(webapp2.RequestHandler):
+    def get(self):
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('templates/terms.html')
+        self.response.write(template.render(template_values))
+
 
 class FeedbackHandler(webapp2.RequestHandler):
     def post(self):
@@ -453,6 +461,9 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/partner/orders/<ordernumber:\d+>', 'partner.ViewOrderHandler', name='partner-view-order'),
     webapp2.Route('/partner/submitorder', 'partner.SubmitOrderHandler', name='partner-submit-order'),
 
+
+    ('/privacy', PrivacyHandler),
+    ('/terms', TermsHandler),
     ('/feedback', FeedbackHandler),
 
     ('/test', TestHandler),

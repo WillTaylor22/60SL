@@ -1,0 +1,79 @@
+{% extends "templates/base.html" %}
+{% block content %}
+
+<a href="/"><img src="/static/img/Logo_width300.png" alt="Sixty Second Laundry" style=" margins: auto; margin-top: 30px; margin-left: 50px;"></a>
+
+
+<h3>Privacy Policy</h3>
+
+<p>Last Updated: June 18, 2014</p>
+
+<p>This Privacy Policy explains how information about you is collected, disclosed and used by 60 Second Laundry and our cleaners (collectively, "60 Second Laundry") when you use our websites, purchase our services, or otherwise interact with us.</p>
+
+<p>We may change this Privacy Policy occasionally. If we make changes, we will update the notice at the top of this document, and will sometimes post a message on our Website to keep you informed. We recommend that you stay up to date with our privacy policy, so that you are informed of the ways that you can help to protect your privacy.</p>
+<br>
+<h4>Collection of Information</h4>
+
+<p>We collect information that you provide direct to us. For example, we collect information when you search for cleaners near your postcode, when you create an order, when you submit an order. The types of information we need to collect to provide this service include an address to collect from, which may be your home or office address if you choose to provide it, phone number, email address, and name.</p>
+<p>When you submit feedback, that feedback is stored but intentionally kept separate from your order, to encourage customers to provide honest feedback. Feedback can be given with forms such as the one at the bottom of this page.</p>
+
+<p>We collect website usage information to help us improve the service. This includes time spent on each page and buttons clicked. We may in the future collect device information for the device that you use to access our services. This could include the hardware model, operating system and version, MAC address, unique device identifier, IMEI number and mobile network information.</p>
+
+<p>With your consent, we may collect location information.</p>
+
+<p>Information collected by Cookies: We use various technologies to collect information, and this may include sending cookies to you. Cookies are small data files stored on your hard drive or in device memory that help us improve our Services and your experience, see which areas and features of our Services are popular, and count visits. We may also collect information using web beacons (also known as "tracking pixels"). For more information about cookies, and how to disable them, please see the "Cookies" section below.</p>
+
+<p>We may in the future also obtain information from other sources and combine that with our information we collect through our services.</p>
+<br>
+<h4>Use of Information</h4>
+
+<p>We may use information about you for various purposes, that include:</p>
+
+<ul>
+<li>Provide, maintain and improve our service</li>
+<li>Provide services that you request. This means that relevant order information will be provided to specific dry cleaners, launderettes or other service providers that you explicitly order from in order that they can fulfil your request.</li>
+<li>Respond to your comments, questions and requests and provide customer service</li>
+<li>Send you technical notices, updates, security alerts, support, and administrative messages</li>
+<li>Monitor and analyse trends, usage and activities in connection with our Services.</li>
+<li>Personalize and improve the Services and provide advertisements, content or features that match user profiles or interests</li>
+<li>Detect, investigate and prevent fraudulent, unauthorized or illegal activity.</li>
+<li>Carry out any other purpose for which the information was collected.</li>
+</ul>
+
+<p>60 Second Laundry is based in the UK. By using the Services, you consent to the processing and transfer of information in and to the UK and other countries. This could occur if 60 Second Laundry finds a proven, highly-safe, cost-effective place to store our data in the U.S. or otherwise.</p>
+<br>
+<h4>Security</h4>
+
+<p>We take reasonable measures to help protect information about you from loss, theft, misuse and unauthorized access, disclose, alteration and destruction.</p>
+
+<br>
+<h4>Cookies</h4>
+
+<p>Most web browsers are set to accept cookies by default. If you prefer, you can usually choose to set your browser to remove or reject browser cookies. Please note that if you choose to remove or reject cookies, this could affect the functionality of our website.</p>
+<br>
+<h4>Contact</h4>
+
+<p>To contact us, please email info@60secondlaundry.com, or write to:</p>
+
+<p style="margin-left:20px;">60 Second Laundry<br>
+LA Laundry Ltd<br>
+17 Willow Street<br>
+London<br>
+EC2A 4BH<br>
+</p>
+<br>
+<div class="input-group" style="width: 400px;">
+	<input type="hidden" id="meta" value="Sent from the 'privacy policy' page">
+	<textarea id="feedback" class="collectionform input-sm" style="border-color: lightgrey; width: 320px;"placeholder="Help us make this better! Type here to send us honest feedback."></textarea>
+	<span class="input-grousp-btn" style="float:right;">
+		<button id="feedback_button" class="btn btn-default" style="color:#999999; width: 80px; height: 48px;">Send</button>
+	</span>
+	</div>
+
+
+
+{% endblock %}{% block endscripts %}
+<!-- feedback -->
+<script src="static/js/feedbackbar.js"></script>
+
+{% endblock %}

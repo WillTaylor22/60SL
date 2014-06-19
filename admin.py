@@ -89,83 +89,88 @@ class InputHandler(webapp2.RequestHandler):
     self.response.write(template.render(template_values))
 
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
-	# This view takes the input, populates a new model and adds to DB
-	def post(self): 
-		## Get the POST data and put it into variables
-		# Blob data: ('logo' is file upload field in the form)
-		upload_files = self.get_uploads('logo')
-		blob_info = upload_files[0]
-		blob_key = blob_info.key()
+  # This view takes the input, populates a new model and adds to DB
+  def post(self): 
+    ## Get the POST data and put it into variables
+    # Blob data: ('logo' is file upload field in the form)
+    upload_files = self.get_uploads('logo')
+    blob_info = upload_files[0]
+    blob_key = blob_info.key()
 
-		partner_name = self.request.get('name')
-		# Create a new "Partner" with a new partner key
-		partner = model.Partner(parent=model.partner_key(partner_name))
+    partner_name = self.request.get('name')
+    # Create a new "Partner" with a new partner key
+    partner = model.Partner(parent=model.partner_key(partner_name))
 
-		
-		partner_outcodes = self.request.get('outcodes')
-		partner_outcodes = quopri.decodestring(partner_outcodes)
-		partner_outcodes = partner_outcodes.split()
-		partner_address = self.request.get('address')
-		partner_minimum_order = self.request.get('minimum_order')
-		partner_delivery_cost = self.request.get('delivery_cost')
+    
+    partner_outcodes = self.request.get('outcodes')
+    partner_outcodes = quopri.decodestring(partner_outcodes)
+    partner_outcodes = partner_outcodes.split()
+    partner_address = self.request.get('address')
+    partner_minimum_order = self.request.get('minimum_order')
+    partner_delivery_cost = self.request.get('delivery_cost')
 
-		partner.phonenumber = self.request.get('phonenumber')
-		partner.phonenumber_2 = self.request.get('phonenumber_2')
-		partner.email = self.request.get('email')
-		partner.email_2 = self.request.get('email_2')
-		partner.email_3 = self.request.get('email_3')
+    partner.phonenumber = self.request.get('phonenumber')
+    partner.phonenumber_2 = self.request.get('phonenumber_2')
+    partner.email = self.request.get('email')
+    partner.email_2 = self.request.get('email_2')
+    partner.email_3 = self.request.get('email_3')
 
-		
-		# Give the new partner our data
-		partner.name = partner_name
-		partner.address = partner_address
-		partner.outcodes = partner_outcodes
-		partner.minimum_order = int(partner_minimum_order)
-		partner.delivery_cost = partner_delivery_cost
+    
+    # Give the new partner our data
+    partner.name = partner_name
+    partner.address = partner_address
+    partner.outcodes = partner_outcodes
+    partner.minimum_order = int(partner_minimum_order)
+    partner.delivery_cost = partner_delivery_cost
 
-		fname = self.request.get('filename')
+    fname = self.request.get('filename')
 
-		partner.start_hr = int(self.request.get('start_hr'))
-		partner.start_min = int(self.request.get('start_min'))
-		partner.end_hr = int(self.request.get('end_hr'))
-		partner.end_min = int(self.request.get('end_min'))
-		partner.window_size = int(self.request.get('window_size'))
+    partner.start_hr = int(self.request.get('start_hr'))
+    partner.start_min = int(self.request.get('start_min'))
+    partner.end_hr = int(self.request.get('end_hr'))
+    partner.end_min = int(self.request.get('end_min'))
+    partner.window_size = int(self.request.get('window_size'))
 
-		partner.last_orders_hr = int(self.request.get('last_orders_hr'))
-		partner.last_orders_min = int(self.request.get('last_orders_min'))
-		partner.end_of_morning_hr = int(self.request.get('end_of_morning_hr'))
-		partner.end_of_morning_min = int(self.request.get('end_of_morning_min'))
+    partner.last_orders_hr = int(self.request.get('last_orders_hr'))
+    partner.last_orders_min = int(self.request.get('last_orders_min'))
+    partner.end_of_morning_hr = int(self.request.get('end_of_morning_hr'))
+    partner.end_of_morning_min = int(self.request.get('end_of_morning_min'))
 
-		partner.last_orders_same_day_hr = int(self.request.get('last_orders_same_day_hr'))
-		partner.last_orders_same_day_min = int(self.request.get('last_orders_same_day_min'))
+    partner.last_orders_same_day_hr = int(self.request.get('last_orders_same_day_hr'))
+    partner.last_orders_same_day_min = int(self.request.get('last_orders_same_day_min'))
 
-		days = self.request.get('days')
-		day_list = days.split()
-		day_list = map(int, day_list)
-		partner.days = day_list
-
-		# OLD:
-		# partner.start_day = int(self.request.get('start_day'))
-		# partner.end_day = int(self.request.get('end_day'))
-
-
-		partner.logo_key = blob_key # n.b. blobstore.BlobReferenceProperty() takes a blob_info
-		
-		partner.populate_slots()
-
-		# Use to clear all items
-		clear_items(partner_name) 
-
-		# Populate if no items exist
-		if fname:
-			grab(partner_name, fname)
+    partner.shirts = self.request.get('shirts')
+    partner.suits = self.request.get('suits')
 
 
 
-		partner.put()
+    days = self.request.get('days')
+    day_list = days.split()
+    day_list = map(int, day_list)
+    partner.days = day_list
 
-		# redirect
-		self.redirect('/viewpartners')
+    # OLD:
+    # partner.start_day = int(self.request.get('start_day'))
+    # partner.end_day = int(self.request.get('end_day'))
+
+
+    partner.logo_key = blob_key # n.b. blobstore.BlobReferenceProperty() takes a blob_info
+    
+    partner.populate_slots()
+
+    # Use to clear all items
+    clear_items(partner_name) 
+
+    # Populate if no items exist
+    if fname:
+      grab(partner_name, fname)
+
+
+
+    partner.put()
+
+    # redirect
+    self.redirect('/viewpartners')
 
 class ServeHandler(blobstore_handlers.BlobstoreDownloadHandler):
   def get(self):

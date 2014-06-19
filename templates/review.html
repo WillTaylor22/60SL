@@ -24,7 +24,7 @@
 <hr>
 <table class="review_table">
 <tr>
-	<td class='review_left'>Collection from:</td>
+	<td class='review_left' style="width: 140px;">Collection from:</td>
 	<td class='review_bold'>{{ order.first_name }} {{ order.last_name }}</td>
 </tr>
 <tr>
@@ -79,18 +79,14 @@
 	<td class='review_left'>Order Price:</td>
 	<td>Agreed when clothes are collected</td>
 </tr>
-<!-- <tr>
-	<td>TEST: submitted?:</td>
-	<td>{{ order.submitted }}</td>
-</tr>
 <tr>
-	<td>TEST: order ID:</td>
-	<td>{{ order.ordernumber }}</td>
-</tr> -->
+	<td class='review_left'>Payment:</td>
+	<td>{{ continue_message }}</td>
+</tr>
 </table>
 <hr>
 </h5>
-<p style="text-align: right;">{{ continue_message }}</p>
+<p style="text-align: right;">By continuing, you accept our <a href="/terms" target="_blank">Terms</a> and <a href="/privacy-policy" target="_blank">Privacy Policy</a></p>
 <div>
 	<button id="back_button" onclick="goBack()" class="btn btn-default" style="float: left; ">Go Back</button>
 	<form action="buy" onsubmit="return submit_order()" method="post">

@@ -14,11 +14,11 @@
 		<li class="active">Booking</li>
 	</ol>
 
-	<h5 style="text-align: center;">Your Booking</h5>
+	<h1 style="text-align: center;">Your Booking</h1>
 	<div id="collectioninfo">
 		<form action="review" method="post" onsubmit="return validateForm()">
 			<fieldset>
-				<legend style="text-align: center;">Collect & Deliver Here:</legend>
+				<legend>Collect & Deliver Here</legend>
 				<input class="collectionform input-lg" name="Address_line_1" type="text" name="searchquery"
 				placeholder="Address Line 1" required><br>
 				<input class="collectionform input-lg" name="Address_line_2" type="text" name="searchquery"
@@ -32,10 +32,11 @@
 			</fieldset>
 			<br><br>
 			<fieldset>
-				<legend style="text-align: center;">If Your Cleaner Needs To Contact You</legend>
-				<input class="collectionform-half input-lg" name="first_name" type="text" name="searchquery"
+				<legend>If Your Cleaner Needs To Contact You</legend>
+				<input class="collectionform input-lg" name="first_name" type="text" name="searchquery"
 				placeholder="First Name" required>
-				<input class="collectionform-half input-lg" name="last_name" type="text" name="searchquery"
+				<br>
+				<input class="collectionform input-lg" name="last_name" type="text" name="searchquery"
 				placeholder="Last Name" required>
 				<br>
 				<input class="collectionform input-lg" name="Phone_number" type="text" name="searchquery"
@@ -44,11 +45,11 @@
 				placeholder="Email" required><br>
 			</fieldset>
 			<br>
-			<P style="color:grey;"><span class="glyphicon glyphicon-lock"></span> Your details are stored securely and will not be used for marketing.</P>
+			<P><span class="glyphicon glyphicon-lock"></span> Your details are stored securely and will not be used for marketing.</P>
 			<br><br>
 
 			<fieldset>
-			<legend style="text-align: center;">Collect: <br><strong><span id="collection_string_day"></span><span id="c_comma"></span> <span id="collection_string_time"></span></strong></legend>
+			<legend>Collection: <br><strong><span id="collection_string_day"></span><span id="c_comma"></span> <span id="collection_string_time"></span></strong></legend>
 			<div style="display: none" id="c_warning_div" class="alert alert-info">
 				<strong>Note:</strong> If your cleaner feels that they can't collect at short notice, they'll give you a call to re-arrange.
 			</div>
@@ -56,8 +57,9 @@
 				No slots available
 			</div>
 
-			<p style="text-align: center; color: grey;" >Select a day to see  available times for {{ partner_name }}</p>
-			<div class="btn-group btn-group-justified" data-toggle="buttons">
+			
+
+<!-- 			<div class="btn-group btn-group-justified" data-toggle="buttons">
 				{% set i = 0 %}
 				{% for day_label in next_three_days %}
 				<label class="btn btn-default">
@@ -68,12 +70,24 @@
 				<label class="btn btn-default">
 					<input type="radio" name="collection_day" id="collection_date_other"  value="">Other <span class="caret"></span>
 				</label>
-            </div>
-            
-            <div id="c_date_div" style="display: none; float:right;">
+            </div> -->
+
+            <div id="c_date_div" style="display: block; font-size:130%; text-indent: 20px;">
 			</div>
-			
-            <br>
+			<br>
+
+<!-- 		<div style="width: 400; height 80; display: none;" id="c_guide_1">
+				<img src="/static/img/guides/guide1-4.png">
+			</div>
+			<div style="width: 400; height 80; display: none;" id="c_guide_2">
+				<img src="/static/img/guides/guide2-4.png">
+			</div>
+			<div style="width: 400; height 80; display: none;" id="c_guide_3">
+				<img src="/static/img/guides/guide3-4.png">
+			</div>
+			<div style="width: 400; height 80; display: none;" id="c_guide_4">
+				<img src="/static/img/guides/guide4-4.png">
+			</div> -->
             <div class="btn-group" data-toggle="buttons">
             	{% set i = 0 %}
 				{% for slot in partner.delivery_slots %}
@@ -86,17 +100,18 @@
 				{% endfor %}
             </div>
         	</fieldset>
-
+        	<br>
+        	<p>The times available for collection depend on the day you choose and the delivery preferences of {{ partner_name }}</p>
             <br><br>
      
             <fieldset>
-			<legend style="text-align: center;">Deliver: <br><strong><span id="delivery_string_day"></span><span id="d_comma"></span> <span id="delivery_string_time"></span></strong></legend>
+			<legend>Deliver: <br><strong><span id="delivery_string_day"></span><span id="d_comma"></span> <span id="delivery_string_time"></span></strong></legend>
 
 			<div style="display: none" id="d_empty_div" class="alert alert-info">
 				No slots available
 			</div>
-			<p style="text-align: center; color: grey;" >Select a day to see available times</p>
-			<div class="btn-group btn-group-justified" data-toggle="buttons">
+
+			<!-- <div class="btn-group btn-group-justified" data-toggle="buttons">
 				{% set i = 0 %}
 				{% for day_label in next_three_days %}
 				<label class="btn btn-default">
@@ -108,13 +123,22 @@
 					<input type='radio' id="delivery_date_other" name="delivery_day" value="">Other <span class="caret"></span>
 				</label>
             </div>
-            
-			<div id="d_date_div" style="display: none; float:right;">
+             -->
+			<div id="d_date_div" style="display: block; font-size:130%; text-indent: 20px;">
 			</div>
 
-			
-
-            <br>
+            <div style="width: 400; height 80;" id="d_guide_1" hidden>
+				<img src="/static/img/guides/guide1-4.png">
+			</div>
+			<div style="width: 400; height 80;" id="d_guide_2" hidden>
+				<img src="/static/img/guides/guide2-4.png">
+			</div>
+			<div style="width: 400; height 80;" id="d_guide_3" hidden>
+				<img src="/static/img/guides/guide3-4.png">
+			</div>
+			<div style="width: 400; height 80;" id="d_guide_4" hidden>
+				<img src="/static/img/guides/guide4-4.png">
+			</div>
             <div class="btn-group" data-toggle="buttons">
 				{% set i = 0 %}
 				{% for slot in partner.delivery_slots %}
@@ -127,17 +151,17 @@
         	</fieldset>
         	<br>
         	<fieldset>
-        		<legend style="text-align: center;">Payment Method</legend>
-        		<div>
+        		<legend>Payment Method</legend>
+        		<!-- <div>
         			<img src="/static/img/paypal.png" style='margin-left: 25px;'>
-        			<p style="color:grey; width: 299px; float: right">You pay when your clothes are returned to you. Coming soon, PayPal for safe online transactions. <button style="color:grey; float:right;" class="btn btn-default btn-sm" onclick="return how_does_payment_work()">Tell me more</button></p>
+        			<p style="color:grey; width: 299px; float: right">You pay when your clothes are returned to you. Coming soon, PayPal for safe online transactions. <button style="color:grey; float:right;" class="btn btn-default btn-sm" onclick="how_does_payment_work(); return false;">Tell me more</button></p>
         		</div>
-
-        		<br>
+ -->
+        		<p>You pay in cash when your clothes are returned</p>
         		<div class="btn-group btn-group-justified" data-toggle="buttons">
-        			<label class="btn btn-default" disabled>
+        		<!-- 	<label class="btn btn-default" disabled>
 						<input type='radio' name="payment_method" id="paypal" value="paypal">Pay Online With PayPal
-					</label>
+					</label> -->
 					<label class="btn btn-default">
 						<input type='radio' name="payment_method" id="cash" value="cash" checked>Cash
 					</label>
@@ -181,13 +205,9 @@
 <script type="text/javascript">
 
 function how_does_payment_work(){
-	console.log("here")
 	var question_string = "Cash: pay on delivery. Paying with PayPal: you sign up now. You agree on the price when the dry cleaner picks up the clothes. He bills you the agreed amount when the clothes have been cleaned."
 		bootbox.alert(question_string)
 	}
-
-
-
 </script>
 
 <!-- feedback -->
@@ -230,7 +250,7 @@ function initialise_datepickers(){
 	$('#c_date_div').datepicker({
 	    daysOfWeekDisabled: array,
 	    startDate: "now",
-	    todayHighlight: true
+	    todayHighlight: false
 	}).on('changeDate', function(e){
 	    // get date
 	    var selectedDate = $('#c_date_div').datepicker('getDate')
@@ -241,7 +261,7 @@ function initialise_datepickers(){
 	$('#d_date_div').datepicker({
 		daysOfWeekDisabled: array,
 	    startDate: "now",
-	    todayHighlight: true
+	    todayHighlight: false
 	}).on('changeDate', function(e){
 	    // get date
 	    var selected_date = $('#d_date_div').datepicker('getDate')
@@ -289,6 +309,35 @@ $( "[name='collection_day']" ).change(function () {
 		var selectedDate = new Date(selected_c_date_button.attr('value'))
 		c_date_change(selectedDate)
 	}
+
+	// show guides
+	// if (selected_c_date_button.attr('id') == "c_day_0"){
+	// 	console.log("here")
+	// 	console.log($("#c_guide_1"))
+	// 	$("#c_guide_1").style.display = "block" ;
+	// 	$("#c_guide_2").addClass("hidden") ;
+	// 	$("#c_guide_3").addClass("hidden") ;
+	// 	$("#c_guide_4").addClass("hidden") ;
+	// }
+	// if (selected_c_date_button.attr('id') == "c_day_1"){
+	// 	document.getElementById("c_guide_1").hide() ;
+	// 	document.getElementById("c_guide_2").show() ;
+	// 	document.getElementById("c_guide_3").hide() ;
+	// 	document.getElementById("c_guide_4").hide() ;
+	// }
+	// if (selected_c_date_button.attr('id') == "c_day_2"){
+	// 	document.getElementById("c_guide_1").hide() ;
+	// 	document.getElementById("c_guide_2").hide() ;
+	// 	document.getElementById("c_guide_3").show() ;
+	// 	document.getElementById("c_guide_4").hide() ;
+	// }
+	// if (selected_c_date_button.attr('id') == "collection_date_other"){
+	// 	document.getElementById("c_guide_1").hide() ;
+	// 	document.getElementById("c_guide_2").hide() ;
+	// 	document.getElementById("c_guide_3").hide() ;
+	// 	document.getElementById("c_guide_4").show() ;
+	// }
+	
 })
 
 

@@ -11,29 +11,25 @@
 	<li class="active">Cleaner</li>
 </ol>
 
-<!-- <p style="text-align: center; color: grey;">Like this? Book now, pay when you get your clothes back.</p> -->
- <p style="text-align: center; color: grey;">What next? You don't add socks to a cart. Just read about the cleaner, book collection, pay after your clothes are returned. Super fast.</p>
-<form action="collection" method="get">
-					<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
-					<input type="submit" class="btn btn-success btn-lg btn-block" value="Got It. Let's Book Collection">
-			</form>
-
-<hr>
-
 	<div id="partnerinfo">
 		
 		<div id="quickviewdiv">
 
-			<div id="partner_logo"><img src="{{ partner.logo_url }}" style="float: left; margin-right: 10px;" alt='Partner Logo'>
+			<div id="partner_logo"><img class="partnerlogo" src="{{ partner.logo_url }}" style="float: left; margin-right: 10px;" alt='Partner Logo'>
 			</div>
 			<div id="partner_facts" style="float: left; width: 270px;">
-				<h4>{{ partner.name }}</h4>
+				<h4 style="margin-bottom: 5px;">{{ partner.name }}</h4>
 				<div id="partner_facts_deeper" style="float: left; width: 270px;">
 					<h5>{{ partner.address}}</h5>
 					<h5>Min order: £{{ partner.minimum_order }}</h5>
 					<h5>{{ partner.delivery_cost }}</h5>
 				</div>
 			</div>
+			<form action="collection" method="get" style="float:right; margin-top:-40px;">
+					<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
+					<input type="submit" class="btn btn-success" value="Book Collection">
+			</form>
+			<p style="float:right; margin-right:12px; font-size: 80%"><a href="" onclick="help_me(); return false;">Click here for help</a></p>
 		</div>
 	</div>
 		<hr>
@@ -48,7 +44,25 @@
 	{% set prevtabname = 'first' %}
 	<div class="tab-pane active" id="Menu">
 		<!-- START TABLE -->
-		<table class='menutable' border="0" style="margin-top:5px;">
+<!-- 		<button class="btn btn-default" style="float:right;" onclick="show_full_menu(); return false;">See Full Menu</button> -->
+<!-- 		<div id="full_menu" style="display:none">
+ -->		<table class='menutable' border="0" style="margin-top:5px;">
+					
+ 				{% if partner.shirts %}
+					<tr style="height: 2.7em; vertical-align: bottom;">
+						<th>Best Sellers</th>
+					</tr>
+					<tr>
+						<td class="itemcolumn">Shirts</td>
+						<td class='subitemcolumn'></td>
+						<td class='pricecolumn' style="text-align:right;">{{ partner.shirts }}</td>
+					</tr>
+					<tr>
+						<td class="itemcolumn">Suits</td>
+						<td class='subitemcolumn'></td>
+						<td class='pricecolumn' style="text-align:right;">{{ partner.suits }}</td>
+					</tr>
+				{% endif %}
 			{% for item in menuitems %}
 				{% if item.tabname != prevtabname: %}
 					<tr style="height: 2.7em; vertical-align: bottom;">
@@ -80,7 +94,8 @@
 				{% set prevtabname = item.tabname %}
 			{% endfor %}
 		</table>
-	</div> <!-- end final table and table's div --> 
+<!-- 		</div>
+ -->	</div> <!-- end final table and table's div --> 
 
 	<div class="tab-pane" id="Reviews">
 		<br>
@@ -95,6 +110,25 @@
 
 </div> <!-- end tab-content --> 
 
+<hr>
+
+<form action="collection" method="get">
+					<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
+					<input type="submit" class="btn btn-success btn-lg btn-block" value="Got It. Let's Book Collection">
+			</form>
+
+
+<!-- <p style="text-align: center; color: grey;">Like this? Book now, pay when you get your clothes back.</p> -->
+<!--  <p style="text-align: center; color: grey;">What next? You don't add socks to a cart. Just read about the cleaner, then book collection, and you pay after your clothes are returned. It's really fast.</p>
+<form action="collection" method="get">
+					<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
+					<input type="submit" class="btn btn-success btn-lg btn-block" value="Got It. Let's Book Collection">
+			</form>
+
+<hr>
+
+ -->
+
 
 </div><!-- body div -->
 
@@ -103,5 +137,18 @@
 {% block endscripts %}
 <!-- <script src="/static/js/accounting.js/accounting.min.js"></script> -->
 <!-- <script src="/static/js/custom/table.js"></script> -->
+
+<script src="/static/js/bootbox/bootbox.min.js"></script>
+
+<script type="text/javascript">
+
+function help_me(){
+	var question_string = "You don't add socks to a cart.<br><br> Just read about the cleaner, then book collection.<br><br>You pay after your clothes are returned.<br><br>Have fun!"
+		bootbox.alert({
+			title: "What next?",
+			message: question_string,
+		})
+	}
+</script>
 
 {% endblock %}

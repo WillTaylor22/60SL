@@ -110,7 +110,9 @@ class Partner(ndb.Model):
   last_orders_same_day_hr = ndb.IntegerProperty()
   last_orders_same_day_min = ndb.IntegerProperty()
 
-
+  # best sellers
+  shirts = ndb.StringProperty()
+  suits = ndb.StringProperty()
 
   delivery_slots = ndb.StringProperty(repeated=True)
 
@@ -448,6 +450,62 @@ class order(ndb.Model):
     message.body = body_string
 
     message.send()
+
+  def send_email_to_will(self):
+
+    print "SENT EMAIL TO WILL"
+
+    partner = get_partner(self.service_partner)
+
+    from google.appengine.api import mail
+
+    sender_string = "60 Second Laundry <orders@60secondlaundry.com>"
+
+    # E.g. New Order: Will Taylor @ 29th May 17:00 - 18:00
+    subject_string = "New Order: " + self.first_name + " " + self.last_name \
+    + " @ " + self.collection_time_date
+    
+    to_string = 'will.taylor@60secondlaundry.com'
+    body_string = "PARTNER: " + partner.name + """
+
+    Dear """ + partner.name + """:
+
+    You have received an order!
+
+    For ALL questions & issues with the order, contact your customer directly on:
+    """ + self.phonenumber + """
+
+    Order details:
+    Customer Name: """ + self.first_name + " " + self.last_name + """
+    Address: """ + self.address1 + """
+    """ + self.address2 + """
+    """ + self.address3 + """
+    """ + self.postcode + """
+    Order Instructions: """ + self.collectioninstructions + """
+    Customer Phone Number: """ + self.phonenumber + """
+    Customer Email: """ + self.email + """
+
+    Collection Time: """ + self.collection_time_date + """
+    Delivery Time: """ + self.delivery_time_date + """
+    (We recommend that you call 30 mins in advance of arrival to let them know you are coming and avoid any missed deliveries)
+
+    Any questions about 60 Second Laundry, contact Will on will.taylor@60secondlaundry or call him on 07772622352.
+
+    If you enjoyed our service, please let us know via will.taylor@60secondlaundry.com
+
+    The 60 Second Laundry Team
+    We love cleaners!
+    """
+
+    message = mail.EmailMessage(
+      sender=sender_string,
+        subject=subject_string)
+
+    message.to = to_string
+    message.body = body_string
+
+    message.send()
+
 
 class postcode_attempt(ndb.Model):
   postcode = ndb.StringProperty()

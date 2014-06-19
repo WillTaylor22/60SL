@@ -35,6 +35,7 @@
 	<label>Window (in minutes)</label>
 	<input id="searchbar" type="text" name="window_size" value='60'>
 	<hr>
+	<legend>Last orders for next morning deliveries</legend>
 	<label>Last Orders for tomorrow morning (Hour, 24 hour clock)</label>
 	<input id="searchbar" type="text" name="last_orders_hr" placeholder="" value='19'><br>
 	<label>Last Orders for pickup tomorrow morning (Minute)</label>
@@ -42,17 +43,36 @@
 	<label>Morning End Time (Hour, 24 hour clock)</label>
 	<input id="searchbar" type="text" name="end_of_morning_hr" placeholder="" value='10'><br>
 	<label>Morning End Time (Minute)</label>
-	<input id="searchbar" type="text" name="end_of_morning_min" placeholder="" value='0'><hr>
-	<label>Last orders for same evening deliveries</label>
+	<input id="searchbar" type="text" name="end_of_morning_min" placeholder="" value='0'>
+
+	<br><br>
+	<legend>Last orders for same evening deliveries</legend>
 	<label>(Hour, 24 hour clock)</label>
 	<input id="searchbar" type="text" name="last_orders_same_day_hr" placeholder="" value='23'><br>
 	<label>(Minute)</label>
 	<input id="searchbar" type="text" name="last_orders_same_day_min" placeholder="" value='0'><br>
-	<br><br>
+	
+	<br>
+	<br>
+
 	Days Available For Delivery: Enter string of numbers seperated by spaces, where Sunday = 0, Monday = 1, etc
-	<input id="searchbar" type="text" name="days" placeholder="" value='0 1 2 3 4 5 6'><br><br>
+	<input id="searchbar" type="text" name="days" placeholder="" value='0 1 2 3 4 5 6'>
+	
+	<br>
+	<br>
+
+	<legend>Best Sellers</legend>
+	<label>Shirts (string)</label>
+	<input id="searchbar" type="text" name="shirts"><br>
+	<label>Suits</label>
+	<input id="searchbar" type="text" name="suits"><br>
+
+	<br>
+	<br>
+	
 	<input id="searchbutton" class="btn btn-success" type="submit" value="Add to database">
 	<br><br>
+
 	
 </form>
 {% endblock %}
