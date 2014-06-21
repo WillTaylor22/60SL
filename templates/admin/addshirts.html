@@ -1,0 +1,21 @@
+{% extends "templates/base.html" %}
+{% block content %}
+<h1>Add Menu</h1>
+
+{% if success %}
+Succeeded!
+{% endif %}
+
+<form action="/addshirts" method="POST">
+	Partner Name:
+	<input id="searchbar" type="text" name="partner_name">
+	<br>
+	Shirts:
+	<input id="searchbar" type="text" name="shirts">
+	<br><br>
+	Suits:
+	<input id="searchbar" type="text" name="suits">
+	<br><br>
+	<input id="searchbutton" class="btn btn-success" type="submit" value="Add shirts & suits">
+</form>
+{% endblock %}

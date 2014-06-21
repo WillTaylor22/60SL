@@ -449,6 +449,8 @@ app = webapp2.WSGIApplication([
     ('/upload', 'admin.UploadHandler'),
     ('/delete', 'admin.DeleteHandler'),
     ('/viewpartners', 'admin.ServeHandler'),
+    ('/addshirts', 'admin.AddShirtsHandler'),
+
 
     webapp2.Route('/partner-signup', 'partner.PartnerSignupHandler'),
     webapp2.Route('/partner-verify/<type:v|p>/<user_id:\d+>-<signup_token:.+>',

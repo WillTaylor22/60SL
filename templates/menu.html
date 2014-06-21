@@ -44,9 +44,9 @@
 	{% set prevtabname = 'first' %}
 	<div class="tab-pane active" id="Menu">
 		<!-- START TABLE -->
-<!-- 		<button class="btn btn-default" style="float:right;" onclick="show_full_menu(); return false;">See Full Menu</button> -->
-<!-- 		<div id="full_menu" style="display:none">
- -->		<table class='menutable' border="0" style="margin-top:5px;">
+		<br>
+<!-- 			<p style="text-align: right;"><i>Difficult cleaning jobs may require specialist attention and so can cost more - final prices are confirmed on pickup.</i></p>
+ --> 		<table class='menutable' style="margin-top:5px;">
 					
  				{% if partner.shirts %}
 					<tr style="height: 2.7em; vertical-align: bottom;">
@@ -65,6 +65,7 @@
 				{% endif %}
 			{% for item in menuitems %}
 				{% if item.tabname != prevtabname: %}
+				<tr><td></td></tr>
 					<tr style="height: 2.7em; vertical-align: bottom;">
 						<th>{{ item.tabname }}</th>
 					</tr>
@@ -88,8 +89,8 @@
 					{% else %}
 						<td class="pricecolumn" style="text-align:right;">{{ item.pricemin|currencyformat }} - {{ item.pricemax|currencyformat }}</td>
 					{% endif %}
-
 				</tr>
+
 
 				{% set prevtabname = item.tabname %}
 			{% endfor %}

@@ -220,3 +220,33 @@ class MenuHandler(webapp2.RequestHandler):
     template = JINJA_ENVIRONMENT.get_template('templates/admin/addmenu.html')
     self.response.write(template.render(template_values))
 
+
+""" allows you to manually add bestsellers to a cleaner """
+class AddShirtsHandler(webapp2.RequestHandler):
+  def get(self):
+    template_values ={
+    }
+
+    template = JINJA_ENVIRONMENT.get_template('templates/admin/addshirts.html')
+    self.response.write(template.render(template_values))
+
+  def post(self):
+    partner_name = self.request.get('partner_name')
+    shirts = self.request.get('shirts')
+    suits = self.request.get('suits')
+    
+    partner = model.get_partner(partner_name)
+
+    partner.shirts = shirts
+    partner.suits = suits
+    partner.put()
+
+    success = True
+
+    template_values ={
+      success: success
+    }
+
+    template = JINJA_ENVIRONMENT.get_template('templates/admin/addshirts.html')
+    self.response.write(template.render(template_values))
+

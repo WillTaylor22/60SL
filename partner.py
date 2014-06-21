@@ -297,15 +297,15 @@ class ForgotPasswordHandler(BaseHandler):
     to_string = user.email_address
     body_string = """Hello,
 
-    Please follow this link to reset your password:
+Please follow this link to reset your password:
 
-    <a href="{url}">{url}</a>
+""" + verification_url + """"
 
-    Any questions about 60 Second Laundry, contact Will on will.taylor@60secondlaundry or call him on 07772622352.
+Any questions about 60 Second Laundry, contact Will on will.taylor@60secondlaundry or call him on 07772622352.
 
-    The 60 Second Laundry Team
-    We love cleaners!
-    """
+The 60 Second Laundry Team
+We love cleaners!
+"""
 
     message = mail.EmailMessage(
       sender=sender_string,

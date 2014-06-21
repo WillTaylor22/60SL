@@ -15,6 +15,7 @@
 	</ol>
 
 	<h1 style="text-align: center;">Your Booking</h1>
+	<p style="text-align: center; font-size: 80%"><a href="" onclick="help_me(); return false;">Click here for help</a></p>
 	<div id="collectioninfo">
 		<form action="review" method="post" onsubmit="return validateForm()">
 			<fieldset>
@@ -158,7 +159,7 @@
         		</div>
  -->
         		<p>You pay in cash when your clothes are returned</p>
-        		<div class="btn-group btn-group-justified" data-toggle="buttons">
+        		<div class="btn-group btn-group-justified" data-toggle="buttons" style="display:none">
         		<!-- 	<label class="btn btn-default" disabled>
 						<input type='radio' name="payment_method" id="paypal" value="paypal">Pay Online With PayPal
 					</label> -->
@@ -201,6 +202,17 @@
 {% block endscripts %}
 
 <script src="/static/js/bootbox/bootbox.min.js"></script>
+
+<script type="text/javascript">
+
+function help_me(){
+	var question_string = "You don't add socks to a cart.<br><br> Just read about the cleaner, then book collection.<br><br>You pay after your clothes are returned.<br><br>Have fun!"
+		bootbox.alert({
+			title: "What next?",
+			message: question_string,
+		})
+	}
+</script>
 
 <script type="text/javascript">
 
