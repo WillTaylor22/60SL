@@ -5,16 +5,13 @@
 
 {% if failed %}
 
-<strong>Login failed!</strong> Check your credentials and try again.
+<strong>Login failed.</strong> Check your credentials and try again.
 
 {% endif %}
 
-{% if password_fail %}
-<strong>Password failed.</strong> Order not submitted. Logging you out for security reasons.
-{% endif %}
 
 <div>
-	<form class="form" action="/partner-login" method="POST" >
+	<form class="form" action="/partner/login" method="POST" >
 		<table>
 			<tr>
 				<td><label for="username">Username </label></td>
@@ -34,6 +31,6 @@
 <br>
 <br>
 
-<a href="/partner-forgot">I have forgotten my password</a>
+<a href="/partner/forgot">I have forgotten my password</a>
 
 {% endblock %}

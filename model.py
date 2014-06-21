@@ -286,6 +286,16 @@ class order(ndb.Model):
     return orders
 
   @classmethod
+  def get_outstanding_by_partner_email(cls, partner_email):
+    query = cls.query(
+      ancestor=partner_key_by_email(partner_email))
+    query = query.filter(cls.submitted == True)
+    query = query.filter(cls.charged == False)
+    number = query.count()
+
+    return number
+
+  @classmethod
   def get_by_email(cls, partner_email):
     query = cls.query(Partner.email == partner_email)
     return query.fetch(1)[0]

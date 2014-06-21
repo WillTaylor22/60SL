@@ -7,10 +7,8 @@ import logging
 import os.path
 import webapp2
  
-from webapp2_extras import auth
-from webapp2_extras import sessions
-from webapp2_extras.auth import InvalidAuthIdError
-from webapp2_extras.auth import InvalidPasswordError
+from webapp2_extras import auth, sessions, security
+from webapp2_extras.auth import InvalidAuthIdError, InvalidPasswordError
 from google.appengine.api.urlfetch import DownloadError
 
 from string import split
@@ -52,13 +50,20 @@ def yesnoformat(value):
     result = "No"
   return result
 
+def badgecollapseformat(value):
+  if(value == 0):
+    result = ""
+  else:
+    result = value
+  return result
+
 def datetimeformat(value, format='%H:%M %d-%b'):
     return value.strftime(format)
 
 JINJA_ENVIRONMENT.filters['datetimeformat'] = datetimeformat
 JINJA_ENVIRONMENT.filters['currencyformat'] = currencyformat
 JINJA_ENVIRONMENT.filters['yesnoformat'] = yesnoformat
-
+JINJA_ENVIRONMENT.filters['badgecollapseformat'] = badgecollapseformat
 
 def user_required(handler):
   """
@@ -120,9 +125,18 @@ class BaseHandler(webapp2.RequestHandler):
  
   def render_template(self, template_filename, params={}):
     user = self.user_info
-    params['user'] = user # Params is "template_values"
+    params['user_info'] = user # Params is "template_values"
     template = JINJA_ENVIRONMENT.get_template(os.path.join('templates', 'partner', template_filename))
     self.response.write(template.render(params))
+
+  def render_template_dashboard(self, template_filename, user, partner, params={}):
+    params['user'] = user
+    params['partner'] = partner
+    num_orders = model.order.get_outstanding_by_partner_email(partner.email)
+    params['num_orders'] = num_orders
+    params['num_reviews'] = 0
+    self.render_template(template_filename, params)
+
 
   def display_message(self, message):
     """Utility function to display a template with a simple message."""
@@ -214,6 +228,31 @@ class PartnerSignupHandler(BaseHandler):
     # message.send()
  
     self.display_message(msg.format(url=verification_url))
+
+
+class LoginHandler(BaseHandler):
+  def get(self):
+    self._serve_page()
+ 
+  def post(self):
+    username = self.request.get('username')
+    password = self.request.get('password')
+    try:
+      u = self.auth.get_user_by_password(username, password, remember=True)
+      self.redirect(self.uri_for('partner'))
+    except (InvalidAuthIdError, InvalidPasswordError) as e:
+      logging.info('Login failed for user %s because of %s', username, type(e))
+      self._serve_page(True)
+ 
+  def _serve_page(self, failed=False, message=None):
+    username = self.request.get('username')
+    params = {
+      'message': self.request.get('message'),
+      'username': username,
+      'failed': failed
+    }
+    self.render_template('login.html', params)
+
 
 class LogoutHandler(BaseHandler):
   def get(self):
@@ -346,6 +385,47 @@ class SetPasswordHandler(BaseHandler):
     
     self.display_message('Password updated')
 
+class SetPasswordDashboardHandler(BaseHandler):
+
+  @user_required
+  def post(self):
+
+    user = self.user
+    username = user.auth_ids[0]
+
+    current_password = self.request.get('current_password')
+
+    """ check password """
+    if not security.check_password_hash(current_password, user.password):
+
+      logging.info('Change password in dashboard failed for user %s', username)
+      params = {
+        'message': '"Current password" was not correct'
+      }
+      partner = model.Partner.get_by_email(user.email_address)
+      self.render_template_dashboard('settings.html', user, partner, params)
+    """ password accepted """
+
+    password = self.request.get('password')
+    partner = model.Partner.get_by_email(user.email_address)
+
+    if not password or password != self.request.get('confirm_password'):
+      params = {
+        message: 'passwords do not match'
+      }
+      self.render_template_dashboard('settings.html', user, partner, params)
+      return
+
+    user.set_password(password)
+    user.put()
+    
+    params = {
+      'message': 'Password changed!'
+    }
+    self.render_template_dashboard('settings.html', user, partner, params)
+
+
+
 """ Profile Handlers """
 
 class DashboardHandler(BaseHandler):
@@ -353,15 +433,15 @@ class DashboardHandler(BaseHandler):
   @user_required
   def get(self):
     user = self.user
-
     partner = model.Partner.get_by_email(user.email_address)
+    
     orders = model.order.get_by_partner_email(user.email_address)
 
     params = {
-      'partner': partner,
       'orders': orders
     }
-    self.render_template('dashboard.html', params)
+
+    self.render_template_dashboard('orders.html', user, partner, params)
 
 class ViewOrderHandler(BaseHandler):
   
@@ -379,39 +459,14 @@ class ViewOrderHandler(BaseHandler):
 
     message = ''
 
-    template_values ={
+    params = {
       'message': message,
       'order': order,
       'menuitems': menuitems
     }
 
-    template = JINJA_ENVIRONMENT.get_template('templates/partner/order.html')
-    self.response.write(template.render(template_values))
+    self.render_template_dashboard('order.html', user, partner, params)
 
-class LoginHandler(BaseHandler):
-  def get(self):
-    self._serve_page()
- 
-  def post(self):
-    username = self.request.get('username')
-    password = self.request.get('password')
-    try:
-      u = self.auth.get_user_by_password(username, password, remember=True)
-      self.redirect(self.uri_for('partner'))
-    except (InvalidAuthIdError, InvalidPasswordError) as e:
-      logging.info('Login failed for user %s because of %s', username, type(e))
-      self._serve_page(True)
- 
-  def _serve_page(self, failed=False, message=None):
-    username = self.request.get('username')
-    print "self.request.get('failed')"
-    print self.request.get('failed')
-    params = {
-      'message': self.request.get('message'),
-      'username': username,
-      'failed': failed
-    }
-    self.render_template('login.html', params)
 
 class SubmitOrderHandler(BaseHandler):
 
@@ -419,28 +474,32 @@ class SubmitOrderHandler(BaseHandler):
   def post(self):
 
     user = self.user
-    username = user.auth_ids[0]
     password = self.request.get('pw')
     ordernumber = self.request.get('ordernumber')
     amount = float(self.request.get('amount'))/100 # receives pence, turns to £
+    partner = model.Partner.get_by_email(user.email_address)
+
 
     """ check password """
-    try:
-      u = self.auth.get_user_by_password(username, password, remember=True)
-    except (InvalidAuthIdError, InvalidPasswordError) as e:
+    if not security.check_password_hash(current_password, user.password):
       logging.info('Login failed for user %s because of %s', username, type(e))
+
+      orders = model.order.get_by_partner_email(user.email_address)
+
       params = {
-        'password_fail': True,
-        'username': username,
+        'orders': orders
       }
-      self.render_template('login.html', params)
+
+      self.render_template_dashboard('orders.html', user, partner, params)
     """ password accepted """
 
+
+   
+
     """ mis """
-    user = self.user
-    partner = model.Partner.get_by_email(user.email_address)
     order = model.order.get_by_name_id(partner.name, ordernumber)
     preapproval = model.Preapproval.query(model.Preapproval.order == order.key).get()
+    message = ''
 
     """ charge & receipt customer """
     if order.payment_method == 'cash':
@@ -664,3 +723,79 @@ class SubmitOrderHandler(BaseHandler):
 
     template = JINJA_ENVIRONMENT.get_template('templates/partner/dashboard.html')
     self.response.write(template.render(params))
+
+
+class ReviewsHandler(BaseHandler):
+  
+  @user_required
+  def get(self, *args, **kwargs):
+    
+    user = self.user
+    partner = model.Partner.get_by_email(user.email_address)
+
+    message = ''
+
+    params = {
+      'message': message,
+    }
+
+    self.render_template_dashboard('reviews.html', user, partner, params)
+
+
+class MenuHandler(BaseHandler):
+  
+  @user_required
+  def get(self, *args, **kwargs):
+    
+    user = self.user
+    partner = model.Partner.get_by_email(user.email_address)
+
+    menuitems = model.menuitem.get_by_partner_name(partner.name)
+
+    message = ''
+
+    params = {
+      'user': user,
+      'message': message,
+      'menuitems': menuitems
+    }
+
+    self.render_template_dashboard('menu.html', user, partner, params)
+    
+
+
+class InfoHandler(BaseHandler):
+  
+  @user_required
+  def get(self, *args, **kwargs):
+    
+    user = self.user
+    partner = model.Partner.get_by_email(user.email_address)
+
+    message = ''
+
+    params = {
+      'user': user,
+      'message': message,
+    }
+
+    self.render_template_dashboard('info.html', user, partner, params)
+
+
+class SettingsHandler(BaseHandler):
+  
+  @user_required
+  def get(self, *args, **kwargs):
+    
+    user = self.user
+    partner = model.Partner.get_by_email(user.email_address)
+
+    message = ''
+
+    params = {
+      'user': user,
+      'message': message,
+    }
+
+    self.render_template_dashboard('settings.html', user, partner, params)
+

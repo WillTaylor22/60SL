@@ -1,0 +1,59 @@
+{% extends "templates/partner/dashboard.html" %}
+{% block option %}
+
+<h3 class="option_header">Settings</h3>
+<br>
+<i style="text-align: center;">Feature in development</i>
+
+
+<br><br>
+<table class="settings_table">
+
+	<tr>
+		<th colspan="2">Dashboard Settings</th>
+	</tr>
+	<tr>
+		<td class="settings_label">User</td>
+		<td class="value">{{ user.email_address }}</td>
+		<td class="edit"></td>
+	</tr>
+	<tr>
+		<td class="settings_label">Password</td>
+		<td class="value">*</td>
+		<td class="edit"><a id="change_password_text" href="" onclick="display_change_pw(); return false;">Change Password</a></td>
+	</tr>
+</table>
+
+
+
+<div class="change_password" id="change_password" style="display: none;">
+	<form action="/partner/password-dashboard" method="POST">
+		<legend>Change Password</legend>
+		<label for="current_password">Current Password</label>
+		<input type='password' name='current_password'><br>
+		<label for="password">New Password</label>
+		<input type='password' name='password'><br>
+		<label for="confirm_password">Confirm New Password</label>
+		<input type='password' name='confirm_password'><br>
+		<br>
+		<input type="submit" class="btn btn-success" value="Change password">
+	</form>
+</div>
+
+
+
+{% endblock %}
+
+{% block endscripts %}
+
+<script type="text/javascript">
+
+$("#settings_li").addClass("active")
+
+function display_change_pw(){
+	document.getElementById("change_password").style.display = "block";
+}
+
+</script>
+
+{% endblock %}

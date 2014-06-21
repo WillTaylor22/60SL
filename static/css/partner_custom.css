@@ -19,3 +19,51 @@ label {
   padding-right: 10px;
   width: 100px;
 }
+
+/* make sidebar nav vertical */ 
+@media (min-width: 768px) {
+  .sidebar-nav .navbar .navbar-collapse {
+    padding: 0;
+    max-height: none;
+  }
+  .sidebar-nav .navbar ul {
+    float: none;
+  }
+  .sidebar-nav .navbar ul:not {
+    display: block;
+  }
+  .sidebar-nav .navbar li {
+    float: none;
+    display: block;
+  }
+  .sidebar-nav .navbar li a {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+}
+/*
+.option_header{
+  margin-top: 0
+}*/
+
+.settings_table{
+  width: 100%;
+}
+
+
+.settings_label{
+  width: 100px;
+}
+
+.edit{
+  font-size: 80%;
+}
+
+.change_password{
+  margin-top: 10px;
+  background-color: #fefefe
+}
+
+.change_password label{
+  width: 200px;
+}

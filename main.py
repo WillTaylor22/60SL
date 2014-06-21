@@ -35,6 +35,9 @@ import settings
 from google.appengine.ext import ndb
 from bin import postcode
 
+# import webapp2_extras
+from webapp2_extras.routes import PathPrefixRoute
+
 # Template Settings
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -444,7 +447,7 @@ app = webapp2.WSGIApplication([
     ('/buy', Buy),
     webapp2.Route('/buy/success', handler=SuccessCash, name="success-cash"),
     ('/buy/success/([^/]*)/([^/]*)/.*', SuccessPayPal),
-    
+
     ('/add', 'admin.InputHandler'),
     ('/upload', 'admin.UploadHandler'),
     ('/delete', 'admin.DeleteHandler'),
@@ -452,17 +455,23 @@ app = webapp2.WSGIApplication([
     ('/addshirts', 'admin.AddShirtsHandler'),
 
 
-    webapp2.Route('/partner-signup', 'partner.PartnerSignupHandler'),
-    webapp2.Route('/partner-verify/<type:v|p>/<user_id:\d+>-<signup_token:.+>',
-  handler='partner.VerificationHandler', name='partner-verification'),
-    webapp2.Route('/partner-password', 'partner.SetPasswordHandler'),
-    webapp2.Route('/partner-login', 'partner.LoginHandler', name='partner-login'),
-    webapp2.Route('/partner-logout', 'partner.LogoutHandler', name='partner-logout'),
-    webapp2.Route('/partner-forgot', 'partner.ForgotPasswordHandler', name='partner-forgot'),
-    webapp2.Route('/partner', 'partner.DashboardHandler', name='partner'),
-    webapp2.Route('/partner/orders/<ordernumber:\d+>', 'partner.ViewOrderHandler', name='partner-view-order'),
-    webapp2.Route('/partner/submitorder', 'partner.SubmitOrderHandler', name='partner-submit-order'),
-
+    PathPrefixRoute('/partner', [
+        webapp2.Route('/signup', 'partner.PartnerSignupHandler'),
+        webapp2.Route('/verify/<type:v|p>/<user_id:\d+>-<signup_token:.+>',
+        handler='partner.VerificationHandler', name='partner-verification'),
+        webapp2.Route('/password', 'partner.SetPasswordHandler'),
+        webapp2.Route('/login', 'partner.LoginHandler', name='partner-login'),
+        webapp2.Route('/logout', 'partner.LogoutHandler', name='partner-logout'),
+        webapp2.Route('/forgot', 'partner.ForgotPasswordHandler', name='partner-forgot'),
+        webapp2.Route('/', 'partner.DashboardHandler', name='partner'),
+        webapp2.Route('/orders/<ordernumber:\d+>', 'partner.ViewOrderHandler', name='partner-view-order'),
+        webapp2.Route('/submitorder', 'partner.SubmitOrderHandler', name='partner-submit-order'),
+        webapp2.Route('/reviews', 'partner.ReviewsHandler', name='partner-reviews'),
+        webapp2.Route('/menu', 'partner.MenuHandler', name='partner-menu'),
+        webapp2.Route('/info', 'partner.InfoHandler', name='partner-info'),
+        webapp2.Route('/settings', 'partner.SettingsHandler', name='partner-settings'),
+        webapp2.Route('/password-dashboard', 'partner.SetPasswordDashboardHandler'),
+    ]),
 
     ('/privacy', PrivacyHandler),
     ('/terms', TermsHandler),
@@ -471,3 +480,15 @@ app = webapp2.WSGIApplication([
     ('/test', TestHandler),
 
 ], debug=True, config=config)
+
+
+    #   webapp2.Route('/partner-signup', 'partner.PartnerSignupHandler'),
+    #   webapp2.Route('/partner-verify/<type:v|p>/<user_id:\d+>-<signup_token:.+>',
+    # handler='partner.VerificationHandler', name='partner-verification'),
+    #   webapp2.Route('/partner-password', 'partner.SetPasswordHandler'),
+    #   webapp2.Route('/partner-login', 'partner.LoginHandler', name='partner-login'),
+    #   webapp2.Route('/partner-logout', 'partner.LogoutHandler', name='partner-logout'),
+    #   webapp2.Route('/partner-forgot', 'partner.ForgotPasswordHandler', name='partner-forgot'),
+    #   webapp2.Route('/partner', 'partner.DashboardHandler', name='partner'),
+    #   webapp2.Route('/partner/orders/<ordernumber:\d+>', 'partner.ViewOrderHandler', name='partner-view-order'),
+    #   webapp2.Route('/partner/submitorder', 'partner.SubmitOrderHandler', name='partner-submit-order'),

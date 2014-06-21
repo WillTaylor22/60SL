@@ -1,236 +1,113 @@
-{% extends "templates/partner/base.html" %}
-{% block content %}
+{% extends "templates/partner/dashboard.html" %}
 
-<div id="pagecontainer" class="container">
-	<div class="row">
-		<h1>Order: {{ order.first_name }} {{ order.last_name }}</h1>
-	</div>
-	<div class="row">
-		<div class="col-md-4">
-			<div style="background-color: #FCFCFC;">
-				<table>
-					<tr>
-						<td><strong>Customer</strong></td>
-						<td><strong>{{ order.first_name }} {{ order.last_name }}</strong></td>
-					</tr>
-					<tr>
-						<td style="width: 130px;">Address</td>
-						<td>{{ order.address1 }}</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td>{{ order.address2 }}</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td>{{ order.address3 }}</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td>{{ order.postcode }}</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td>{{ order.collectioninstructions }}</td>
-					</tr>
-					<tr>
-						<td>Phone Number</td>
-						<td>{{ order.phonenumber }}</td>
-					</tr>
-					<tr>
-						<td>Email </td>
-						<td>{{ order.email }}</td>
-					</tr>
-					<tr>
-						<td>Collection</td>
-						<td>{{ order.collection_time_date }}</td>
-					</tr>
-					<tr>
-						<td>Delivery</td>
-						<td>{{ order.delivery_time_date }}</td>
-					</tr>
-					<tr>
-						<td>Ordered</td>
-						<td>{{ order.ordertime }}</td>
-					</tr>
-					<tr>
-						<td>Order #</td>
-						<td>{{ order.ordernumber }}</td>
-						<input type="hidden" id="ordernumber" value="{{ order.ordernumber }}">
-					</tr>
-					
-					<tr>
-						<td>Payment Method:</td>
-						<td>{{ order.payment_method|capitalize }}</td>
-						<input type="hidden" id="payment_method" value="{{ order.payment_method }}">
-					</tr>
-					<tr>
-						<td>Billed</td>
-						<td>{{ order.charged|yesnoformat }}</td>
-					</tr>
-					{% if order.charged %}
-					<tr>
-						<td>Final Price</td>
-						<td>{{ order.cost }}</td>
-					</tr>
-					{% endif %}
-					
-				</table>
-			</div>
+{% block option %}
 
-			<div style="background-color: #FCFCFC;">
-				<form onsubmit="return submit_order()">
-					<h3>The Order</h3>
-					<div class="input-group input-group-lg">
-						<label for="amount" style="width: 170px;">Final billable amount: £</label>
-						<input type="text" id="amount_pounds" class="input-sm" name="amount_pounds" style="width: 40px;">.
-						<input type="text" id="amount_pence" class="input-sm" name="amount_pence" style="width: 40px;"><br>
-					</div>
-					<div class="input-group input-group-lg">
-						<label for="pw" style="width: 170px;">Your Password: </label>
-						<input type="password" class="input-sm" id="pw" name="pw" style="width: 87px;"><br>
-					</div>
-
-					{% if order.payment_method == "cash" %}
-					<ul>
-						<li>You are paid in cash when you deliver.</li>
-						<li>The customer will receive a receipt and will be asked to leave a review.</li>
-						<li>60 Second Laundry contact some customers to improve our service.</li>
-						<li>Make sure your customer expects <span id="amount_span">this amount</span> to be billed before you bill them!!</li>
-					</ul>
-					{% endif %}
-
-					{% if order.payment_method == "paypal" %}
-					<ul>
-						<li>This will charge the customer<span id="amount_span"></span> through PayPal.</li>
-						<li>The customer will receive a receipt and will be asked to leave a review when they have received their clothes back.</li>
-						<li>60 Second Laundry contact some customers to improve our service.</li>
-						<li>Make sure your customer expects <span id="amount_span">this amount</span> to be billed before you bill them!!</li>
-					</ul>
-					{% endif %}
-					<input type="submit" id="submit_button" class="btn btn-primary" value="Bill Customer">
-				</form>
-				<br>
-			</div> 
-			<br>
-			<div id="newItem" hidden>
-				<form onsubmit="return add_custom_item()">
-					<fieldset>
-						<legend>New Item</legend>
-
-						<label for='type'>Type</label>
-						<input type='text' id='type' /><br>
-
-						<label for='subtype'>Subtype</label>
-						<input type='text' id='subtype' /><br>
-
-						<label for='price'>Unit Price (£)</label>
-						<input type='text' id='price' /><br>
-
-						<label for='turnaround'>Turnaround (Optional)</label>
-						<input type='text' id='turnaround' /><br>
-
-						<input type='submit' class='btn btn-primary' value="Add Item">
-					</fieldset>
-				</form>
-			</div>
-		</div>
-		<div class="col-md-8">
-			<h3>Your Menu</h3>
-			<div style="background-color: #FCFCFC; "> <!-- content: tab headings, tab contents -->
-			<ul class="nav nav-pills nav-justified" data-tabs="tabs"> <!-- tab headings -->
-			{% set prevtabname = '' %}
-			{% set i = 0 %}
-			{% set length = 0 %}
-
-			{% for item in menuitems %}
-			   	{% if item.tabname != prevtabname: %}
-					{% set prevtabname = item.tabname %}
-					{% set i = i+1 %}
-					{% if i == 1: %}
-			    		<li class="active"><a data-toggle="tab" href="#T{{ i }}">{{ item.tabname }}</a></li>
-					{% else %}
-						{% if length > 200 %}
-							<li class="dropdown">
-								    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-								      More <span class="caret"></span>
-								    </a>
-								    <ul class="dropdown-menu">
-						{% endif %}
-									<li><a data-toggle="tab" href="#T{{ i }}">{{ item.tabname }}</a></li>
-						{% if length > 200 %}
-							</ul>
-						{% endif %}
-					{% endif %}
-					{% set length = length + 30 + item.tabname|length*5 %}
-				{% endif %}
-			{% endfor %}
-			</ul>
-
-
-			<div class="tab-content"> <!-- tab content -->
-				
-			{% set tabnumber = 0 %} 
-			{% set prevtabname = 'first' %}
-
-			{% for item in menuitems %}
-				{% if item.tabname != prevtabname: %} <!-- ...then setup new tab -->
-				{% set tabnumber = tabnumber+1 %}
-					{% if prevtabname == 'first': %}
-			<div class="tab-pane active" id="T{{ tabnumber }}">
-				{% else %}
-			</table></div> <!-- end previous table and table's div -->
-			<div class="tab-pane" id="T{{ tabnumber }}">
-				{% endif %}
-			<br>
-			<!-- START TABLE -->
-			<table style="width: 100%;">
-			<tr>
-					<td class="itemcolumn"><strong>Item</strong></td>
-				<td class="subitemcolumn"></td>   
-				<td class="pricecolumn"><strong>Price</strong></td>
-				<td class="turnaroundcolumn"><strong>Turn-around</strong></td>
-<!-- 				<td class="add"><strong>Add</strong></td>
- -->			</tr>
-			{% endif %}
-			<tr>
-				{% if item.item != prev_item %}
-					<td class='firstitem itemcolumn'>{{ item.item }}</td>
-				{% else %}
-					<td class="itemcolumn"></td>
-				{% endif %}
-				{% set prev_item = item.item %}
-
-				<td class='subitemcolumn'>{{ item.subitem }}</td>
-				
-				{% if item.price != 0 %}
-					<td class="pricecolumn">{{ item.price|currencyformat }}</td>
-
-				{% else %}
-					<td class="pricecolumn">{{ item.pricemin|currencyformat }} - {{ item.pricemax|currencyformat }}</td>
-
-				{% endif %}
-				<td class="turnaroundcolumn">{{ item.time|capitalize }}</td>
-
-				
-<!-- 				<td><button class="btn btn-default btn-primary btn-xs" onclick="item_added('{{ item.itemid }}', '{{ item.tabname }}', '{{ item.item }}', '{{ item.subitem }}', '{{ item.price }}', '{{ item.pricemin }}', 1)"><i class="gylphicon glyphicon-plus"></i></button><td>
- -->			</tr>
-
-
-
-
-				{% set prevtabname = item.tabname %}
-			{% endfor %}
-				</table></div> <!-- end final table and table's div --> 
-			</div> <!-- end tab-content --> 
-
-		</div>
-	</div>
+<div>
+	<h3 class="option_header">Viewing Order: {{ order.first_name }} {{ order.last_name }}</h3>
+	<table>
+		<tr>
+			<td><strong>Customer</strong></td>
+			<td><strong>{{ order.first_name }} {{ order.last_name }}</strong></td>
+		</tr>
+		<tr>
+			<td style="width: 130px;">Address</td>
+			<td>{{ order.address1 }}</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>{{ order.address2 }}</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>{{ order.address3 }}</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>{{ order.postcode }}</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>{{ order.collectioninstructions }}</td>
+		</tr>
+		<tr>
+			<td>Phone Number</td>
+			<td>{{ order.phonenumber }}</td>
+		</tr>
+		<tr>
+			<td>Email </td>
+			<td>{{ order.email }}</td>
+		</tr>
+		<tr>
+			<td>Collection</td>
+			<td>{{ order.collection_time_date }}</td>
+		</tr>
+		<tr>
+			<td>Delivery</td>
+			<td>{{ order.delivery_time_date }}</td>
+		</tr>
+		<tr>
+			<td>Ordered</td>
+			<td>{{ order.ordertime }}</td>
+		</tr>
+		<tr>
+			<td>Order #</td>
+			<td>{{ order.ordernumber }}</td>
+			<input type="hidden" id="ordernumber" value="{{ order.ordernumber }}">
+		</tr>
+		
+		<tr>
+			<td>Payment Method:</td>
+			<td>{{ order.payment_method|capitalize }}</td>
+			<input type="hidden" id="payment_method" value="{{ order.payment_method }}">
+		</tr>
+		<tr>
+			<td>Billed</td>
+			<td>{{ order.charged|yesnoformat }}</td>
+		</tr>
+		{% if order.charged %}
+		<tr>
+			<td>Final Price</td>
+			<td>{{ order.cost }}</td>
+		</tr>
+		{% endif %}
+		
+	</table>
 </div>
 
+<div style="background-color: #FCFCFC;">
+	<form onsubmit="return submit_order()">
+		<h3>Submit Payment</h3>
+		<div class="input-group input-group-lg">
+			<label for="amount" style="width: 170px;">Final billable amount: £</label>
+			<input type="text" id="amount_pounds" class="input-sm" name="amount_pounds" style="width: 40px;">.
+			<input type="text" id="amount_pence" class="input-sm" name="amount_pence" style="width: 40px;"><br>
+		</div>
+		<div class="input-group input-group-lg">
+			<label for="pw" style="width: 170px;">Your Password: </label>
+			<input type="password" class="input-sm" id="pw" name="pw" style="width: 87px;"><br>
+		</div>
 
+		{% if order.payment_method == "cash" %}
+		<ul>
+			<li>You are paid in cash when you deliver.</li>
+			<li>The customer will receive a receipt and will be asked to leave a review.</li>
+			<li>60 Second Laundry contact some customers to improve our service.</li>
+			<li>Make sure your customer expects <span id="amount_span">this amount</span> to be billed before you bill them!!</li>
+		</ul>
+		{% endif %}
 
-
+		{% if order.payment_method == "paypal" %}
+		<ul>
+			<li>This will charge the customer<span id="amount_span"></span> through PayPal.</li>
+			<li>The customer will receive a receipt and will be asked to leave a review when they have received their clothes back.</li>
+			<li>60 Second Laundry contact some customers to improve our service.</li>
+			<li>Make sure your customer expects <span id="amount_span">this amount</span> to be billed before you bill them!!</li>
+		</ul>
+		{% endif %}
+		<input type="submit" id="submit_button" class="btn btn-primary" value="Bill Customer">
+	</form>
+	<br>
+</div> 
 
 {% endblock %}
 
@@ -363,9 +240,5 @@ function post(path, params, method) {
 }
 
 </script>
-
-<!-- 
-<script src="/static/js/custom/table.js"></script>
- -->
 
 {% endblock %}

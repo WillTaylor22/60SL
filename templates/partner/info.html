@@ -1,0 +1,43 @@
+{% extends "templates/partner/dashboard.html" %}
+{% block option %}
+<link href="/static/css/custom.css" rel="stylesheet"> 
+
+<h3 class="option_header">Your Information For Customers</h3>
+<br>
+<i>Your listing:</i>
+<br>
+<br>
+	<div style="width:400px">
+		<div id="partnerinfo">
+			<div id="quickviewdiv">
+
+				<div id="partner_logo"><img class="partnerlogo" src="{{ partner.logo_url }}" style="float: left; margin-right: 10px;" alt='Partner Logo'>
+				</div>
+				<div id="partner_facts" style="float: left; width: 270px;">
+					<h4 style="margin-bottom: 5px;">{{ partner.name }}</h4>
+					<div id="partner_facts_deeper" style="float: left; width: 270px;">
+						<h5>{{ partner.address}}</h5>
+						<h5>Min order: £{{ partner.minimum_order }}</h5>
+						<h5>{{ partner.delivery_cost }}</h5>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<br>
+<hr>
+<p><i>Your "info":</i></p>
+<p style="font-size: 80%"><i>This is displayed on your profile (next to reviews)</i></p>
+<p><i>Feature not yet available</i></p>
+
+{% endblock %}
+
+{% block endscripts %}
+
+<script type="text/javascript">
+
+$("#info_li").addClass("active")
+
+</script>
+
+{% endblock %}

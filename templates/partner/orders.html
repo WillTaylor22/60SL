@@ -1,0 +1,39 @@
+{% extends "templates/partner/dashboard.html" %}
+{% block option %}
+
+<h3 class="option_header">Orders</h3>
+<table id="list_orders_table" style="margin-top:10px;">
+	<tr>
+		<td><strong>Customer</strong></td>
+		<td><strong>Received</strong></td>
+		<td><strong>Pickup</strong></td>
+		<td><strong>Collection</strong></td>
+		<td><strong>Payment</strong></td>
+		<td><strong>Billed</strong></td>
+		<td><strong>See Order</strong></td>
+	</tr>
+{% for order in orders %}
+	<tr>
+		<td>{{ order.first_name }} {{ order.last_name }}</td>
+		<td>{{ order.ordertime|datetimeformat }}</td>
+		<td>{{ order.collection_time_date }}</td>
+		<td>{{ order.delivery_time_date }}</td>
+		<td>{{ order.payment_method|capitalize }}</td>
+		<td>{{ order.charged|yesnoformat }}</td>
+		<td><form method="GET" action="/partner/orders/{{ order.ordernumber }}"><input type="submit" class="btn btn-success" value="See Order"></form>
+		</td>
+	</tr>
+{% endfor %}
+</table>
+
+{% endblock %}
+
+{% block endscripts %}
+
+<script type="text/javascript">
+
+$("#orders_li").addClass("active")
+
+</script>
+
+{% endblock %}
