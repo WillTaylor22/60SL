@@ -114,6 +114,10 @@ class Partner(ndb.Model):
   shirts = ndb.StringProperty()
   suits = ndb.StringProperty()
 
+  # geocode
+  latitude = ndb.FloatProperty()
+  longitude = ndb.FloatProperty()
+
   delivery_slots = ndb.StringProperty(repeated=True)
 
   @property 
@@ -247,7 +251,7 @@ class menuitem(ndb.Model):
   def get_by_partner_name(cls, partner_name):
     query = cls.query(
       ancestor=partner_key(partner_name)).order(ndb.GenericProperty("itemid"))
-    return query.fetch(300)
+    return query
 
 class order(ndb.Model):
   # parent=partner_k
@@ -297,8 +301,7 @@ class order(ndb.Model):
 
   @classmethod
   def get_by_email(cls, partner_email):
-    query = cls.query(Partner.email == partner_email)
-    return query.fetch(1)[0]
+    return cls.query(Partner.email == partner_email).get()
 
   @classmethod
   def get_by_name_id(cls, partner_name, id):

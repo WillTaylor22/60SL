@@ -20,6 +20,8 @@ import os
 import urllib
 import webapp2
 import jinja2
+import math
+from operator import attrgetter
 from datetime import datetime, date, timedelta
 import cgi
 import logging
@@ -76,11 +78,18 @@ def nicedates(value):
     elif value.isoweekday() == 7:
         return 'Sunday'
 
+def distanceformat(value):
+    if value >= 1000:
+        result = str(int(round(float(value)/1000))) + "km away"
+    else:
+        result = str(value) + "m away"
+    return result
+
 e = jinja2.Environment()
 JINJA_ENVIRONMENT.filters['datetimeformat'] = datetimeformat
 JINJA_ENVIRONMENT.filters['currencyformat'] = currencyformat
 JINJA_ENVIRONMENT.filters['nicedates'] = nicedates
-
+JINJA_ENVIRONMENT.filters['distanceformat'] = distanceformat
 
 
 # Handlers (Views)
@@ -108,9 +117,27 @@ class Listings(webapp2.RequestHandler):
 
         session['postcode'] = this_postcode
 
+        # Load from session if using breadcrumb
+        lat = self.request.get('lat')
+        if lat == '':
+            if session.has_key('latitude'):
+                lat = session['latitude']
+
+        session['latitude'] = lat
+
+        lon = self.request.get('long')
+        if lon == '':
+            if session.has_key('longitude'):
+                lon = session['longitude']
+
+        session['longitude'] = lon
+
+        latitude = float(lat)
+        longitude = float(lon)
+        
         # analytics
-        postcode_attempt = model.postcode_attempt(postcode = this_postcode)
-        postcode_attempt.put()
+        _postcode_attempt = model.postcode_attempt(postcode = this_postcode)
+        _postcode_attempt.put()
 
         try:
             outcode = postcode.parse_uk_postcode(this_postcode, strict=True, incode_mandatory=False)[0]
@@ -118,10 +145,24 @@ class Listings(webapp2.RequestHandler):
             partners = model.Partner.query(model.Partner.outcodes == outcode).fetch(10)
 
             if partners[0]:
+                for partner in partners:
+                    lat1 = partner.latitude
+                    lat2 = latitude
+                    lon1 = partner.longitude
+                    lon2 = longitude
+                    distance = get_distance(lat1, lat2, lon1, lon2)
+                    partner.distance = round_to_1(distance)
+                    print partner.name
+                    print partner.distance
+
+                partners.sort(key=attrgetter('distance'))
+
                 template_values = {
                     'postcode' : this_postcode,
                     'partners' : partners
                 }
+
+
                 template = JINJA_ENVIRONMENT.get_template('templates/listings.html')
 
         except IndexError:
@@ -138,6 +179,24 @@ class Listings(webapp2.RequestHandler):
             template = JINJA_ENVIRONMENT.get_template('templates/index.html')
         
         self.response.write(template.render(template_values))
+
+def round_to_1(x):
+    return int(round(x, -int(math.floor(math.log10(x)))))
+
+def get_distance(lat1, lat2, lon1, lon2):
+    R = 6371000 # m
+    theta_1 = math.radians(lat1)
+    theta_2 = math.radians(lat2)
+    delta_theta = math.radians(lat2-lat1)
+    delta_lamda = math.radians(lon2-lon1)
+
+    a = math.sin(delta_theta/2) * math.sin(delta_theta/2) + \
+        math.cos(theta_1) * math.cos(theta_2) * math.sin(delta_lamda/2) * \
+        math.sin(delta_lamda/2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+
+    return R * c;
+
 
 class Menu(webapp2.RequestHandler):
     def get(self):
@@ -157,11 +216,18 @@ class Menu(webapp2.RequestHandler):
         if session.has_key('postcode'):
             postcode = session['postcode']
 
+        partner = model.get_partner(partner_name)
+        menuitems = model.menuitem.query(
+            ancestor=model.partner_key(partner.name)).order(ndb.GenericProperty("itemid")).fetch(300)
+
+        print partner.name
+        print partner.key
+        print menuitems
+
         template_values = {
             'postcode': postcode,
-            'partner' : model.get_partner(partner_name),
-            'menuitems' : model.menuitem.query(
-            ancestor=model.partner_key(partner_name)).order(ndb.GenericProperty("itemid")).fetch(300)
+            'partner' : partner,
+            'menuitems' : menuitems
         }
 
         template = JINJA_ENVIRONMENT.get_template('templates/menu.html')
@@ -453,6 +519,7 @@ app = webapp2.WSGIApplication([
     ('/delete', 'admin.DeleteHandler'),
     ('/viewpartners', 'admin.ServeHandler'),
     ('/addshirts', 'admin.AddShirtsHandler'),
+    ('/addgeocode', 'admin.AddGeocodeHandler'),
 
 
     PathPrefixRoute('/partner', [
@@ -480,15 +547,3 @@ app = webapp2.WSGIApplication([
     ('/test', TestHandler),
 
 ], debug=True, config=config)
-
-
-    #   webapp2.Route('/partner-signup', 'partner.PartnerSignupHandler'),
-    #   webapp2.Route('/partner-verify/<type:v|p>/<user_id:\d+>-<signup_token:.+>',
-    # handler='partner.VerificationHandler', name='partner-verification'),
-    #   webapp2.Route('/partner-password', 'partner.SetPasswordHandler'),
-    #   webapp2.Route('/partner-login', 'partner.LoginHandler', name='partner-login'),
-    #   webapp2.Route('/partner-logout', 'partner.LogoutHandler', name='partner-logout'),
-    #   webapp2.Route('/partner-forgot', 'partner.ForgotPasswordHandler', name='partner-forgot'),
-    #   webapp2.Route('/partner', 'partner.DashboardHandler', name='partner'),
-    #   webapp2.Route('/partner/orders/<ordernumber:\d+>', 'partner.ViewOrderHandler', name='partner-view-order'),
-    #   webapp2.Route('/partner/submitorder', 'partner.SubmitOrderHandler', name='partner-submit-order'),

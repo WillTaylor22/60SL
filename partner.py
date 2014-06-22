@@ -18,6 +18,7 @@ from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
 
 import model
+from model import Partner, order, menuitem, Preapproval
 import paypal
 import logging
 
@@ -132,7 +133,7 @@ class BaseHandler(webapp2.RequestHandler):
   def render_template_dashboard(self, template_filename, user, partner, params={}):
     params['user'] = user
     params['partner'] = partner
-    num_orders = model.order.get_outstanding_by_partner_email(partner.email)
+    num_orders = order.get_outstanding_by_partner_email(partner.email)
     params['num_orders'] = num_orders
     params['num_reviews'] = 0
     self.render_template(template_filename, params)
@@ -327,7 +328,7 @@ class ForgotPasswordHandler(BaseHandler):
     msg = 'We have sent an email to %s with a link that will \
     enable you to reset your password' % user.email_address
 
-    partner = model.partner_key_by_email(user.email_address).get()
+    partner = Partner_key_by_email(user.email_address).get()
 
     from google.appengine.api import mail
 
@@ -402,12 +403,12 @@ class SetPasswordDashboardHandler(BaseHandler):
       params = {
         'message': '"Current password" was not correct'
       }
-      partner = model.Partner.get_by_email(user.email_address)
+      partner = Partner.get_by_email(user.email_address)
       self.render_template_dashboard('settings.html', user, partner, params)
     """ password accepted """
 
     password = self.request.get('password')
-    partner = model.Partner.get_by_email(user.email_address)
+    partner = Partner.get_by_email(user.email_address)
 
     if not password or password != self.request.get('confirm_password'):
       params = {
@@ -433,9 +434,9 @@ class DashboardHandler(BaseHandler):
   @user_required
   def get(self):
     user = self.user
-    partner = model.Partner.get_by_email(user.email_address)
+    partner = Partner.get_by_email(user.email_address)
     
-    orders = model.order.get_by_partner_email(user.email_address)
+    orders = order.get_by_partner_email(user.email_address)
 
     params = {
       'orders': orders
@@ -450,18 +451,18 @@ class ViewOrderHandler(BaseHandler):
     
     user = self.user
 
-    partner = model.Partner.get_by_email(user.email_address)
+    partner = Partner.get_by_email(user.email_address)
     order_id = kwargs['ordernumber']
 
-    order = model.order.get_by_name_id(partner.name, order_id)
+    _order = order.get_by_name_id(partner.name, order_id)
 
-    menuitems = model.menuitem.get_by_partner_name(partner.name)
+    menuitems = menuitem.get_by_partner_name(partner.name)
 
     message = ''
 
     params = {
       'message': message,
-      'order': order,
+      'order': _order,
       'menuitems': menuitems
     }
 
@@ -477,14 +478,14 @@ class SubmitOrderHandler(BaseHandler):
     password = self.request.get('pw')
     ordernumber = self.request.get('ordernumber')
     amount = float(self.request.get('amount'))/100 # receives pence, turns to £
-    partner = model.Partner.get_by_email(user.email_address)
+    partner = Partner.get_by_email(user.email_address)
 
 
     """ check password """
     if not security.check_password_hash(current_password, user.password):
       logging.info('Login failed for user %s because of %s', username, type(e))
 
-      orders = model.order.get_by_partner_email(user.email_address)
+      orders = order.get_by_partner_email(user.email_address)
 
       params = {
         'orders': orders
@@ -497,8 +498,8 @@ class SubmitOrderHandler(BaseHandler):
    
 
     """ mis """
-    order = model.order.get_by_name_id(partner.name, ordernumber)
-    preapproval = model.Preapproval.query(model.Preapproval.order == order.key).get()
+    order = order.get_by_name_id(partner.name, ordernumber)
+    preapproval = Preapproval.query(Preapproval.order == order.key).get()
     message = ''
 
     """ charge & receipt customer """
@@ -713,7 +714,7 @@ class SubmitOrderHandler(BaseHandler):
     message.send()
 
   def _display_page(self, partner, message, user):
-    orders = model.order.get_by_partner_email(user.email_address)
+    orders = order.get_by_partner_email(user.email_address)
 
     params = {
       'message': message,
@@ -731,7 +732,7 @@ class ReviewsHandler(BaseHandler):
   def get(self, *args, **kwargs):
     
     user = self.user
-    partner = model.Partner.get_by_email(user.email_address)
+    partner = Partner.get_by_email(user.email_address)
 
     message = ''
 
@@ -748,9 +749,9 @@ class MenuHandler(BaseHandler):
   def get(self, *args, **kwargs):
     
     user = self.user
-    partner = model.Partner.get_by_email(user.email_address)
+    partner = Partner.get_by_email(user.email_address)
 
-    menuitems = model.menuitem.get_by_partner_name(partner.name)
+    menuitems = menuitem.get_by_partner_name(partner.name)
 
     message = ''
 
@@ -770,7 +771,7 @@ class InfoHandler(BaseHandler):
   def get(self, *args, **kwargs):
     
     user = self.user
-    partner = model.Partner.get_by_email(user.email_address)
+    partner = Partner.get_by_email(user.email_address)
 
     message = ''
 
@@ -788,7 +789,7 @@ class SettingsHandler(BaseHandler):
   def get(self, *args, **kwargs):
     
     user = self.user
-    partner = model.Partner.get_by_email(user.email_address)
+    partner = Partner.get_by_email(user.email_address)
 
     message = ''
 

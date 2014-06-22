@@ -250,3 +250,34 @@ class AddShirtsHandler(webapp2.RequestHandler):
     template = JINJA_ENVIRONMENT.get_template('templates/admin/addshirts.html')
     self.response.write(template.render(template_values))
 
+""" allows you to manually add bestsellers to a cleaner """
+class AddGeocodeHandler(webapp2.RequestHandler):
+  def get(self):
+    template_values ={
+    }
+
+    template = JINJA_ENVIRONMENT.get_template('templates/admin/addgeocode.html')
+    self.response.write(template.render(template_values))
+
+  def post(self):
+    partner_name = self.request.get('partner_name')
+    latitude = self.request.get('lat')
+    longitude = self.request.get('long')
+    
+    partner = model.get_partner(partner_name)
+
+    partner.latitude = float(latitude)
+    partner.longitude = float(longitude)
+    partner.put()
+
+    success = True
+
+    template_values ={
+      'success': success,
+      'lat': latitude,
+      'long': longitude
+    }
+
+    template = JINJA_ENVIRONMENT.get_template('templates/admin/addgeocode.html')
+    self.response.write(template.render(template_values))
+
