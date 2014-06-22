@@ -923,6 +923,19 @@ $( "[name='delivery_time']" ).change(function () {
 <!-- form validation -->
 <script type="text/javascript">
 function validateForm(){
+	  //Required attribute fallback
+	  if (!attributeSupported("required") || ($.browser.safari)) {
+	   //If required attribute is not supported or browser is Safari (Safari thinks that it has this attribute, but it does not work), then check all fields that has required attribute
+	   $("#formTemplate [required]").each(function(index) {
+	    if (!$(this).val()) {
+	     //If at least one required value is empty, then ask to fill all required fields.
+	     bootbox.alert("Please fill all required fields.");
+	     return false;
+	    }
+	   });
+	  }
+
+
 	var timefailflag = 0
 	var failflag = 0
 	$("#invalid_c_time").text("")
@@ -990,4 +1003,5 @@ function hide_invalid_options_warning(){
 }
 
 </script>
+
 {% endblock %}

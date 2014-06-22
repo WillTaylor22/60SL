@@ -22,17 +22,6 @@
     margin: auto;
 }
 
-#sorry{
-    position: absolute;
-    top:110px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    margin: auto;
-}
-
-
 
 #maindiv{
     width: 400px;
@@ -91,16 +80,6 @@ div#partnerlogo{
     width: 100%;
 }
 
-.collectionform-half{
-    width: 49%;
-}
-
-td{
-    border: 1px;
-    border-color: black;
-    vertical-align: bottom;
-}
-
 .menutable{
     border-color: black;
     vertical-align: bottom;
@@ -139,13 +118,12 @@ td{
 
 }
 */
-/*
-#orderdiv{
-    padding-top: 1px;
-    background-color: #FFFF33;
+
+#order_footer{
+    background-color: #EFEFEF;
     border-radius:10px;
 }
-*/
+
 
 #quickviewdiv{
     margin:0;
@@ -234,3 +212,9 @@ form legend{
     border-radius: 20px;
 }
 
+
+/* MENU */
+
+#order_table{
+    width: 100%;
+}

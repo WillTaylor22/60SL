@@ -11,29 +11,33 @@
 	<li class="active">Cleaner</li>
 </ol>
 
-	<div id="partnerinfo">
-		
-		<div id="quickviewdiv">
+<div id="partnerinfo">
+	
+	<div id="quickviewdiv">
 
-			<div id="partner_logo"><img class="partnerlogo" src="{{ partner.logo_url }}" style="float: left; margin-right: 10px;" alt='Partner Logo'>
-			</div>
-			<div id="partner_facts" style="float: left; width: 270px;">
-				<h4 style="margin-bottom: 5px;">{{ partner.name }}</h4>
-				<div id="partner_facts_deeper" style="float: left; width: 270px;">
-					<h5>{{ partner.address}}</h5>
-					<h5>Min order: £{{ partner.minimum_order }}</h5>
-					<h5>{{ partner.delivery_cost }}</h5>
-				</div>
-			</div>
-			<form action="collection" method="get" style="float:right; margin-top:-40px;">
-					<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
-					<input type="submit" class="btn btn-success" value="Book Collection">
-			</form>
-			<p style="float:right; margin-right:12px; font-size: 80%"><a href="" onclick="help_me(); return false;">Click here for help</a></p>
+		<div id="partner_logo">
+			<img class="partnerlogo" src="{{ partner.logo_url }}" style="float: left; margin-right: 10px;" alt='Partner Logo'>
 		</div>
+
+		<div id="partner_facts" style="float: left; width: 270px;">
+			<h4 style="margin-bottom: 5px;">{{ partner.name }}</h4>
+			<div id="partner_facts_deeper" style="float: left; width: 270px;">
+				<h5>{{ partner.address}}</h5>
+				<h5>Min order: £{{ partner.minimum_order }}</h5>
+				<h5>{{ partner.delivery_cost }}</h5>
+			</div>
+		</div>
+
+		<form action="collection" method="get" style="float:right; margin-top:-40px;">
+				<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
+				<input type="submit" class="btn btn-success" value="Book Collection">
+		</form>
+
+		<p style="float:right; margin-right:12px; font-size: 80%"><a href="" onclick="help_me(); return false;">Click here for help</a></p>
+
 	</div>
-		<hr>
-<div> <!-- content: tab headings, tab contents -->
+</div>
+<hr>
 <ul class="nav nav-pills" data-tabs="tabs"> <!-- tab headings -->
     		<li class="active" style="width: 131px; text-align: center;"><a data-toggle="tab" href="#Menu">Menu</a></li>
     		<li style="width: 131px; text-align: center;"><a data-toggle="tab" href="#Reviews">Reviews</a></li>
@@ -43,14 +47,22 @@
 <div class="tab-content"> <!-- tab content -->
 	{% set prevtabname = 'first' %}
 	<div class="tab-pane active" id="Menu">
+
+		<div id="order_footer" style="display:none;">
+			<h4 style="padding: 10px;">Price calculator</h4>
+			<div id="order">
+				<table class="table" id="order_table">
+
+				</table>
+			</div>
+		</div>
+
 		<!-- START TABLE -->
-		<br>
-<!-- 			<p style="text-align: right;"><i>Difficult cleaning jobs may require specialist attention and so can cost more - final prices are confirmed on pickup.</i></p>
- --> 		<table class='menutable' style="margin-top:5px;">
-					
+		<table class='menutable table table-hover' style="margin-top:5px;">
+				<button class="btn btn-default btn-sm" id="calculator_button" style="float:right; margin-top:5px;" onclick="enable_calculator(); return false;">Enable price calculator</button>
  				{% if partner.shirts %}
 					<tr style="height: 2.7em; vertical-align: bottom;">
-						<th>Best Sellers</th>
+						<th colspan="3" style='border-top: solid white 1px;'>Best Sellers</th>
 					</tr>
 					<tr>
 						<td class="itemcolumn">Shirts</td>
@@ -65,9 +77,9 @@
 				{% endif %}
 			{% for item in menuitems %}
 				{% if item.tabname != prevtabname: %}
-				<tr><td></td></tr>
-					<tr style="height: 2.7em; vertical-align: bottom;">
-						<th>{{ item.tabname }}</th>
+				
+					<tr>
+						<th colspan="5" style="padding-top: 30px; {% if loop.first %}padding-top: 0;{% endif %} vertical-align: bottom; border: solid white 1px;">{{ item.tabname }}</th>
 					</tr>
 				{% endif %}
 
@@ -75,7 +87,7 @@
 					{% if item.item != prev_item %}
 						<td class='firstitem itemcolumn'>{{ item.item }}</td>
 					{% else %}
-						<td class="itemcolumn"></td>
+						<td class="itemcolumn" style='border-top: solid white 1px;'></td>
 					{% endif %}
 
 					{% set prev_item = item.item %}
@@ -85,18 +97,30 @@
 					{% if item.price != 0 %}
 						<td class="pricecolumn" style="text-align:right;">{{ item.price|currencyformat }}</td>
 					{% elif item.pricemax == 0 %}
-						<td class="pricecolumn" style="text-align:right;">From {{ item.pricemin|currencyformat }}</td>
+						<td class="pricecolumn from" style="text-align:right;">{{ item.pricemin|currencyformat }}</td>
 					{% else %}
 						<td class="pricecolumn" style="text-align:right;">{{ item.pricemin|currencyformat }} - {{ item.pricemax|currencyformat }}</td>
 					{% endif %}
+						<td hidden class="addbutton">
+							<button class="btn btn-default btn-xs" onclick="add_item(
+								'{{ item.itemid }}',
+								'{{ item.tabname }}',
+								'{{ item.item }}',
+								'{{ item.subitem }}',
+								{{ item.price }},
+								{{ item.pricemin }}); return false;">
+							<span class="glyphicon glyphicon-plus"></span></button></td>
+						<td hidden class="removebutton"><button class="btn btn-default btn-xs" onclick="change_quantity_by_id('{{ item.itemid }}', -1); return false;"><span class="glyphicon glyphicon-minus"></span></button></td>
 				</tr>
 
 
 				{% set prevtabname = item.tabname %}
 			{% endfor %}
 		</table>
-<!-- 		</div>
- -->	</div> <!-- end final table and table's div --> 
+
+
+
+	</div> <!-- end final table and table's div --> 
 
 	<div class="tab-pane" id="Reviews">
 		<br>
@@ -111,27 +135,10 @@
 
 </div> <!-- end tab-content --> 
 
-<hr>
-
 <form action="collection" method="get">
-					<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
-					<input type="submit" class="btn btn-success btn-lg btn-block" value="Got It. Let's Book Collection">
-			</form>
-
-
-<!-- <p style="text-align: center; color: grey;">Like this? Book now, pay when you get your clothes back.</p> -->
-<!--  <p style="text-align: center; color: grey;">What next? You don't add socks to a cart. Just read about the cleaner, then book collection, and you pay after your clothes are returned. It's really fast.</p>
-<form action="collection" method="get">
-					<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
-					<input type="submit" class="btn btn-success btn-lg btn-block" value="Got It. Let's Book Collection">
-			</form>
-
-<hr>
-
- -->
-
-
-</div><!-- body div -->
+	<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
+	<input type="submit" class="btn btn-success btn-lg btn-block" value="Got It. Let's Book Collection">
+</form>
 
 <br>
 {% endblock %}
@@ -143,6 +150,27 @@
 
 <script type="text/javascript">
 
+calc_enable = 0
+cart = new Array();
+// 0: id, 1: cat, 2: item, 3: subitem, 4: price OR pricemin, 5: qty
+total = 0.0
+
+function enable_calculator(){
+	calc_enable = 1 - calc_enable
+	if (calc_enable == 1){
+		$("td[class='addbutton']").show()
+		$("td[class='removebutton']").show()
+		$("#calculator_button").text("Disable price calculator")
+		document.getElementById("order_footer").style.display = "block";
+	}
+	if (calc_enable == 0){
+		$("td[class='addbutton']").hide()
+		$("td[class='removebutton']").hide()
+		$("#calculator_button").text("Enable price calculator")
+		document.getElementById("order_footer").style.display = "none";
+	}
+}
+
 function help_me(){
 	var question_string = "You don't add socks to a cart.<br><br> Just read about the cleaner, then book collection.<br><br>You pay after your clothes are returned.<br><br>Have fun!"
 		bootbox.alert({
@@ -150,6 +178,203 @@ function help_me(){
 			message: question_string,
 		})
 	}
+
+function add_item(item_id, cat, item, subitem, price, pricemin){
+	var index = cart.map(function(cart){return cart[0];}).indexOf(item_id)
+
+	if(index!=-1){
+		cart[index][5] += 1
+	} else {
+		var cart_price = Math.max(Math.round(100*price),Math.round(100*pricemin))
+		cart.push([
+			item_id,
+			cat,
+			item,
+			subitem,
+			cart_price,
+			1])
+	}
+
+	cart.sort(_sortFunction)
+	refresh()
+}
+
+function refresh(){
+	calculate_total()
+
+	build_cart_html_table()
+
+	print_cart_to_console()
+}
+
+function print_cart_to_console(){
+	console.log("cart -----");
+	for (var i=0; i<cart.length; i++){
+		console.log(cart[i]);
+	}
+}
+
+function calculate_total(){
+	total = 0.0
+	for(i=0; i<cart.length; i++){
+		total += cart[i][4] * cart[i][5]
+	}
+}
+
+function _sortFunction(a, b){
+    return a[0] > b[0];
+}
+
+function build_cart_html_table(){
+	// clear old table
+	// var div = document.getElementById("order")
+	var table=document.getElementById("order_table")
+	table.innerHTML = ""
+
+	if (total != 0){
+		//setup table
+		var table_body=document.createElement('tbody');
+		
+		// create table rows
+		// for each item in the cart, check to see if the item already exists
+		// first, we need to add a "category row" if that category doesn't exist
+		// current categories
+
+	    // use a temporary array to remember previous categories in the html table.
+		var categories_in_table = new Array();
+
+		for(var i=0; i<cart.length; i++){ //for each item in the cart...
+		    // check to see if category already present in table
+	   	    //add current category done AFTER search through previous
+
+		    var new_category = categories_in_table.indexOf(cart[i][1]) == -1
+		    categories_in_table.push(cart[i][1]) 
+
+		    
+			if(new_category){
+				var tr = document.createElement('tr');
+					var td = document.createElement('th');
+					td.appendChild(document.createTextNode(cart[i][1]))
+				tr.appendChild(td);
+					var td=document.createElement('td');
+				tr.appendChild(td);
+					var td=document.createElement('td');
+				tr.appendChild(td);
+					var td=document.createElement('td');
+				tr.appendChild(td);
+				table_body.appendChild(tr);
+			}
+			
+			// adding row for item
+			var tr = create_item_row(i)
+			table_body.appendChild(tr)
+		}
+
+		var tr = create_total_row()
+		table_body.appendChild(tr);
+		
+		table.appendChild(table_body);
+	}
+}
+
+function create_item_row(i){
+	var tr=document.createElement('tr');
+		var td=document.createElement('td');
+		td.class = 'order_table_name'
+		td.appendChild(document.createTextNode(cart[i][2])) // name
+		
+		if(cart[i][3]){ //if subitem, add "(subitem)"
+			td.appendChild(document.createTextNode(" (" + cart[i][3] + ")"))
+		}
+		
+		if (cart[i][5] != 1){ // if quantity > 1, add "xQty"
+			td.appendChild(document.createTextNode(" x" + cart[i][5]))
+		}
+	tr.appendChild(td);
+
+		var td = document.createElement('td')
+		td.class = "order_table_price"
+		td.appendChild(document.createTextNode("£" + display_price(cart[i][4])))
+		
+		if (cart[i][5] != 1){ // if quantity > 1, add "each"
+			td.appendChild(document.createTextNode(" each"))
+		}
+	tr.appendChild(td);
+
+		var td=document.createElement('td');
+			var addbutton = document.createElement("button");
+			addbutton.className = "btn btn-default btn-xs"
+			addbutton.id = "A" + cart[i][0]
+			addbutton.onclick = function(){
+				change_quantity_by_id(this.id.substring(1), 1)
+			}
+
+				var addbuttonicon = document.createElement("i")
+				addbuttonicon.className = "glyphicon glyphicon-plus"
+			addbutton.appendChild(addbuttonicon);
+		td.appendChild(addbutton);
+		td.width = "20px;"
+	tr.appendChild(td);
+
+		var td=document.createElement('td');
+			var removebutton = document.createElement("button");
+			removebutton.className = "btn btn-default btn-xs"
+			removebutton.id = "B" + cart[i][0]
+			removebutton.onclick = function(){
+				change_quantity_by_id(this.id.substring(1), -1)
+			}
+
+				var removebuttonicon = document.createElement("i")
+				removebuttonicon.className = "glyphicon glyphicon-minus"
+			removebutton.appendChild(removebuttonicon);
+		td.appendChild(removebutton);
+		td.width = "20px;"
+	tr.appendChild(td);
+
+	return tr
+}
+
+function create_total_row(){
+
+	var tr=document.createElement('tr');
+		var th=document.createElement('th');
+		th.appendChild(document.createTextNode("Total\u00a0"))
+	tr.appendChild(th);
+		var th=document.createElement('th');
+		th.appendChild(document.createTextNode("£" + display_price(total)))
+	tr.appendChild(th);
+
+		var td=document.createElement('td');
+	tr.appendChild(td);
+		var td=document.createElement('td');
+	tr.appendChild(td);
+
+
+	return tr
+}
+
+
+function change_quantity_by_id(item_id, change){
+	var index = cart.map(function(cart){return cart[0];}).indexOf(item_id)
+	console.log(index)
+	if ( index > -1 ){
+		cart[index][5] += change
+
+		if (cart[index][5] <= 0) {
+			cart.splice(index, 1);
+		}
+
+		refresh()
+	}
+}
+
+function display_price(pence){
+	pounds = parseFloat(pence)/100
+	if (pounds*10 % 1 == 0 && pounds % 1 != 0) 
+		pounds = pounds + '0'
+	return pounds
+}
+
 </script>
 
 {% endblock %}
