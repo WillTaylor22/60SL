@@ -218,3 +218,19 @@ form legend{
 #order_table{
     width: 100%;
 }
+
+.order_table_price{
+    text-align: right;
+}
+
+#flying_div{
+    width: 400px;
+    position:fixed;
+    z-index: 1;
+    overflow-y: scroll;
+    bottom:0px;
+    background-color: #eeeeee;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    max-height: 40%;
+}

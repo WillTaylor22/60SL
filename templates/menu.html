@@ -48,10 +48,13 @@
 	{% set prevtabname = 'first' %}
 	<div class="tab-pane active" id="Menu">
 
-		<div id="order_footer" style="display:none;">
-			<h4 style="padding: 10px;">Price calculator</h4>
+		<div id="flying_div" style="display:none;">
+			<h4 style="margin-left: 2px;"><span class="glyphicon glyphicon-calculator"></span> Total: <span id="total_span">£0</span> <span style="font-size: 70%;">(<a href="" onclick="return why_approx(); return false;">approx.</a>)</span><form action="collection" method="get" style="float:right; margin-right: 5px; margin-top: -5px;">
+				<input type="text" name="partner_name" value="{{ partner.name }}" hidden=True>
+				<input type="submit" class="btn btn-default btn-sm" value="Book Collection">
+		</form></h4>
 			<div id="order">
-				<table class="table" id="order_table">
+				<table class="table table-condensed" id="order_table">
 
 				</table>
 			</div>
@@ -68,11 +71,15 @@
 						<td class="itemcolumn">Shirts</td>
 						<td class='subitemcolumn'></td>
 						<td class='pricecolumn' style="text-align:right;">{{ partner.shirts }}</td>
+						<td hidden class="addbutton" colspan="2">
+							<span style='color:grey; font-size:80%'>Add below</span></td>
 					</tr>
 					<tr>
 						<td class="itemcolumn">Suits</td>
 						<td class='subitemcolumn'></td>
 						<td class='pricecolumn' style="text-align:right;">{{ partner.suits }}</td>
+						<td hidden class="addbutton" colspan="2">
+							<span style='color:grey; font-size:80%'>Add below</span></td>
 					</tr>
 				{% endif %}
 			{% for item in menuitems %}
@@ -141,6 +148,9 @@
 </form>
 
 <br>
+
+<div id="filler_div"></div>
+
 {% endblock %}
 {% block endscripts %}
 <!-- <script src="/static/js/accounting.js/accounting.min.js"></script> -->
@@ -161,13 +171,17 @@ function enable_calculator(){
 		$("td[class='addbutton']").show()
 		$("td[class='removebutton']").show()
 		$("#calculator_button").text("Disable price calculator")
-		document.getElementById("order_footer").style.display = "block";
+		document.getElementById("flying_div").style.display = "block";
+		document.getElementById("filler_div").style.display = "block";
+		$("#filler_div").height($("#flying_div").height())
 	}
 	if (calc_enable == 0){
 		$("td[class='addbutton']").hide()
 		$("td[class='removebutton']").hide()
 		$("#calculator_button").text("Enable price calculator")
-		document.getElementById("order_footer").style.display = "none";
+		document.getElementById("flying_div").style.display = "none";
+		document.getElementById("filler_div").style.display = "none";
+		$("#filler_div").height($("#flying_div").height())
 	}
 }
 
@@ -178,6 +192,15 @@ function help_me(){
 			message: question_string,
 		})
 	}
+
+function why_approx(){
+	var question_string = "We say that the price here is 'approximate' because you may have added the wrong items to your order. For example, adding a short skirt to your order but providing a long skirt (slightly more expensive to clean).<br><br>Some stains and materials require special tools and solvents, and this can cost more too.<br><br><strong>Your cleaner will contact you before doing anything that costs more.</strong>"
+	bootbox.alert({
+		title: "Why are prices approximate?",
+		message: question_string,
+	})
+	return false;
+}
 
 function add_item(item_id, cat, item, subitem, price, pricemin){
 	var index = cart.map(function(cart){return cart[0];}).indexOf(item_id)
@@ -203,6 +226,8 @@ function refresh(){
 	calculate_total()
 
 	build_cart_html_table()
+	update_total_span()
+	$("#filler_div").height($("#flying_div").height())
 
 	print_cart_to_console()
 }
@@ -270,8 +295,8 @@ function build_cart_html_table(){
 			table_body.appendChild(tr)
 		}
 
-		var tr = create_total_row()
-		table_body.appendChild(tr);
+		// var tr = create_total_row()
+		// table_body.appendChild(tr);
 		
 		table.appendChild(table_body);
 	}
@@ -287,18 +312,15 @@ function create_item_row(i){
 			td.appendChild(document.createTextNode(" (" + cart[i][3] + ")"))
 		}
 		
-		if (cart[i][5] != 1){ // if quantity > 1, add "xQty"
-			td.appendChild(document.createTextNode(" x" + cart[i][5]))
-		}
+		
 	tr.appendChild(td);
 
 		var td = document.createElement('td')
-		td.class = "order_table_price"
-		td.appendChild(document.createTextNode("£" + display_price(cart[i][4])))
-		
-		if (cart[i][5] != 1){ // if quantity > 1, add "each"
-			td.appendChild(document.createTextNode(" each"))
+		td.className = "order_table_price"
+		if (cart[i][5] != 1){ // if quantity > 1, add "xQty"
+			td.appendChild(document.createTextNode(cart[i][5] + "x "))
 		}
+		td.appendChild(document.createTextNode("£" + display_price(cart[i][4])))
 	tr.appendChild(td);
 
 		var td=document.createElement('td');
@@ -351,6 +373,12 @@ function create_total_row(){
 
 
 	return tr
+}
+
+
+function update_total_span(){
+    string = "£" + display_price(total)
+	document.getElementById("total_span").innerHTML = string
 }
 
 

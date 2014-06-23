@@ -78,7 +78,7 @@ class User(webapp2_extras.appengine.auth.models.User):
 
     return None, None
 
-class Partner(ndb.Model):
+class Partner(ndb.Expando):
   # Models an individual partner entry with name and outcodes
 
   # public profile
