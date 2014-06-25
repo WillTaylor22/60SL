@@ -2,9 +2,10 @@
 {% block content %}
 
 <ol class="breadcrumb">
-	<li><a href="/">Home</a></li>
+	<li><a href="/"><img src="static/img/Logo_width150.png"></a></li>
 	<li class="active">Listings</li>
 </ol>
+
 
 	{% for partner in partners %}
 	<div id="partnerinfo">
@@ -34,4 +35,25 @@
 	</div>
 
 {% endfor %}
+
+<!-- Google Code for Enter Postcode Conversion Page -->
+<script type="text/javascript">
+/* <![CDATA[ */
+var google_conversion_id = 967043869;
+var google_conversion_language = "en";
+var google_conversion_format = "3";
+var google_conversion_color = "ffffff";
+var google_conversion_label = "r4kSCLPtvgoQndaPzQM";
+var google_remarketing_only = false;
+/* ]]> */
+</script>
+<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+</script>
+<noscript>
+<div style="display:inline;">
+<img height="1" width="1" style="border-style:none;" alt="" src="//www.googleadservices.com/pagead/conversion/967043869/?label=r4kSCLPtvgoQndaPzQM&amp;guid=ON&amp;script=0"/>
+</div>
+</noscript>
+
+
 {% endblock %}

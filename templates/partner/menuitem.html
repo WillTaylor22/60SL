@@ -1,0 +1,73 @@
+{% extends "templates/partner/dashboard.html" %}
+
+{% block option %}
+
+<div>
+	<h3 class="option_header">Viewing Item: {{ item.item }}</h3>
+	<table>
+		<tr>
+			<td><strong>Item</strong></td>
+			<td><strong>{{ item.item }}</strong></td>
+			<td><button type="submit" class="btn btn-default btn-xs" onclick="edit_item(
+						'{{ item.itemid }}'">Edit 
+						<span class="glyphicon glyphicon-pencil"></span>
+					</button></form></td>
+		</tr>
+		<tr>
+			<td style="width: 250px;">Category</td>
+			<td>{{ item.tabname }}</td>
+			<td><form method="GET" action="/partner/menu/{{ item.itemnumber }}"><button type="submit" class="btn btn-default btn-xs" onclick="edit_item(
+						'{{ item.itemid }}'">Edit 
+						<span class="glyphicon glyphicon-pencil"></span>
+					</button></form></td>
+		</tr>
+		<tr>
+			<td>Subitem (optional)</td>
+			<td>{{ item.subitem }}</td>
+			<td><form method="GET" action="/partner/menu/{{ item.itemnumber }}"><button type="submit" class="btn btn-default btn-xs" onclick="edit_item(
+						'{{ item.itemid }}'">Edit 
+						<span class="glyphicon glyphicon-pencil"></span>
+					</button></form></td>
+		</tr>
+				<tr><td><hr></td><td><hr></td></tr>
+		<tr>
+			<td>Price (number, no £)</td>
+			<td>{{ item.price }}</td>
+			<td><form method="GET" action="/partner/menu/{{ item.itemnumber }}"><button type="submit" class="btn btn-default btn-xs" onclick="edit_item(
+						'{{ item.itemid }}'">Edit 
+						<span class="glyphicon glyphicon-pencil"></span>
+					</button></form></td>
+		</tr>
+		<tr>
+			<td><i>Or</i></td>
+		</tr>
+		<tr>
+			<td>Price Minimum (number, no £)</td>
+			<td>{{ item.pricemin }}</td>
+			<td><form method="GET" action="/partner/menu/{{ item.itemnumber }}"><button type="submit" class="btn btn-default btn-xs" onclick="edit_item(
+						'{{ item.itemid }}'">Edit 
+						<span class="glyphicon glyphicon-pencil"></span>
+					</button></form></td>
+		</tr>
+		<tr>
+			<td>Price Maximum (number, no £)</td>
+			<td>{{ item.pricemax }}</td>
+			<td><form method="GET" action="/partner/menu/{{ item.itemnumber }}"><button type="submit" class="btn btn-default btn-xs" onclick="edit_item(
+						'{{ item.itemid }}'">Edit 
+						<span class="glyphicon glyphicon-pencil"></span>
+					</button></form></td>
+		</tr>
+				<tr><td><hr></td><td><hr></td></tr>
+
+		<tr>
+			<td>Turnaround</td>
+			<td>{{ item.time }}</td>
+			<td><form method="GET" action="/partner/menu/{{ item.itemnumber }}"><button type="submit" class="btn btn-default btn-xs" onclick="edit_item(
+						'{{ item.itemid }}'">Edit 
+						<span class="glyphicon glyphicon-pencil"></span>
+					</button></form></td>
+		</tr>
+	</table>
+</div>
+
+{% endblock %}

@@ -67,3 +67,8 @@ label {
 .change_password label{
   width: 200px;
 }
+
+.editbuttoncolumn
+{
+  width: 10px;
+}

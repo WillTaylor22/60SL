@@ -24,7 +24,7 @@
 				{% if not user %}
 		        <a href="/partner/login">Login</a>
 		        {% else %}
-		          Logged in as <span style="background-color: OldLace">{{ user.name }}</span> | <a href="/partner/logout">Logout</a>
+		        {{ partner.name }} | Logged in as <span style="background-color: OldLace">{{ user.name }}</span> | <a href="/partner/logout">Logout</a>
 		        {% endif %}
 		        |
 		        <a href="/partner/">Dashboard</a>

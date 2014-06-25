@@ -3,8 +3,8 @@
     /*height: 100px;*/
     background-color: white;
 
-    position: absolute;
-    top:-200px;
+    position: relative;
+    top: 80px;
     bottom: 0;
     left: 0;
     right: 0;
@@ -13,10 +13,9 @@
 }
 
 #logo{
-    position: absolute;
     top:0;
     bottom: 0;
-    left: 0;
+    margin-left: 50px;
     right: 0;
 
     margin: auto;
@@ -25,27 +24,11 @@
 
 #maindiv{
     width: 400px;
-    position: absolute;
-    top:0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
     margin: auto;
-
 }
 
 #questiondiv{
-    width: 400px;
-    height: 100px;
-    position: absolute;
-    top:0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
     margin: auto;
-
 }
 
 #searchbar{

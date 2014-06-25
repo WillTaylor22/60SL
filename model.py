@@ -251,7 +251,15 @@ class menuitem(ndb.Model):
   def get_by_partner_name(cls, partner_name):
     query = cls.query(
       ancestor=partner_key(partner_name)).order(ndb.GenericProperty("itemid"))
-    return query
+    return query.fetch(300)
+
+  @classmethod
+  def get_by_partner_name_id(cls, partner_name, item_id):
+    return ndb.Key('Partner', partner_name, 'menuitem', int(item_id)).get()
+
+  @property 
+  def itemnumber(self):
+    return self.key.id()
 
 class order(ndb.Model):
   # parent=partner_k

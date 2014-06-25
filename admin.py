@@ -198,7 +198,7 @@ class DeleteHandler(webapp2.RequestHandler):
     self.redirect('/viewpartners')        
 
 """ allows you to manually re-add a menu to a cleaner """
-class MenuHandler(webapp2.RequestHandler):
+class AddMenuHandler(webapp2.RequestHandler):
   def get(self):
     template_values ={
     }
@@ -214,7 +214,10 @@ class MenuHandler(webapp2.RequestHandler):
 
     grab(partner_name, fname)
 
+    success = True
+
     template_values ={
+      'success': success
     }
 
     template = JINJA_ENVIRONMENT.get_template('templates/admin/addmenu.html')

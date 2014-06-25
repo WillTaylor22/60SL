@@ -764,6 +764,32 @@ class MenuHandler(BaseHandler):
     self.render_template_dashboard('menu.html', user, partner, params)
     
 
+class ViewMenuItemHandler(BaseHandler):
+  
+  @user_required
+  def get(self, *args, **kwargs):
+    
+    user = self.user
+
+    partner = Partner.get_by_email(user.email_address)
+    item_id = kwargs['itemnumber']
+
+    # menuitems = menuitem.get_by_partner_name(partner.name)
+    # print menuitems
+
+    _menuitem = menuitem.get_by_partner_name_id(partner.name, item_id)
+
+    message = ''
+
+    params = {
+      'message': message,
+      'item': _menuitem
+    }
+
+    self.render_template_dashboard('menuitem.html', user, partner, params)
+
+
+
 
 class InfoHandler(BaseHandler):
   

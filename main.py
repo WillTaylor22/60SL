@@ -106,7 +106,7 @@ class Main(webapp2.RequestHandler):
 
 class Listings(webapp2.RequestHandler):
     def get(self):
-
+        print "here"
         session = get_current_session()
 
         # Load from session if using breadcrumb
@@ -134,7 +134,7 @@ class Listings(webapp2.RequestHandler):
 
         latitude = float(lat)
         longitude = float(lon)
-        
+        print "here"
         # analytics
         _postcode_attempt = model.postcode_attempt(postcode = this_postcode)
         _postcode_attempt.put()
@@ -152,11 +152,8 @@ class Listings(webapp2.RequestHandler):
                     lon2 = longitude
                     distance = get_distance(lat1, lat2, lon1, lon2)
                     partner.distance = round_to_1(distance)
-                    print partner.name
-                    print partner.distance
 
                 partners.sort(key=attrgetter('distance'))
-
                 template_values = {
                     'postcode' : this_postcode,
                     'partners' : partners
@@ -171,6 +168,7 @@ class Listings(webapp2.RequestHandler):
                 'error_message': errormessage
             }
             template = JINJA_ENVIRONMENT.get_template('templates/index.html')
+        
         except ValueError:
             errormessage = "Postcode not recognised"
             template_values = {
@@ -181,7 +179,10 @@ class Listings(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 
 def round_to_1(x):
-    return int(round(x, -int(math.floor(math.log10(x)))))
+    if x == 0:
+        return 0
+    else:
+        return int(round(x, -int(math.floor(math.log10(x)))))
 
 def get_distance(lat1, lat2, lon1, lon2):
     R = 6371000 # m
@@ -518,6 +519,7 @@ app = webapp2.WSGIApplication([
     ('/upload', 'admin.UploadHandler'),
     ('/delete', 'admin.DeleteHandler'),
     ('/viewpartners', 'admin.ServeHandler'),
+    ('/addmenu', 'admin.AddMenuHandler'),
     ('/addshirts', 'admin.AddShirtsHandler'),
     ('/addgeocode', 'admin.AddGeocodeHandler'),
 
@@ -535,6 +537,7 @@ app = webapp2.WSGIApplication([
         webapp2.Route('/submitorder', 'partner.SubmitOrderHandler', name='partner-submit-order'),
         webapp2.Route('/reviews', 'partner.ReviewsHandler', name='partner-reviews'),
         webapp2.Route('/menu', 'partner.MenuHandler', name='partner-menu'),
+        webapp2.Route('/menu/<itemnumber:\d+>', 'partner.ViewMenuItemHandler', name='partner-view-item'),
         webapp2.Route('/info', 'partner.InfoHandler', name='partner-info'),
         webapp2.Route('/settings', 'partner.SettingsHandler', name='partner-settings'),
         webapp2.Route('/password-dashboard', 'partner.SetPasswordDashboardHandler'),
