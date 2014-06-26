@@ -1,0 +1,89 @@
+{% extends "templates/base.html" %}
+{% block content %}
+
+		<ol class="breadcrumb">
+			<li><a href="/"><img id="logo" src="static/img/Logo_width300.png" alt="Sixty Second Laundry" style="width: 50%; height: 50%"></a></li>
+		</ol>
+
+		{% if error_message %}
+		<div class="alert alert-info">
+		  {{ error_message }}
+		</div>
+		{% endif %}
+		<br>
+		<h2 style="text-align: center"><span style="color: red">Order Laundry</span> <span style="color: grey">&</span><br> <span style="color: #23009D">Dry Cleaning Online</span></h2><br>
+		<form onsubmit="return try_submit();">
+			<label>Enter your postcode:</label>
+			<input class="collectionform input-lg" type="text" id="postcode" name="postcode"
+			placeholder="e.g. W1J 7BU">
+
+			<br>
+			<br>
+			<input id="searchbutton" type="submit" class="btn btn-success" value="Show Cleaners Near Me">
+		</form>
+
+		<form id="form" action="near" method="get">
+			<input id="_postcode" name="postcode" hidden>
+			<input id="lat" name="lat" hidden>
+			<input id="long" name="long" hidden>
+		</form>
+
+		<br /><br /><br />
+		<table id="howtotable">
+			<tr>
+				<td style="width:132px;"><span class="glyphicon glyphicon-time"></span><br><br></td>
+				<td style="width:132px; "><span class="glyphicon glyphicon-home"></span><br><br></td>
+				<td style="width:132px;"><span class="glyphicon glyphicon-heart"></span><br><br></td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top;"><p>Book free <strong>pickup</strong> and delivery</p></td>
+				<td style="vertical-align: top;"><p>Collection from your <strong>doorstep</strong></p></td>
+				<td style="vertical-align: top;"><p>Pay the <strong>same prices</strong> as normal!</p></td>
+			</tr>
+		</table>
+
+
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		{% include "templates/footer.html" %}
+
+
+
+
+	
+{% endblock %}
+
+{% block endscripts %}
+
+<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+
+
+<script>
+
+function try_submit()
+    {
+    	
+    	$("#searchbutton").val("Finding...");
+        $("#_postcode").val($("#postcode").val())
+      
+        var geocoder = new google.maps.Geocoder();
+
+        geocoder.geocode({address: $("#postcode").val() + ", UK"}, function(results, status) {
+				if (results[0])
+				{
+					var postcode = $("#postcode").val();
+					var result = results[0];
+					$("#lat").val(result.geometry.location.lat());
+					$("#long").val(result.geometry.location.lng());
+					$("#form").submit()
+				}
+		})
+      return false;
+	}
+
+</script>
+
+{% endblock %}

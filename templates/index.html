@@ -1,89 +1,117 @@
-{% extends "templates/base.html" %}
-{% block content %}
+<!DOCTYPE html>
 
-		<ol class="breadcrumb">
-			<li><a href="/"><img id="logo" src="static/img/Logo_width300.png" alt="Sixty Second Laundry" style="width: 50%; height: 50%"></a></li>
-		</ol>
-
-		{% if error_message %}
-		<div class="alert alert-info">
-		  {{ error_message }}
-		</div>
-		{% endif %}
-		<br>
-		<h2 style="text-align: center"><span style="color: red">Order Laundry</span> <span style="color: grey">&</span><br> <span style="color: #23009D">Dry Cleaning Online</span></h2><br>
-		<form onsubmit="return try_submit();">
-			<label>Enter your postcode:</label>
-			<input class="collectionform input-lg" type="text" id="postcode" name="postcode"
-			placeholder="e.g. W1J 7BU">
-
-			<br>
-			<br>
-			<input id="searchbutton" type="submit" class="btn btn-success" value="Show Cleaners Near Me">
-		</form>
-
-		<form id="form" action="near" method="get">
-			<input id="_postcode" name="postcode" hidden>
-			<input id="lat" name="lat" hidden>
-			<input id="long" name="long" hidden>
-		</form>
-
-		<br /><br /><br />
-		<table id="howtotable">
-			<tr>
-				<td style="width:132px;"><span class="glyphicon glyphicon-time"></span><br><br></td>
-				<td style="width:132px; "><span class="glyphicon glyphicon-home"></span><br><br></td>
-				<td style="width:132px;"><span class="glyphicon glyphicon-heart"></span><br><br></td>
-			</tr>
-			<tr>
-				<td style="vertical-align: top;"><p>Book free <strong>pickup</strong> and delivery</p></td>
-				<td style="vertical-align: top;"><p>Collection from your <strong>doorstep</strong></p></td>
-				<td style="vertical-align: top;"><p>Pay the <strong>same prices</strong> as normal!</p></td>
-			</tr>
-		</table>
-
-
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		{% include "templates/footer.html" %}
-
-
-
-
+{% autoescape true %}
+<html>
+<head>
+	<title>60 Second Laundry</title>
+	<link href="/static/css/bootstrap.min.css" rel="stylesheet"> 
+	<link href="/static/css/custom.css" rel="stylesheet"> 
+	<meta name="viewport" content="width=420, user-scalable=no">
 	
-{% endblock %}
+	<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-{% block endscripts %}
-
-<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
-
-
-<script>
-
-function try_submit()
-    {
-    	
-    	$("#searchbutton").val("Finding...");
-        $("#_postcode").val($("#postcode").val())
-      
-        var geocoder = new google.maps.Geocoder();
-
-        geocoder.geocode({address: $("#postcode").val() + ", UK"}, function(results, status) {
-				if (results[0])
-				{
-					var postcode = $("#postcode").val();
-					var result = results[0];
-					$("#lat").val(result.geometry.location.lat());
-					$("#long").val(result.geometry.location.lng());
-					$("#form").submit()
-				}
-		})
-      return false;
-	}
+  ga('create', 'UA-47860802-1', '60secondlaundry.com');
+  ga('send', 'pageview');
 
 </script>
 
-{% endblock %}
+</head>
+	<body>
+		<div id="background_image">
+			<div class="container">
+				<div id="wrap">
+						<br>
+						<img src="static/img/LaP300px.png" style="margin-left: 50px">
+						<br>
+						{% if error_message %}
+						<br>
+						<div class="alert alert-info">
+						  {{ error_message }}
+						</div>
+						{% endif %}
+						<br>
+						<form onsubmit="return try_submit();">
+							<label>Enter your postcode:</label>
+							<input class="collectionform input-lg" type="text" id="postcode" name="postcode"
+							placeholder="e.g. W1J 7BU">
+
+							<br>
+							<br>
+							<input id="searchbutton" type="submit" class="btn btn-success" value="Show Cleaners Near Me">
+						</form>
+
+						<form id="form" action="near" method="get">
+							<input id="_postcode" name="postcode" hidden>
+							<input id="lat" name="lat" hidden>
+							<input id="long" name="long" hidden>
+						</form>
+
+						<br /><br /><br />
+						<table id="howtotable">
+							<tr>
+								<td style="width:132px;"><span class="glyphicon glyphicon-time"></span><br><br></td>
+								<td style="width:132px; "><span class="glyphicon glyphicon-home"></span><br><br></td>
+								<td style="width:132px;"><span class="glyphicon glyphicon-heart"></span><br><br></td>
+							</tr>
+							<tr>
+								<td style="vertical-align: top;"><p>Book free <strong>pickup</strong> and delivery</p></td>
+								<td style="vertical-align: top;"><p>Collection from your <strong>doorstep</strong></p></td>
+								<td style="vertical-align: top;"><p>Pay the <strong>same prices</strong> as normal!</p></td>
+							</tr>
+						</table>
+				<br><br><br><br><br><br>
+				<div id="footer">© LA LAUNDRY Ltd.
+					<br>
+					<a href="/terms">Terms</a> | 
+					<a href="/privacy">Privacy Policy</a> | 
+					<a href="/partner/">I'm A Cleaner</a> | 
+					Registered Company 08770346
+				</div>
+
+				</div>
+
+
+			</div>
+		</div>
+			
+		<script src="/static/jquery/jquery-1.11.0.min.js"></script>
+		<script src="/static/js/bootstrap.js"></script>
+		
+
+		<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+
+
+		<script>
+
+		function try_submit()
+		    {
+		    	
+		    	$("#searchbutton").val("Finding...");
+		        $("#_postcode").val($("#postcode").val())
+		      
+		        var geocoder = new google.maps.Geocoder();
+
+		        geocoder.geocode({address: $("#postcode").val() + ", UK"}, function(results, status) {
+						if (results[0])
+						{
+							var postcode = $("#postcode").val();
+							var result = results[0];
+							$("#lat").val(result.geometry.location.lat());
+							$("#long").val(result.geometry.location.lng());
+							$("#form").submit()
+						}
+				})
+		      return false;
+			}
+
+		</script>
+
+
+
+	</body>
+</html>
+{% endautoescape %}
