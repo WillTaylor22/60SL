@@ -852,3 +852,88 @@ class SettingsHandler(BaseHandler):
 
     self.render_template_dashboard('settings.html', user, partner, params)
 
+  @user_required
+  def post(self):
+
+    user = self.user
+    partner = Partner.get_by_email(user.email_address)
+
+    # Basic Information
+    partner.name = self.request.get('name')
+    partner.address = self.request.get('address')
+
+    # Delivery Location Information
+    partner_outcodes = self.request.get('outcodes')
+    partner_outcodes = quopri.decodestring(partner_outcodes)
+    partner.outcodes = partner_outcodes.split()
+
+    # - Free Delivery
+    partner.minimum_order = self.request.get('minimum_order')
+
+    # - Paid Delivery
+    partner.minimum_order_paid_accept = self.request.get('minimum_order_paid_accept')
+    partner.minimum_order_paid = self.request.get('minimum_order_paid')
+
+
+    partner.phonenumber = self.request.get('phonenumber')
+    partner.phonenumber_2 = self.request.get('phonenumber_2')
+    partner.email = self.request.get('email')
+    partner.email_2 = self.request.get('email_2')
+    partner.email_3 = self.request.get('email_3')
+
+    
+    # Give the new partner our data
+    partner.name = partner_name
+    partner.address = partner_address
+    partner.outcodes = partner_outcodes
+    partner.minimum_order = int(partner_minimum_order)
+    partner.delivery_cost = partner_delivery_cost
+
+    fname = self.request.get('filename')
+
+    partner.start_hr = int(self.request.get('start_hr'))
+    partner.start_min = int(self.request.get('start_min'))
+    partner.end_hr = int(self.request.get('end_hr'))
+    partner.end_min = int(self.request.get('end_min'))
+    partner.window_size = int(self.request.get('window_size'))
+
+    partner.last_orders_hr = int(self.request.get('last_orders_hr'))
+    partner.last_orders_min = int(self.request.get('last_orders_min'))
+    partner.end_of_morning_hr = int(self.request.get('end_of_morning_hr'))
+    partner.end_of_morning_min = int(self.request.get('end_of_morning_min'))
+
+    partner.last_orders_same_day_hr = int(self.request.get('last_orders_same_day_hr'))
+    partner.last_orders_same_day_min = int(self.request.get('last_orders_same_day_min'))
+
+    partner.shirts = self.request.get('shirts')
+    partner.suits = self.request.get('suits')
+
+
+
+    days = self.request.get('days')
+    day_list = days.split()
+    day_list = map(int, day_list)
+    partner.days = day_list
+
+    # OLD:
+    # partner.start_day = int(self.request.get('start_day'))
+    # partner.end_day = int(self.request.get('end_day'))
+
+
+    partner.logo_key = blob_key # n.b. blobstore.BlobReferenceProperty() takes a blob_info
+    
+    partner.populate_slots()
+
+    # Use to clear all items
+    clear_items(partner_name) 
+
+    # Populate if no items exist
+    if fname:
+      grab(partner_name, fname)
+
+
+
+    partner.put()
+
+    # redirect
+    self.redirect('/viewpartners')

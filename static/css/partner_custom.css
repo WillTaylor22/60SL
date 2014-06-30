@@ -18,10 +18,18 @@ fieldset {
   width: 400px;
 }
 
-label {
+/*label {
   clear: both;
   padding-right: 10px;
-  width: 100px;
+  width: 100;
+}
+*/
+#settings_form p{
+  font-size: 90%;
+}
+
+#settings_form .time{
+  width: 30px;
 }
 
 /* make sidebar nav vertical */ 

@@ -4,8 +4,105 @@
 <h3 class="option_header">Settings</h3>
 <br>
 <i style="text-align: center;">Feature in development</i>
+<br>
+<hr>
+<form id="settings_form" action="/partner/settings" method="POST">
+	<fieldset>
+		<legend>Basic Information</legend>
+		<label for="name">Your Business' Name</label><br>
+		<input type="text" name="name" value="{{ partner.name }}">
+		<br>
+		<label for="address">Your Business' Address Line 1.</label><br>
+		<p>Let us know if you move so that we can provide you with local customers</p>
+		<input id="address" type="text" name="address" value="{{ partner.address }}"><br>
+		<br>
+	</fieldset>
+	<fieldset>
+		<legend>Delivery Location Information</legend>
+		<label for="outcodes">Outcodes you deliver to</label><br><p>An outcode is the first section of a postcode, e.g. "SW1". Use a space to seperate outcodes</p>
+		<input id="outcodes" type="text" name="outcodes" placeholder="" value="{% for outcode in partner.outcodes %}{{ outcode }} {% endfor %}">
+		<br>
+		<label for="minimum_order">Minimum Price Of Free Delivery Order</label><br><p>(Enter the number of pounds only, e.g. "20". No £ sign. Recommended: 20 or lower)</p>
+		<input id="minimum_order" type="text" name="minimum_order" placeholder="" value="{{ partner.minimum_order }}">
+		<br>
+		<label for="minimum_order_paid_accept">Accept Paid Delivery Orders</label>
+		<input id="minimum_order_paid_accept" type="checkbox" name="minimum_order_paid_accept" placeholder="" value="{{ partner.minimum_order_paid_accept }}" checked>
+		<br>
+		<label for="minimum_order_paid">Minimum Price Of Paid Delivery Order</label><br><p>You are paid £5 extra for handling small orders under £20. Enter the number of pounds only, e.g. "10". No £ sign. Must be less than 20. Recommended: 10 or lower.</p>
+		<input id="minimum_order_paid" type="text" name="minimum_order_paid" placeholder="" value="{{ partner.minimum_order_paid }}">
+	</fieldset>
+	<br>
+	<fieldset>
+		<legend>Contacting you when you receive an order</legend>
+		<label for="phonenumber">Phone Number</label><br><p>To Receive Text On (Must be correct. No spaces)</p>
+		<input id="phonenumber" type="text" name="phonenumber" value="{{ partner.phonenumber }}">
+		<br>
+		<label for="phonenumber_2">Second Phone Number</label><br><p>(Optional) You will also receive a text at this number</p>
+		<input id="phonenumber_2" type="text" name="phonenumber_2" value="{{ partner.phonenumber_2 }}" ><br>
+
+		<label for="email">Email To Receive Full Order Details</label><br>
+		<input id="email" type="text" name="email"><br>
+		<label for="email_2">Email 2 (Optional)</label><br>
+		<input id="email_2" type="text" name="email_2"><br>
+		<label for="email_3">Email 3 (Optional)</label><br>
+		<input id="email_3" type="text" name="email_3"><br>
+	</fieldset>
+
+	<hr>
+	<fieldset>
+		<legend>Delivery Times Information</legend>
+		<label>Earliest Delivery Time</label><br>
+			<label for="start_hr">Hour (24 hour clock)</label>
+			<input class='time' id="start_hr" type="text" name="start_hr" placeholder="" value='{{ partner.start_hr }}'>
+			<label for="start_min">, Minute </label>
+			<input class="time" id="start_min" type="text" name="start_min" placeholder="" value='{{ partner.start_min }}'>
+			<br>
+		<label>Last Delivery</label><br><p>This will be the end of the last delivery window</p>
+			<label for="end_hr">Hour (24 hour clock)</label>
+			<input class='time' id="end_hr" type="text" name="end_hr" value='{{ partner.end_hr }}'>
+			<label>, Minute</label>
+			<input class='time' id="{{ partner.end_min }}" type="text" name="end_min" placeholder="" value='{{ partner.end_min }}'>
+			<br>
+		<label for="window_size">Delivery Slot Size</label><p>In minutes e.g. "60". Recommended: 60 or less. This is the length of time of a delivery slot. E.g. 60 minute slot means slots will look like "12:00 - 13:00"</p>
+		<input class="time" id="window_size" type="text" name="window_size" value='{{ partner.window_size }}'>
+		<br>
+		<label>Days Available For Delivery</label><p>Enter day numbers seperated by spaces, where Sunday = 0, Monday = 1... up to Saturday = 6.</p>
+		<input id="searchbar" type="text" name="days" placeholder="" value='0 1 2 3 4 5 6'>
+	
+	</fieldset>
+	<br>
+	<fieldset>
+		<legend>Optional Delivery Settings</legend>
+		<label>Last Orders For Same Evening Deliveries</label><br>
+		<p>This lets you set a latest time in the evening for which orders for that same day can arrive.</p>
+		<label for="last_orders_same_day_enable">Enable This Setting</label>
+		<input id="last_orders_same_day_enable" type="checkbox" name="last_orders_same_day_enable" value='{{ partner.last_orders_same_day_enable }}'><br>
+		<label for="last_orders_same_day_hr">Hour (24 hour clock):</label><input class="time" id="last_orders_same_day_hr" type="text" name="last_orders_same_day_hr" placeholder="" value='{{ partner.last_orders_same_day_hr }}'>
+		<label for="last_orders_same_day_min">, Minute</label>
+		<input class="time" id="last_orders_same_day_min" type="text" name="last_orders_same_day_min" placeholder="" value='{{ partner.last_orders_same_day_min }}'>
+		<hr>
+		<label>Last Orders For Next Morning Deliveries.</label><p>This lets you prevent orders coming in during the evening that would require you to wake up early next morning. For example, you can say that "after 7pm (last orders: 7pm), don't send me any orders for the next day that start before 10am (end of morning: 10am)"</p>
+		<label>Enable This Setting</label>
+		<input id="last_orders_enable" type="checkbox" name="last_orders_enable" value='{{ partner.last_orders_enable }}'><br>
+		<label>Last Orders</label><br>
+		<label for="last_orders_hr">Hour 24 hour clock)</label>
+		<input class="time" id="last_orders_hr" type="text" name="last_orders_hr" value='{{ partner.last_orders_hr }}'>
+		<label for="last_orders_min">, Minute</label>
+		<input class="time"  id="last_orders_min" type="text" name="last_orders_min" value='{{ partner.last_orders_min }}'>
+		<br>
+		<label>When "Morning" Ends</label><br>
+		<label for="end_of_morning_hr">Hour (24 hour clock)</label>
+		<input class="time" id="end_of_morning_hr" type="text" name="end_of_morning_hr" placeholder="" value='{{ partner.end_of_morning_hr }}'>
+		<label for="end_of_morning_min">, Minute</label>
+		<input class="time" id="end_of_morning_min" type="text" name="end_of_morning_min" placeholder="" value='{{ partner.end_of_morning_min }}'>
+		<br>
+	</fieldset>
+	<br>
+	<input class="btn btn-success" type="submit" value="Save Changes">
+</form>
 
 
+<hr>
 <br><br>
 <table class="settings_table">
 
@@ -24,147 +121,16 @@
 	</tr>
 </table>
 
-<table>
-	<tr>
-		<td>name</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td>address</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td>outcodes</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td>logo_key</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td>minimum_order</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td>delivery_cost</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td>phonenumber</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td>email</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td>days</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td>start_hr</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-	</tr>
-  name = ndb.StringProperty()
-  address = ndb.StringProperty()
-  outcodes = ndb.StringProperty(repeated=True)
-  logo_key = ndb.BlobKeyProperty() #stores the key for the image
-  minimum_order = ndb.IntegerProperty()
-  delivery_cost = ndb.StringProperty()
-
-  # contact
-  phonenumber = ndb.StringProperty()
-  email = ndb.StringProperty()
-
-  # delivery
-  days = ndb.IntegerProperty(repeated=True)
-  start_hr = ndb.IntegerProperty()
-  start_min = ndb.IntegerProperty()
-  end_hr = ndb.IntegerProperty()
-  end_min = ndb.IntegerProperty()
-  window_size = ndb.IntegerProperty()
-  start_day = ndb.IntegerProperty()
-  end_day = ndb.IntegerProperty()
-
-  last_orders_hr = ndb.IntegerProperty()
-  last_orders_min = ndb.IntegerProperty()
-  end_of_morning_hr = ndb.IntegerProperty()
-  end_of_morning_min = ndb.IntegerProperty()
-  last_orders_same_day_hr = ndb.IntegerProperty()
-  last_orders_same_day_min = ndb.IntegerProperty()
-
-  # best sellers
-  shirts = ndb.StringProperty()
-  suits = ndb.StringProperty()
-
-  # geocode
-  latitude = ndb.FloatProperty()
-  longitude = ndb.FloatProperty()
-
-</table>
-
 
 
 <div class="change_password" id="change_password" style="display: none;">
 	<form action="/partner/password-dashboard" method="POST">
 		<legend>Change Password</legend>
-		<label for="current_password">Current Password</label>
+		<label for="current_password">Current Password</label><br>
 		<input type='password' name='current_password'><br>
-		<label for="password">New Password</label>
+		<label for="password">New Password</label><br>
 		<input type='password' name='password'><br>
-		<label for="confirm_password">Confirm New Password</label>
+		<label for="confirm_password">Confirm New Password</label><br>
 		<input type='password' name='confirm_password'><br>
 		<br>
 		<input type="submit" class="btn btn-success" value="Change password">
