@@ -24,6 +24,137 @@
 	</tr>
 </table>
 
+<table>
+	<tr>
+		<td>name</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>address</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>outcodes</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>logo_key</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>minimum_order</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>delivery_cost</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>phonenumber</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>email</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>days</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>start_hr</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+  name = ndb.StringProperty()
+  address = ndb.StringProperty()
+  outcodes = ndb.StringProperty(repeated=True)
+  logo_key = ndb.BlobKeyProperty() #stores the key for the image
+  minimum_order = ndb.IntegerProperty()
+  delivery_cost = ndb.StringProperty()
+
+  # contact
+  phonenumber = ndb.StringProperty()
+  email = ndb.StringProperty()
+
+  # delivery
+  days = ndb.IntegerProperty(repeated=True)
+  start_hr = ndb.IntegerProperty()
+  start_min = ndb.IntegerProperty()
+  end_hr = ndb.IntegerProperty()
+  end_min = ndb.IntegerProperty()
+  window_size = ndb.IntegerProperty()
+  start_day = ndb.IntegerProperty()
+  end_day = ndb.IntegerProperty()
+
+  last_orders_hr = ndb.IntegerProperty()
+  last_orders_min = ndb.IntegerProperty()
+  end_of_morning_hr = ndb.IntegerProperty()
+  end_of_morning_min = ndb.IntegerProperty()
+  last_orders_same_day_hr = ndb.IntegerProperty()
+  last_orders_same_day_min = ndb.IntegerProperty()
+
+  # best sellers
+  shirts = ndb.StringProperty()
+  suits = ndb.StringProperty()
+
+  # geocode
+  latitude = ndb.FloatProperty()
+  longitude = ndb.FloatProperty()
+
+</table>
+
 
 
 <div class="change_password" id="change_password" style="display: none;">

@@ -22,6 +22,8 @@ from model import Partner, order, menuitem, Preapproval
 import paypal
 import logging
 
+from django.utils import simplejson as json
+
 from google.appengine.api import mail
 
 try:
@@ -808,6 +810,30 @@ class InfoHandler(BaseHandler):
 
     self.render_template_dashboard('info.html', user, partner, params)
 
+  @user_required
+  def post(self):
+    user = self.user
+    partner = Partner.get_by_email(user.email_address)
+
+    try:
+      # receives these from inline events
+      name = self.request.get("name") # name of field
+      pk = self.request.get("pk") # ID of record
+      value = self.request.get("value") # new value
+
+      print "ajax received"
+      print "name", name
+      print "pk", pk
+      print "value", value
+
+      setattr(partner, name, value)
+      partner.put()
+
+      self.response.status = 200
+      self.response.body = "Ok!"
+    except:
+      self.response.status = 404
+      self.response.write("Did not update")
 
 class SettingsHandler(BaseHandler):
   

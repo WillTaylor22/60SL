@@ -120,6 +120,14 @@ class Partner(ndb.Expando):
 
   delivery_slots = ndb.StringProperty(repeated=True)
 
+  # info
+  cleaner_name = ndb.StringProperty()
+  cleaner_intro = ndb.StringProperty()
+  about_us = ndb.TextProperty()
+  terms = ndb.TextProperty(repeated = True)
+
+
+
   @property 
   def id(self):
     return self.key.id()
