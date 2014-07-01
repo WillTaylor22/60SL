@@ -136,7 +136,15 @@
 
 	<div class="tab-pane" id="Info">
 		<br>
+		{% if partner.info_enable %}
+
+			{% include "templates/profile_info.html" %}
+
+		{% else %}
+
 		<h5 style="text-align: center;">This cleaner has not added info yet</h5>
+
+		{% endif %}
 	</div>
 
 

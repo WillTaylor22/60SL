@@ -2,8 +2,6 @@
 {% block option %}
 
 <h3 class="option_header">Settings</h3>
-<br>
-<i style="text-align: center;">Feature in development</i>
 
 <br>
 
@@ -15,128 +13,154 @@ Check that number values are entirely numbers
 Check that important bits of information are not blank!
 </div>
 
+<button class="btn btn-success btn-lg" onclick="attempt_submit(); return false;">Save All Changes</button>
+<br><br>
+
 <form id="settings_form" action="/partner/settings" method="POST">
-<button class="btn btn-success btn-lg" onclick="attempt_submit(); return false;" style="float:right;">Save Changes</button>
+
 	<fieldset>
 		<legend>Your Business</legend>
-			<label for="name">Name:</label>
-				<input class="required" type="text" name="name" value="{{ partner.name }}" required>
-				<br>
-			<label for="address">First Line Of Address:</label>
-				<input class="required" id="address" type="text" name="address" value="{{ partner.address }}" required>
-				<br>
-				<p>Let us know if you move so that we can provide you with local customers</p>
-				
-			<br>
+			<div class="form-group">
+				<label for="name">Name:</label>
+				<input type="text" name="name" value="{{ partner.name }}" required class="form-control required">
+			</div>
+			<div class="form-group">
+				<label for="address">First Line Of Address:</label>
+				<input id="address" type="text" name="address" value="{{ partner.address }}" required class="form-control required">
+				<p class="help-block">Let us know if you move so that we can provide you with local customers</p>
+			</div>
 	</fieldset>
-	<br>
+
 	<fieldset>
 		<legend>Contacting you when you receive an order</legend>
-			<label for="phonenumber">Phone Number</label>
-				<input class="required" id="phonenumber" type="text" name="phonenumber" value="{{ partner.phonenumber }}" required>
-				<br><p>You will receive order notifications at this number. Must be correct. No spaces</p>
-				
-			<label for="phonenumber_2">Phone Number 2 (Optional)</label>
-				<input id="phonenumber_2" type="text" name="phonenumber_2" value="{{ partner.phonenumber_2 }}" ><br><p>You will also receive a text at this number</p>
-			<label for="email">Email</label>
-				<input class="required" id="email" type="text" name="email" value="{{ partner.email }}" disabled>
-				<p>You Will Receive Full Order Details. Contact us if you would like to change this.</p>		
-			<label for="email_2">Email 2 (Optional)</label>
-				<input id="email_2" type="text" name="email_2" value="{{ partner.email2 }}"><br>
-			<label for="email_3">Email 3 (Optional)</label>
-				<input id="email_3" value="{{ partner.email3 }}" type="text" name="email_3"><br>
+			<div class="form-group">
+				<label for="phonenumber">Phone Number</label>
+				<input class="required form-control" id="phonenumber" type="text" name="phonenumber" value="{{ partner.phonenumber }}" required>
+				<p class="help-block">You will receive order notifications at this number. Must be correct. No spaces</p>
+			</div>
+			<div class="form-group">
+				<label for="phonenumber_2">Phone Number 2 (Optional)</label>
+				<input id="phonenumber_2" class="form-control" type="text" name="phonenumber_2" value="{{ partner.phonenumber_2 }}" ><br><p>You will also receive a text at this number</p>
+			</div>
+			<div class="form-group">
+				<label for="email">Email</label>
+				<input class="required form-control" id="email" type="text" name="email" value="{{ partner.email }}" disabled>
+				<p>You Will Receive Full Order Details. Contact us if you would like to change this.</p>
+			</div>
+			<div class="form-group">	
+				<label for="email_2">Email 2 (Optional)</label>
+				<input id="email_2" class="form-control" type="text" name="email_2" value="{{ partner.email2 }}">
+			</div>
+			<div class="form-group">
+				<label for="email_3">Email 3 (Optional)</label>
+				<input id="email_3" class="form-control" value="{{ partner.email3 }}" type="text" name="email_3">
+			</div>
 	</fieldset>
-	<br>
 	<fieldset>
 		<legend>Delivery Settings</legend>
-			<label for="outcodes">Outcodes you deliver to</label>
-				<input id="outcodes" type="text" name="outcodes" value="{% for outcode in partner.outcodes %}{{ outcode }} {% endfor %}" required>
-				<p>An outcode is the first section of a postcode, e.g. "SW1". Use a space to seperate outcodes</p>
-				
-				<br>
-			<label for="minimum_order">Minimum Order</label> £<input id="minimum_order" class="time integer" type="text" name="minimum_order" value="{{ partner.minimum_order }}" required>
-			<p>Recommended: 20 or lower. This is for ordinary free deliveries.</p>
-			
-			<br>
+			<div class="form-group">
+				<label for="outcodes">Outcodes you deliver to</label>
+				<input id="outcodes" class="form-control" type="text" name="outcodes" value="{% for outcode in partner.outcodes %}{{ outcode }} {% endfor %}" required>
+				<p class="help-block">An outcode is the first section of a postcode, e.g. "SW1". Use a space to seperate outcodes</p>
+			</div>
+			<div class="form-group">
+				<label for="minimum_order">Minimum Order</label> £<input id="minimum_order" class="time integer" type="text" name="minimum_order" value="{{ partner.minimum_order }}" required>
+				<p class="help-block">Recommended: 20 or lower. This is for ordinary free deliveries.</p>
+			</div>
 			<hr>
-			<label for="minimum_order_paid_accept">Accept £5 Delivery Orders</label>
+			<div class="form-group">
+				<label for="minimum_order_paid_accept">Accept £5 Delivery Orders</label>
 				<input id="minimum_order_paid_accept" type="checkbox" name="minimum_order_paid_accept" value="{{ partner.minimum_order_paid_accept }}">
-				<p>"£5 Delivery Orders" are small orders under £20. You are paid £5 extra for each order. Enter the number of pounds of the minimum order only, e.g. "10". No £ sign. Must be a whole number less than 20. Recommended: 10 or lower.</p>
+				<p class="help-block">"£5 Delivery Orders" are small orders under £20. You are paid £5 extra for each order. Enter the number of pounds of the minimum order only, e.g. "10". No £ sign. Must be a whole number less than 20. Recommended: 10 or lower.</p>
+			</div>
+			<div class="form-group">
 				<label for="minimum_order_paid">Minimum £5 Delivery Order £</label>
 				<input id="minimum_order_paid" class="time integer" type="text" name="minimum_order_paid" value="{{ partner.minimum_order_paid }}" maxlength="2">
+			</div>
 	</fieldset>
-	<br>
 	<fieldset>
 		<legend>Delivery Times Information</legend>
-		<label>Earliest Delivery Time: </label><input style="margin-left: 5px;" class='time integer required' id="start_hr" type="text" name="start_hr" value='{{ partner.start_hr }}' required maxlength="2">:
-			<input class="time integer" id="start_min" type="text" name="start_min" value='{{ partner.start_min }}' required maxlength="2"><br>
-			<p>(24 hour clock e.g. 22:00)</p>
-			<br>
-		<label for="end_hr">Last Delivery:</label> 			<input class='time integer required' id="end_hr" type="text" name="end_hr" value='{{ partner.end_hr }}' required maxlength="2">
+		<div class="form-group">
+			<label>Earliest Delivery Time: </label><input style="margin-left: 5px;" class='time integer required' id="start_hr" type="text" name="start_hr" value='{{ partner.start_hr }}' required maxlength="2">:
+			<input class="time integer" id="start_min" type="text" name="start_min" value='{{ partner.start_min }}' required maxlength="2">
+			<p class="help-block">(24 hour clock e.g. 22:00)</p>
+		</div>
+		<div class="form-group">
+			<label for="end_hr">Last Delivery:</label> 			<input class='time integer required' id="end_hr" type="text" name="end_hr" value='{{ partner.end_hr }}' required maxlength="2">
 			:
 			<input class='time integer' id="{{ partner.end_min }}" type="text" name="end_min" value='{{ partner.end_min }}' required maxlength="2">
-
-		<br><p>This will be the end of the last delivery window. (24 hour clock)</p>
-
-			<br>
-		<label for="window_size">Delivery Slot Size: </label><input style="margin-left: 5px;" class="time integer required" id="window_size" type="text" name="window_size" value='{{ partner.window_size }}' maxlength="3"> Minutes
-		<p>In minutes e.g. "60". Recommended: 60 or less. This is the length of time of a delivery slot. E.g. 60 minute slot means slots will look like "12:00 - 13:00"</p>
+			<p class="help-block">This will be the end of the last delivery window. (24 hour 	clock)</p>
+		</div>
+		<div class="form-group">
+			<label for="window_size">Delivery Slot Size: </label><input style="margin-left: 5px;" class="time integer required" id="window_size" type="text" name="window_size" value='{{ partner.window_size }}' maxlength="3"> Minutes
+			<p class="help-block">In minutes e.g. "60". Recommended: 60 or less. This is the length of time of a delivery slot. E.g. 60 minute slot means slots will look like "12:00 - 13:00"</p>
+		</div>
+		<div class="form-group">
+			<label>Days Available For Delivery</label><br>
 			
+			<input id="sunday" type="checkbox" name="days_checkbox" value='0'> <label for="sunday"> Sunday</label>
 			<br>
-		<label>Days Available For Delivery</label>
+			
+			<input id="monday" type="checkbox" name="days_checkbox" value='1'> <label for="monday"> Monday</label>
 			<br>
-			<label for="sunday">Sunday</label>
-			<input id="sunday" type="checkbox" name="days_checkbox" value='0'>
+			
+			<input id="tuesday" type="checkbox" name="days_checkbox" value='2'> <label for="tuesday"> Tuesday</label>
 			<br>
-			<label for="monday">Monday</label>
-			<input id="monday" type="checkbox" name="days_checkbox" value='1'>
+			
+			<input id="wednesday" type="checkbox" name="days_checkbox" value='3'> <label for="wednesday"> Wednesday</label>
 			<br>
-			<label for="tuesday">Tuesday</label>
-			<input id="tuesday" type="checkbox" name="days_checkbox" value='2'>
+			
+			<input id="thursday" type="checkbox" name="days_checkbox" value='4'> <label for="thursday"> Thursday</label>
 			<br>
-			<label for="wednesday">Wednesday</label>
-			<input id="wednesday" type="checkbox" name="days_checkbox" value='3'>
+			
+			<input id="friday" type="checkbox" name="days_checkbox" value='5'> <label for="friday"> Friday</label>
 			<br>
-			<label for="thursday">Thursday</label>
-			<input id="thursday" type="checkbox" name="days_checkbox" value='4'>
-			<br>
-			<label for="friday">Friday</label>
-			<input id="friday" type="checkbox" name="days_checkbox" value='5'>
-			<br>
-			<label for="saturday">Saturday</label>
-			<input id="saturday" type="checkbox" name="days_checkbox" value='6'>
+			
+			<input id="saturday" type="checkbox" name="days_checkbox" value='6'> <label for="saturday"> Saturday</label>
 			<input type="text" name="days" value='{% for day in partner.days%} {{ day }}{% endfor %}' hidden>
+		</div>
 	</fieldset>
 	<br>
 	<fieldset>
 		<legend>Optional Delivery Settings</legend>
-			<h4>Last Orders For Same Evening Deliveries</h4>
-				<p>This lets you set a latest time in the evening for which orders for that same day can arrive.</p>
-			<label for="last_orders_same_day_enable">Enable This Setting</label>
-				<input id="last_orders_same_day_enable" type="checkbox" name="last_orders_same_day_enable" value='{{ partner.last_orders_same_day_enable }}'>
-				<br>
-				{{ partner.last_orders_same_day_enable }}
-				<br>
-			<label for="last_orders_same_day_hr">Time (24 hour clock)</label>
+			<div class="form-group">
+				<h4>Last Orders For Same Evening Deliveries</h4>
+				<p class="help-block">This lets you set a latest time in the evening for which orders for that same day can arrive.</p>
+			</div>
+			<div class="form-group">
+				<input id="last_orders_same_day_enable" type="checkbox" name="last_orders_same_day_enable" value='{{ partner.last_orders_same_day_enable }}'> <label for="last_orders_same_day_enable">Enable This Setting</label>
+			</div>
+			<div class="form-group">
+				<label for="last_orders_same_day_hr">Time (24 hour clock)</label>
 				<input class="time integer" id="last_orders_same_day_hr" type="text" name="last_orders_same_day_hr" value='{{ partner.last_orders_same_day_hr }}' maxlength="2">
 				:
 				<input class="time integer" id="last_orders_same_day_min" type="text" name="last_orders_same_day_min" value='{{ partner.last_orders_same_day_min }}' maxlength="2">
+			</div>
 			<hr>
-			<h4>Last Orders For Next Morning Deliveries.</h4>
-			<p>This lets you prevent orders coming in during the evening that would require you to wake up early next morning. For example, you can say that "after 7pm (last orders: 19:00), don't send me any orders for the next day that start before 10am (end of morning: 10:00)"</p>
-			<label>Enable This Setting</label>
-				<input id="last_orders_enable" type="checkbox" name="last_orders_enable" value='{{ partner.last_orders_enable }}'><br>
-			<label for="last_orders_hr">Last Orders</label>
+			<div class="form-group">
+				<h4>Last Orders For Next Morning Deliveries.</h4>
+				<p class="help-block">This lets you prevent orders coming in during the evening that would require you to wake up early next morning. For example, you can say that "after 7pm (last orders: 19:00), don't send me any orders for the next day that start before 10am (end of morning: 10:00)"</p>
+				<input id="last_orders_enable" type="checkbox" name="last_orders_enable" value='{{ partner.last_orders_enable }}'> <label>Enable This Setting</label>
+			</div>
+			<div class="form-group">
+				<label for="last_orders_hr">Last Orders</label>
 				<input class="time integer" id="last_orders_hr" type="text" name="last_orders_hr" value='{{ partner.last_orders_hr }}' maxlength="2">:
 				<input class="time integer"  id="last_orders_min" type="text" name="last_orders_min" value='{{ partner.last_orders_min }}' maxlength="2">
-				<p>(24 hour clock)</p>
-			<label for="end_of_morning_hr">When "Morning" Ends</label>
+				<p class="help-block">(24 hour clock)</p>
+			</div>
+			<div class="form-group">
+				<label for="end_of_morning_hr">When "Morning" Ends</label>
 				<input class="time integer" id="end_of_morning_hr" type="text" name="end_of_morning_hr" value='{{ partner.end_of_morning_hr }}' maxlength="2">
 				:
 				<input class="time integer" id="end_of_morning_min" type="text" name="end_of_morning_min" value='{{ partner.end_of_morning_min }}' maxlength="2">
-				<p>(24 hour clock)</p>
+				<p class="help-block">(24 hour clock)</p>
+			</div>
 	</fieldset>
 </form>
+
+<br>
+<br>
+<button class="btn btn-success btn-lg" onclick="attempt_submit(); return false;">Save All Changes</button>
 
 
 <hr>

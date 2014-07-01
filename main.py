@@ -555,6 +555,17 @@ class FeedbackHandler(webapp2.RequestHandler):
 
 class TestHandler(webapp2.RequestHandler):
     def get(self):
+
+        # partners = model.Partner.query().fetch(100)
+        # for partner in partners:
+            
+        #     partner.minimum_order_paid_accept = False
+        #     partner.last_orders_same_day_enable = True
+        #     partner.last_orders_enable = True
+            
+        #     partner.put()
+
+
         template_values = {}
         template = JINJA_ENVIRONMENT.get_template('templates/test.html')
         self.response.write(template.render(template_values))
@@ -607,6 +618,7 @@ app = webapp2.WSGIApplication([
         webapp2.Route('/menu', 'partner.MenuHandler', name='partner-menu'),
         webapp2.Route('/menu/<itemnumber:\d+>', 'partner.ViewMenuItemHandler', name='partner-view-item'),
         webapp2.Route('/info', 'partner.InfoHandler', name='partner-info'),
+        webapp2.Route('/profile-photo', 'partner.ProfilePhotoHandler', name='partner-profile-photo'),
         webapp2.Route('/settings', 'partner.SettingsHandler', name='partner-settings'),
         webapp2.Route('/password-dashboard', 'partner.SetPasswordDashboardHandler'),
     ]),
@@ -616,6 +628,6 @@ app = webapp2.WSGIApplication([
     ('/feedback', FeedbackHandler),
     ('/contact', ContactHandler),
 
-    ('/test', TestHandler),
+    # ('/test', TestHandler),
 
 ], debug=True, config=config)

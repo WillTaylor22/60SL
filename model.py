@@ -145,11 +145,16 @@ class Partner(ndb.Expando):
 
   delivery_slots = ndb.StringProperty(repeated=True)
 
-  # info
-  cleaner_name = ndb.StringProperty()
-  cleaner_intro = ndb.StringProperty()
+  # INFO
+  # - Basic info
+  info_enable = ndb.BooleanProperty(default=False)
+  manager_name = ndb.StringProperty()
+  manager_introduction = ndb.TextProperty()
   about_us = ndb.TextProperty()
-  terms = ndb.TextProperty(repeated = True)
+  terms = ndb.TextProperty()
+
+  # - Profile photo
+  profile_key = ndb.BlobKeyProperty()
 
 
 
@@ -160,6 +165,11 @@ class Partner(ndb.Expando):
   @property
   def logo_url(self):
     return images.get_serving_url(self.logo_key)
+
+  @property
+  def profile_url(self):
+    return images.get_serving_url(self.profile_key)
+
 
   @classmethod
   def get_by_email(cls, partner_email):

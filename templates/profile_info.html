@@ -1,0 +1,202 @@
+
+	<div id="meet_cleaner" style="height: 120px;">
+		<div id="cleaner_picture" style="float:left; margin-right: 20px;">
+		<img src="{{ partner.profile_url }}" style="border-radius: 60px; width: 120px; height: 120px;">
+		</div>
+		<div>
+		<h4>Meet your cleaner, {{ partner.manager_name }}</h4>
+		<p><i>"{{ partner.manager_introduction }}"</i></p>
+		<!-- <p><a href="#" id="cleaner_intro">"I've been running dry cleaners for 3 years. We work very hard here to make sure every garmet comes out looking fantatic."</a></p> -->
+		</div>
+	</div>
+	<div id="left_side" style="width: 200px; height: 600px; float:left; padding-right:10px">
+		<h4>Delivery Info</h4>
+		<ul class="unindented">
+			<li><span id="days_string"></span></li>
+			<li><span id="time_string"></span></li>
+			<li>Calls ahead of arrival</li>
+			{% if minimum_order_paid_accept %}
+			<li>Free pickup on orders above £{{ partner.minimum_order }}</li>
+			<li>£5 delivery fee for orders below £20{% if partner.minimum_order_paid != "20" %} (or £20, whichever is less){%endif%}</li>
+			<li>Minimum order is £{{ partner.minimum_order_paid }}</li>
+			{% else %}
+			<li>Free pickup & delivery</li>
+			<li>Minimum order is £{{ partner.minimum_order }}</li>
+			{% endif %}
+
+		</ul>
+		<h4>Terms & Conditions</h4>
+		<p>{{ partner.terms }}</p>
+	</div>
+	<div id="right_side" style="width: 200px; height: 600px; float: right; padding-left: 10px;">
+		<div id="map">
+			<h4>Location</h4>
+			<p>{{ partner.address }}<br>
+			{% if partner.postcode %}{{ partner.postcode }}<br>{% endif %}
+			London</p>
+			<embed
+			  width="180"
+			  height="180"
+			  frameborder="0" style="border:0"
+			  src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAypbedufQav3O8Zod4loQy6825JoQuENY
+			    &q={{ partner.address }}">
+			</embed>
+
+		</div>
+		<div>
+			<h4>About Us</h4>
+			<p>{{ partner.about_us }}</p>
+		</div>
+
+<script type="text/javascript">
+
+
+Number.prototype.mod = function(n) {
+return ((this%n)+n)%n;
+}
+
+set_delivery_times()
+
+function set_delivery_times(){
+	document.getElementById("days_string").innerHTML = get_delivery_days_string()
+	document.getElementById("time_string").innerHTML = get_delivery_times_string()
+
+}
+
+function get_delivery_days_string(){
+	// Formats:
+	// Every Day
+	// Sun, Mon, Tues, Wed, Thurs, Fri, Sat
+	// Mon - Fri
+	allowed_days = [99{% for day in partner.days %},{{ day }}{% endfor %}]
+	allowed_days.splice(0,1)
+	not_allowed_days = []
+	for(i = 0; i<= 6; i += 1){
+		if (allowed_days.indexOf(i) == -1 ) {
+			not_allowed_days.push(i)
+		}
+	}
+
+
+	if (allowed_days.length == 7){
+		return "Every Day"
+	} else {
+		// are numbers consecutive?
+		// find start of chain
+		// start of chain defined as number with number behind it that is not available.
+		var start
+		var end
+		var days_words = []
+		var start_number = 0
+		for(i = 0; i<= 6; i += 1){
+			if (allowed_days.indexOf(i) != -1 && allowed_days.indexOf((i-1).mod(7)) == -1 ){
+				start = i
+				start_number += 1
+			}
+		}
+		if(start_number > 1){
+			// do individually
+			for(i = 0; i<= allowed_days.length; i += 1){
+				if (allowed_days[i] == 0){
+					days_words.push("Sun")
+				} else if (allowed_days[i] == 1){
+					days_words.push("Mon")
+				} else if (allowed_days[i] == 2){
+					days_words.push("Tue")
+				} else if (allowed_days[i] == 3){
+					days_words.push("Wed")
+				} else if (allowed_days[i] == 4){
+					days_words.push("Thu")
+				} else if (allowed_days[i] == 5){
+					days_words.push("Fri")
+				} else if (allowed_days[i] == 6){
+					days_words.push("Sat")
+				}
+			}
+			return days_words.join(", ")
+		} else {
+			for(i = 0; i<= 6; i += 1){
+				if (allowed_days.indexOf(i) != -1 && allowed_days.indexOf((i+1).mod(7)) == -1 ){
+					end = i
+				}
+			}
+				if (start == 0){
+					days_words[0] = "Sun"
+				} else if (start == 1){
+					days_words[0] = "Mon"
+				} else if (start == 2){
+					days_words[0] = "Tue"
+				} else if (start == 3){
+					days_words[0] = "Wed"
+				} else if (start == 4){
+					days_words[0] = "Thu"
+				} else if (start == 5){
+					days_words[0] = "Fri"
+				} else if (start == 6){
+					days_words[0] = "Sat"
+				}
+				if (end == 0){
+					days_words[1] = "Sun"
+				} else if (end == 1){
+					days_words[1] = "Mon"
+				} else if (end == 2){
+					days_words[1] = "Tue"
+				} else if (end == 3){
+					days_words[1] = "Wed"
+				} else if (end == 4){
+					days_words[1] = "Thu"
+				} else if (end == 5){
+					days_words[1] = "Fri"
+				} else if (end == 6){
+					days_words[1] = "Sat"
+				}
+			return days_words.join(" - ")
+		}
+	}
+}
+
+function get_delivery_times_string(){
+	var start_hr = parseInt("{{ partner.start_hr }}")
+	var start_min = parseInt("{{ partner.start_min }}")
+	var end_hr = parseInt("{{ partner.end_hr }}")
+	var end_min = parseInt("{{ partner.end_min }}")
+	var start_ampm
+	var end_ampm
+	var start_string
+	var end_string
+	
+	if (start_hr == 0){
+		start_ampm = 'pm'
+	} else if (start_hr < 12) {
+		start_ampm = 'am'
+	} else {
+		start_ampm = 'pm'
+		start_hr = start_hr - 12
+	}
+	if (start_min == '0'){
+		start_string = start_hr + " " + start_ampm
+	} else {
+		start_string = start_hr + ":" + start_min + " " + start_ampm
+	}
+	
+	if (end_hr == 0){
+		end_ampm = 'pm'
+	} else if (end_hr < 12) {
+		end_ampm = 'am'
+	} else {
+		end_ampm = 'pm'
+		end_hr = end_hr - 12
+	}
+
+	if (end_min == '0'){
+		end_string = end_hr + " " + end_ampm
+	} else {
+		end_string = end_hr + ":" + end_min + " " + end_ampm
+	}
+
+	return start_string + " - " + end_string
+}
+
+
+
+</script>

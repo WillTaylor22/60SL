@@ -1,0 +1,51 @@
+{% extends "templates/partner/dashboard.html" %}
+{% block headscripts %}
+
+    <!-- x-editable (bootstrap version) -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.4.6/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet"/> 
+<!--     <link href="/static/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
+ -->   <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.4.6/bootstrap-editable/js/bootstrap-editable.min.js"></script>
+   <!-- <script src="/static/bootstrap3-editable/js/bootstrap-editable.js" type="text/javascript"></script>-->
+
+
+{% endblock %}
+
+{% block option %}
+
+<p><i>Feature not yet available</i></p>
+
+{% endblock %}
+
+{% block endscripts %}
+
+<script type="text/javascript">
+
+$("#info_li").addClass("active")
+
+$.fn.editable.defaults.mode = 'inline';
+$(document).ready(function() {
+    $('#username').editable({
+        type: 'text',
+	    title: 'Enter username',
+    });
+});
+
+function addRow(tableID) {
+ 
+    var table = document.getElementById(tableID);
+
+    var rowCount = table.rows.length;
+    var row = table.insertRow(rowCount-2);
+
+    var cell1 = row.insertCell(0);
+
+    var cell2 = row.insertCell(1);
+    var input = document.createElement("input");
+    cell2.appendChild(input); 
+
+    return false
+}
+
+</script>
+
+{% endblock %}

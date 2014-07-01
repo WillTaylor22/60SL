@@ -803,9 +803,12 @@ class InfoHandler(BaseHandler):
     user = self.user
     partner = Partner.get_by_email(user.email_address)
 
+    upload_url = blobstore.create_upload_url('/partner/profile-photo')
+
     message = ''
 
     params = {
+      'upload_url': upload_url,
       'user': user,
       'message': message,
     }
@@ -817,28 +820,57 @@ class InfoHandler(BaseHandler):
     user = self.user
     partner = Partner.get_by_email(user.email_address)
 
-    try:
-      # receives these from inline events
-      name = self.request.get("name") # name of field
-      pk = self.request.get("pk") # ID of record
-      value = self.request.get("value") # new value
+    upload_url = blobstore.create_upload_url('/partner/profile-photo')
 
-      print "ajax received"
-      print "name", name
-      print "pk", pk
-      print "value", value
+    # Basic Information
+    partner.info_enable = self.request.get('info_enable') != ''
+    partner.manager_name = self.request.get('manager_name')
+    partner.manager_introduction = self.request.get('manager_introduction')
+    partner.about_us = self.request.get('about_us')
+    partner.terms = self.request.get('terms')
+    partner.put()
 
-      setattr(partner, name, value)
-      partner.put()
+    message = 'Saved.'
 
-      self.response.status = 200
-      self.response.body = "Ok!"
-    except:
-      self.response.status = 404
-      self.response.write("Did not update")
+    params = {
+      'upload_url': upload_url,
+      'user': user,
+      'message': message,
+    }
+
+    self.render_template_dashboard('info.html', user, partner, params)
+
+
+class ProfilePhotoHandler(blobstore_handlers.BlobstoreUploadHandler, BaseHandler):
+  
+  @user_required
+  def post(self):
+    user = self.user
+    partner = Partner.get_by_email(user.email_address)
+
+    upload_url = blobstore.create_upload_url('/partner/profile-photo')
+
+    upload_files = self.get_uploads('profile_photo')
+
+
+    blob_info = upload_files[0]
+    blob_key = blob_info.key()
+    partner.profile_key = blob_key
+    partner.put()
+
+    message = 'Photo Saved.'
+
+    params = {
+      'upload_url': upload_url,
+      'user': user,
+      'message': message,
+    }
+
+    self.render_template_dashboard('info.html', user, partner, params)
+
 
 class SettingsHandler(BaseHandler):
-  
+
   @user_required
   def get(self, *args, **kwargs):
     
