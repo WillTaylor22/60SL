@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+{% autoescape true %}
+<html>
+<head>
+	<title>60 Second Laundry</title>
+	<link href="/static/css/bootstrap.min.css" rel="stylesheet"> 
+	<link href="/static/css/custom.css" rel="stylesheet"> 
+	<meta name="viewport" content="width=420, user-scalable=no">
+	
+	<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-47860802-1', '60secondlaundry.com');
+  ga('send', 'pageview');
+
+</script>
+
+<script src="/static/jquery/jquery-1.11.0.min.js"></script>
+
+<script>
+/**
+ * jQuery.browser.mobile (http://detectmobilebrowser.com/)
+ *
+ * jQuery.browser.mobile will be true if the browser is a mobile device
+ *
+ **/
+(function(a){($.browser=$.browser||{}).mobile=/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))})(navigator.userAgent||navigator.vendor||window.opera);
+
+if ($.browser.mobile){
+	console.log("mobile")
+	window.location = 'http://www.60secondlaundry.com/m'
+} else {
+	console.log("not mobile")
+}
+</script>
+
+</head>
+	<body>
+		<div id="background_image">
+			<div class="container">
+				<div class="segment" id="wrap">
+						<br>
+						<img src="static/img/LaP300px.png" style="margin-left: 50px">
+						<br>
+						{% if error_message %}
+						<br>
+						<div class="alert alert-info">
+						  {{ error_message }}
+						</div>
+						{% endif %}
+						<br>
+						<form onsubmit="return try_submit();">
+							<label>Enter your postcode:</label>
+							<input class="collectionform input-lg" type="text" id="postcode" name="postcode"
+							placeholder="e.g. W1J 7BU">
+
+							<br>
+							<br>
+							<input id="searchbutton" type="submit" class="btn btn-success" value="Show Cleaners Near Me">
+						</form>
+
+						<form id="form" action="near" method="get">
+							<input id="_postcode" name="postcode" hidden>
+							<input id="lat" name="lat" hidden>
+							<input id="long" name="long" hidden>
+						</form>
+
+						<br /><br /><br />
+						<table id="howtotable">
+							<tr>
+								<td style="width:132px;"><span class="glyphicon glyphicon-time"></span><br><br></td>
+								<td style="width:132px; "><span class="glyphicon glyphicon-home"></span><br><br></td>
+								<td style="width:132px;"><span class="glyphicon glyphicon-heart"></span><br><br></td>
+							</tr>
+							<tr>
+								<td style="vertical-align: top;"><p>Book free <strong>pickup</strong> and delivery</p></td>
+								<td style="vertical-align: top;"><p>Collection from your <strong>doorstep</strong></p></td>
+								<td style="vertical-align: top;"><p>Pay the <strong>same prices</strong> as normal!</p></td>
+							</tr>
+						</table>
+
+				</div>
+
+				<div id="social_proof" class="segment"></div>
+
+				<div class="segment"id='benefit_1'>
+					<h1>You're going to love... Free Delivery*</h1>
+					<img class="circle_img" src="#">
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus in ipsum mollis, adipiscing lacus non, rutrum justo. Aenean dignissim ante bibendum porttitor malesuada. Phasellus imperdiet eu risus id imperdiet. Aenean non erat elementum, mollis mi nec, vestibulum augue. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+
+					<p>Phasellus tortor urna, lobortis nec erat vitae, feugiat commodo tellus. Quisque et augue sed eros sodales aliquam vitae sit amet erat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam pellentesque ipsum id lacus congue, sit amet euismod ligula vulputate. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;</p>
+				</div>
+				
+				<div class="segment" id="social_buttons">
+					<h2>Hear about our 1-day discounts first:</h2>
+					<ul>
+						<li><img src="FB"></li>
+						<li><img src="Twit"></li>
+					</ul>
+				</div>
+
+				<div class="segment" id="customer_reviews">
+					<h1>Customers are saying...</h1>
+					<p>"incredible"</p>
+					<p>"Saves me so much time"</p>
+					<p>At first I was not sure,</p>
+				</div>
+
+				<div class="segment" id="benefit_2">
+					<h2>You're going to love... Getting it done for you</h2>
+					<img class="circle_img" src="">
+					<p>Life is short.</p>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus in ipsum mollis, adipiscing lacus non, rutrum justo. Aenean dignissim ante bibendum porttitor malesuada. Phasellus imperdiet eu risus id imperdiet. Aenean non erat elementum, mollis mi nec, vestibulum augue. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+				</div>
+
+				<div class="segment" id="meet_our_cleaners">
+					<div class="cleaner">
+						<h1>Meet Your Cleaners...</h1>
+						<img class="circle_img" src="#">
+						<h3><strong>Hi, I'm Adini!</strong></h3>
+						<p>I've been cleaning for 30 years and have serviced over 20,000 items of clothing.</p>
+						<img class="circle_img" src="#">
+					</div>
+					<div>
+						<h3><strong>Nice to meet you, I'm Ricardo.</strong></h3>
+						<p>I own two branches in East London, servicing 220 shirts a week. We clean every garment with top quality equipement and our well-trained team. The clothes you get back will be cleaned incredibly well.</p>
+					</div>
+					
+				</div>
+				
+				<div class="segment" id="benefit_3">
+					<h1>Same Day Service, Great Prices</h1>
+					<img class="circle_img"  src="#">
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus in ipsum mollis, adipiscing lacus non, rutrum justo. Aenean dignissim ante bibendum porttitor malesuada. Phasellus imperdiet eu risus id imperdiet. Aenean non erat elementum, mollis mi nec, vestibulum augue. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+
+					<p>Phasellus tortor urna, lobortis nec erat vitae, feugiat commodo tellus. Quisque et augue sed eros sodales aliquam vitae sit amet erat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam pellentesque ipsum id lacus congue, sit amet euismod ligula vulputate. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;</p>
+				</div>
+
+				<div class="segment" id="final_cta">
+					<h1>Stop doing laundry the dumb way!</h1>
+					<p>Find your best local cleaner today!</p>
+					<img src="Return to top">
+				</div>
+
+				<div class="segment" id="newsletter">
+					<h2>Get discounts, news, info and promotions through our newsletter!</h2>
+				</div>
+
+
+				<br><br><br><br><br><br>
+				<div id="footer">
+					© LA LAUNDRY Ltd.
+					<br>
+					<a href="/terms">Terms</a> | 
+					<a href="/privacy">Privacy Policy</a> | 
+					<a href="/partner/">I'm A Cleaner</a> | 
+					Registered Company 08770346
+				</div>
+
+				
+
+
+			</div>
+		</div>
+			
+		<script src="/static/js/bootstrap.js"></script>
+		
+
+		<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+
+
+		<script>
+
+		function try_submit()
+		    {
+		    	
+		    	$("#searchbutton").val("Finding...");
+		        $("#_postcode").val($("#postcode").val())
+		      
+		        var geocoder = new google.maps.Geocoder();
+
+		        geocoder.geocode({address: $("#postcode").val() + ", UK"}, function(results, status) {
+						if (results[0])
+						{
+							var postcode = $("#postcode").val();
+							var result = results[0];
+							$("#lat").val(result.geometry.location.lat());
+							$("#long").val(result.geometry.location.lng());
+							$("#form").submit()
+						}
+				})
+		      return false;
+			}
+
+		</script>
+
+
+
+	</body>
+</html>
+{% endautoescape %}

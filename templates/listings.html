@@ -17,7 +17,7 @@
 			<div id="partner_facts" style="float: left; width: 270px;">
 				<h4 style="margin-bottom: 5px;">{{ partner.name }}</h4>
 				<div id="partner_facts_deeper" style="float: left; width: 270px;">
-					<h5>{{ partner.address}}, {{ partner.distance|distanceformat }}</h5>
+					<h5>{{ partner.address}}{% if partner.distance is defined %}, {{ partner.distance|distanceformat }}{% endif %}</h5>
 					<h5>Min order: £{{ partner.minimum_order }}</h5>
 					<h5>{{ partner.delivery_cost }}</h5>
 				</div>

@@ -1,0 +1,96 @@
+{% extends "templates/partner/dashboard.html" %}
+{% block option %}
+
+   <!-- bootstrap 
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script> 
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>  
+
+    <!-- x-editable (bootstrap version) 
+    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.4.6/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet"/>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.4.6/bootstrap-editable/js/bootstrap-editable.min.js"></script>
+    -->
+
+<!-- <link href="/static/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
+ -->
+<h3 class="option_header">Your menu <button class="btn btn-default btn-lg" id="add_item_button"onclick="add_item(); return false;">Add item</button></h3>
+
+<div>
+        <span>Username:</span>
+        <a href="#" id="username" data-type="text" data-placement="right" data-title="Enter username">superuser</a>
+      </div>
+
+
+	{% set prevtabname = 'first' %}
+<!-- START TABLE -->
+<table class='menutable table table-hover' style="margin-top:5px;">
+			{% if partner.shirts %}
+			<tr style="height: 2.7em; vertical-align: bottom;">
+				<th colspan="3" style='border-top: solid white 1px;'>Best Sellers</th>
+			</tr>
+			<tr>
+				<td class="itemcolumn">Shirts</td>
+				<td class='subitemcolumn'></td>
+				<td class='pricecolumn' style="text-align:right;">{{ partner.shirts }}</td>
+			</tr>
+			<tr>
+				<td class="itemcolumn">Suits</td>
+				<td class='subitemcolumn'></td>
+				<td class='pricecolumn' style="text-align:right;">{{ partner.suits }}</td>
+			</tr>
+		{% endif %}
+	{% for item in menuitems %}
+		{% if item.tabname != prevtabname: %}
+		
+			<tr>
+				<th colspan="4" style="padding-top: 30px; {% if loop.first %}padding-top: 0;{% endif %} vertical-align: bottom; border: solid white 1px;">{{ item.tabname }}</th>
+			</tr>
+		{% endif %}
+
+		<tr>
+			<!-- {% if item.item != prev_item %} -->
+				<td class='firstitem itemcolumn'><a href="#" id='item' data-type="text" data-pk="{{ item.itemnumber }}" data-url="/partner/edit-item" data-title="Enter item name">{{ item.item }}</a></td>
+			<!-- {% else %} 
+				<td class="itemcolumn" style='border-top: solid white 1px;'></td>
+			{% endif %}
+
+			{% set prev_item = item.item %}
+
+				<td class='subitemcolumn'>{{ item.subitem }}</td>
+			
+			{% if item.price != 0 %}
+				<td class="pricecolumn" style="text-align:right;">{{ item.price|currencyformat }}</td>
+			{% elif item.pricemax == 0 %}
+				<td class="pricecolumn from" style="text-align:right;">{{ item.pricemin|currencyformat }}</td>
+			{% else %}
+				<td class="pricecolumn" style="text-align:right;">{{ item.pricemin|currencyformat }} - {{ item.pricemax|currencyformat }}</td>
+			{% endif %}
+				<td class="editbuttoncolumn" >
+					
+					<form method="GET" action="/partner/menu/{{ item.itemnumber }}"><button type="submit" class="btn btn-default btn-xs" onclick="edit_item(
+						'{{ item.itemid }}'">Edit 
+						<span class="glyphicon glyphicon-pencil"></span>
+					</button></form>
+				</td>
+		</tr>
+
+
+		{% set prevtabname = item.tabname %}
+	{% endfor %}
+</table>
+
+
+
+{% endblock %}
+
+{% block endscripts %}
+
+<!-- <script src="/static/bootstrap3-editable/js/bootstrap-editable.js"></script>
+ -->
+<script type="text/javascript">
+
+$("#menu_li").addClass("active")
+
+</script>
+
+{% endblock %}

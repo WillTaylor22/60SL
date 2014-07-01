@@ -33,6 +33,7 @@ import model
 import util
 import paypal
 import settings
+from google.appengine.api import mail
 
 from google.appengine.ext import ndb
 from bin import postcode
@@ -104,6 +105,18 @@ class Main(webapp2.RequestHandler):
         template = JINJA_ENVIRONMENT.get_template('templates/index.html')
         self.response.write(template.render(template_values))
 
+class MobileHome(webapp2.RequestHandler):
+    def get(self):
+        
+        session = get_current_session()
+        session['starttime'] = datetime.today()
+
+        template_values = {}
+
+        template = JINJA_ENVIRONMENT.get_template('templates/index-mobile.html')
+        self.response.write(template.render(template_values))
+
+
 class Listings(webapp2.RequestHandler):
     def get(self):
         print "here"
@@ -134,7 +147,14 @@ class Listings(webapp2.RequestHandler):
 
         latitude = float(lat)
         longitude = float(lon)
-        print "here"
+
+        # this tells you a distance has been found.
+        # if not found, skip distance calculations
+        distanceflag = 0
+        if latitude:
+            if longitude:
+                distanceflag = 1
+
         # analytics
         _postcode_attempt = model.postcode_attempt(postcode = this_postcode)
         _postcode_attempt.put()
@@ -143,17 +163,26 @@ class Listings(webapp2.RequestHandler):
             outcode = postcode.parse_uk_postcode(this_postcode, strict=True, incode_mandatory=False)[0]
 
             partners = model.Partner.query(model.Partner.outcodes == outcode).fetch(10)
-
+            sortflag = 1  # for skipping sort if not all distances found
             if partners[0]:
-                for partner in partners:
-                    lat1 = partner.latitude
-                    lat2 = latitude
-                    lon1 = partner.longitude
-                    lon2 = longitude
-                    distance = get_distance(lat1, lat2, lon1, lon2)
-                    partner.distance = round_to_1(distance)
+                if distanceflag == 1: # for skipping if customer location not found
+                    for partner in partners:
+                        if partner.latitude:
+                            if partner.longitude:
+                                lat1 = partner.latitude
+                                lat2 = latitude
+                                lon1 = partner.longitude
+                                lon2 = longitude
+                                distance = get_distance(lat1, lat2, lon1, lon2)
+                                partner.distance = round_to_1(distance)  
+                            else:
+                                sortflag = 0
+                        else:
+                            sortflag = 0
+                if sortflag == 1: # all distances found, sort allowed...
+                    partners.sort(key=attrgetter('distance'))
 
-                partners.sort(key=attrgetter('distance'))
+
                 template_values = {
                     'postcode' : this_postcode,
                     'partners' : partners
@@ -478,6 +507,44 @@ class TermsHandler(webapp2.RequestHandler):
         template = JINJA_ENVIRONMENT.get_template('templates/terms.html')
         self.response.write(template.render(template_values))
 
+class ContactHandler(webapp2.RequestHandler):
+    def get(self):
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('templates/contact.html')
+        self.response.write(template.render(template_values))
+
+    def post(self):
+        name = self.request.get('InputName')
+        email = self.request.get('InputEmail')
+        message = self.request.get('InputMessage')
+
+        print name
+        print email
+        print message
+
+        sender_string = "60 Second Laundry <orders@60secondlaundry.com>"
+
+        subject_string = "New Message from " + name
+
+
+        message = mail.EmailMessage(
+            sender=sender_string,
+            subject=subject_string)
+
+        message.to = 'will.taylor@60secondlaundry.com'
+        message.body = message
+
+        message.send()
+
+
+        success = True
+        template_values = {
+            'success': True,
+        }
+        template = JINJA_ENVIRONMENT.get_template('templates/contact.html')
+        self.response.write(template.render(template_values))
+
+
 
 class FeedbackHandler(webapp2.RequestHandler):
     def post(self):
@@ -507,6 +574,7 @@ config = {
 # URL Routing happens here
 app = webapp2.WSGIApplication([
     ('/', Main),
+    ('/m', MobileHome),
     webapp2.Route('/near', handler=Listings, name='near'),
     ('/menu', Menu),
     ('/collection', Form),
@@ -546,6 +614,7 @@ app = webapp2.WSGIApplication([
     ('/privacy', PrivacyHandler),
     ('/terms', TermsHandler),
     ('/feedback', FeedbackHandler),
+    ('/contact', ContactHandler),
 
     ('/test', TestHandler),
 

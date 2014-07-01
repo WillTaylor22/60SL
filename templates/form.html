@@ -77,18 +77,6 @@
 			</div>
 			<br>
 
-<!-- 		<div style="width: 400; height 80; display: none;" id="c_guide_1">
-				<img src="/static/img/guides/guide1-4.png">
-			</div>
-			<div style="width: 400; height 80; display: none;" id="c_guide_2">
-				<img src="/static/img/guides/guide2-4.png">
-			</div>
-			<div style="width: 400; height 80; display: none;" id="c_guide_3">
-				<img src="/static/img/guides/guide3-4.png">
-			</div>
-			<div style="width: 400; height 80; display: none;" id="c_guide_4">
-				<img src="/static/img/guides/guide4-4.png">
-			</div> -->
             <div class="btn-group" data-toggle="buttons">
             	{% set i = 0 %}
 				{% for slot in partner.delivery_slots %}
@@ -127,24 +115,11 @@
              -->
 			<div id="d_date_div" style="display: block; font-size:130%; text-indent: 20px;">
 			</div>
-
-            <div style="width: 400; height 80;" id="d_guide_1" hidden>
-				<img src="/static/img/guides/guide1-4.png">
-			</div>
-			<div style="width: 400; height 80;" id="d_guide_2" hidden>
-				<img src="/static/img/guides/guide2-4.png">
-			</div>
-			<div style="width: 400; height 80;" id="d_guide_3" hidden>
-				<img src="/static/img/guides/guide3-4.png">
-			</div>
-			<div style="width: 400; height 80;" id="d_guide_4" hidden>
-				<img src="/static/img/guides/guide4-4.png">
-			</div>
             <div class="btn-group" data-toggle="buttons">
 				{% set i = 0 %}
 				{% for slot in partner.delivery_slots %}
-				<label class="btn btn-default" name="delivery_time_label" style="width: 100px;">
-					<input type='radio' id="d_time_{{ i }}" name="delivery_time" value="{{ slot }}">{{ slot }}
+				<label class="btn btn-default" name="delivery_time_label" style="width: 200px;">
+					<input type='radio' id="d_time_{{ i }}" name="delivery_time" value="{{ slot }}">{{ slot }} - {{ slot }}
 				</label>
 				{% set i = i+ 1 %}
 				{% endfor %}
@@ -261,6 +236,7 @@ $(document).ready(function() {
 	$("input[name='payment_method']:checked").click()
 
 	initialise_datepickers()
+	last_orders_same_day_check()
 
 	// more Back Button
 	$('#c_date_div').datepicker('setDate', $("#storedCDate").attr("value"))
@@ -341,35 +317,6 @@ $( "[name='collection_day']" ).change(function () {
 		var selectedDate = new Date(selected_c_date_button.attr('value'))
 		c_date_change(selectedDate)
 	}
-
-	// show guides
-	// if (selected_c_date_button.attr('id') == "c_day_0"){
-	// 	console.log("here")
-	// 	console.log($("#c_guide_1"))
-	// 	$("#c_guide_1").style.display = "block" ;
-	// 	$("#c_guide_2").addClass("hidden") ;
-	// 	$("#c_guide_3").addClass("hidden") ;
-	// 	$("#c_guide_4").addClass("hidden") ;
-	// }
-	// if (selected_c_date_button.attr('id') == "c_day_1"){
-	// 	document.getElementById("c_guide_1").hide() ;
-	// 	document.getElementById("c_guide_2").show() ;
-	// 	document.getElementById("c_guide_3").hide() ;
-	// 	document.getElementById("c_guide_4").hide() ;
-	// }
-	// if (selected_c_date_button.attr('id') == "c_day_2"){
-	// 	document.getElementById("c_guide_1").hide() ;
-	// 	document.getElementById("c_guide_2").hide() ;
-	// 	document.getElementById("c_guide_3").show() ;
-	// 	document.getElementById("c_guide_4").hide() ;
-	// }
-	// if (selected_c_date_button.attr('id') == "collection_date_other"){
-	// 	document.getElementById("c_guide_1").hide() ;
-	// 	document.getElementById("c_guide_2").hide() ;
-	// 	document.getElementById("c_guide_3").hide() ;
-	// 	document.getElementById("c_guide_4").show() ;
-	// }
-	
 })
 
 
@@ -424,6 +371,31 @@ function get_current_delivery_time(){
 	return selected.attr('value')
 }
 
+function last_orders_same_day_check(){
+
+	// LAST ORDERS SAME DAY LOGIC
+	// if time > last_orders_same_day, disable c_date_today
+
+
+	var last_orders_same_day_enable = '{{ partner.last_orders_same_day_enable }}'
+	if(last_orders_same_day_enable == "True"){
+		// get time
+		var now = new Date()
+		var now_time = now.getHours()*60 + now.getMinutes()
+
+		// get last_orders_same_day
+		var last_orders_same_day_hr = {{ partner.last_orders_same_day_hr }}
+		var last_orders_same_day_min = {{ partner.last_orders_same_day_min }}
+		var last_orders = last_orders_same_day_hr*60 + last_orders_same_day_min
+
+		if(now_time>last_orders){
+			// remove calendar option
+			var tomorrow = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+			$('#c_date_div').datepicker('setStartDate', tomorrow)
+		}
+	}
+}
+
 function c_date_change(collection_date){
 	if(isNaN(Date.parse(collection_date))==false){
 
@@ -443,7 +415,7 @@ function c_date_change(collection_date){
 			document.getElementById("c_warning_div").style.display = "block";
 			hide_earlier_collection_times()
 		}
-		else{
+		else {
 			document.getElementById("c_warning_div").style.display = "none";
 			document.getElementById("c_empty_div").style.display = "none";
 			show_earlier_collection_times()
@@ -452,13 +424,11 @@ function c_date_change(collection_date){
 
 		// --- interactions ---
 
-
-
-		// INTERACTION 1: NO DELIVERIES LEFT TODAY
-		// disable today button and calendar option if no deliveries possible today
+		// INTERACTION 1: NO **DELIVERIES** LEFT TODAY
+		// disable d_today button and d_calendar option if no deliveries possible today
 		
-		// first, check that today is available
-		
+		// first, check that today is a day that is delivered on.
+
 		if (today_available()){
 			// second, find out if it's empty.
 			// do this by comparing earliest collection time to last delivery time
@@ -474,11 +444,19 @@ function c_date_change(collection_date){
 			})
 			last_d_available = get_time(last_d_available)
 
+
 			if (earliest_d_from_now > last_d_available){
 				// d_date = today would be empty
-				$("#d_day_0").parent().attr("disabled", true)
+				console.log("remove cal option")
+				// remove calendar option
+				var tomorrow = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+				$('#d_date_div').datepicker({
+				    startDate: tomorrow
+				})
+
 			} else{
-				$("#d_day_0").parent().attr("disabled", false) // enable d_date
+				console.log("don't remove cal option")
+				 // enable d_date
 			}
 		}
 
@@ -538,50 +516,36 @@ function c_date_change(collection_date){
 		}
 
 
-		// INTERACTION 3: LAST ORDERS SAME DAY LOGIC
-		// if time > last_orders_same_day, and c_date = today, hide all times
-		if (collection_date - today == 0){
-			var now = new Date()
-			var now_time = now.getHours()*60 + now.getMinutes()
-			var None = 24
-			var last_orders_same_day_hr = {{ partner.last_orders_same_day_hr }}
-			var last_orders_same_day_min = {{ partner.last_orders_same_day_min }}
-			var last_orders = last_orders_same_day_hr*60 + last_orders_same_day_min
-			if(now_time>last_orders){
-				$("input[name='collection_time']").each(function(){
-					$(this).parent().addClass('hidden')
-				})
-				document.getElementById("c_warning_div").style.display = "none";
-				document.getElementById("c_empty_div").style.display = "block";
-			}
-		}
 
 		// INTERACTION 4: LAST ORDERS NEXT DAY LOGIC
 		// if time > last_orders, and c_date = tomorrow, hide time<morning_end
-		if (collection_date - today == 86400000){
-			var now = new Date()
-			var now_time = now.getHours()*60 + now.getMinutes()
-			var last_orders_hr = {{ partner.last_orders_hr }}
-			var last_orders_min = {{ partner.last_orders_min }}
-			var last_orders = last_orders_hr*60 + last_orders_min
-			if (now_time > last_orders){
+		var last_orders_enable = '{{ partner.last_orders_enable }}'
+		if(last_orders_enable == "True"){
+			if (collection_date - today == 86400000){
+				var now = new Date()
+				var now_time = now.getHours()*60 + now.getMinutes()
+				var last_orders_hr = {{ partner.last_orders_hr }}
+				var last_orders_min = {{ partner.last_orders_min }}
+				var last_orders = last_orders_hr*60 + last_orders_min
+				if (now_time > last_orders){
 
-				var this_time = 0
-				var end_of_morning_hr = {{ partner.end_of_morning_hr }}
-				var end_of_morning_min = {{ partner.end_of_morning_min }}
-				var end_of_morning = end_of_morning_min + end_of_morning_hr*60
+					var this_time = 0
+					var end_of_morning_hr = {{ partner.end_of_morning_hr }}
+					var end_of_morning_min = {{ partner.end_of_morning_min }}
+					var end_of_morning = end_of_morning_min + end_of_morning_hr*60
 
-				$("input[name='collection_time']").each(function(){
-					this_time = get_time(this.value)
+					$("input[name='collection_time']").each(function(){
+						this_time = get_time(this.value)
 
 
-					if(this_time < end_of_morning){
-						$(this).parent().addClass('hidden') // disable d_date
-					}else{
-						$(this).parent().removeClass('hidden') // enable d_date
-					}
-				})
+						if(this_time < end_of_morning){
+							$(this).parent().addClass('hidden') // disable d_date
+						}else{
+							$(this).parent().removeClass('hidden') // enable d_date
+						}
+					})
 
+				}
 			}
 		}
 
@@ -604,13 +568,17 @@ function c_date_change(collection_date){
 };
 
 function today_available(){
-	var first_date = new Date($("#d_day_0").val())
+	allowed_days = [{% for day in partner.days %}{{ day }},{% endfor %} 99] // 99 won't ever be called upon in logic below
+
 	var today = new Date()
-	today.setHours(first_date.getHours(),first_date.getMinutes(),0,0)
-	if (today - first_date == 0){
+	var day_of_week = today.getDay()
+
+	if(allowed_days.indexOf(day_of_week) == -1){
+		return false
+	} else {
 		return true
 	}
-	return false
+
 }
 
 function is_sameday(){

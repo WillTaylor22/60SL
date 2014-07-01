@@ -1,0 +1,945 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"user_",
+				"user_required"
+			],
+			[
+				"font",
+				"font-size"
+			],
+			[
+				"Te",
+				"TextProperty"
+			],
+			[
+				"margi",
+				"margin"
+			],
+			[
+				"marg",
+				"margin-bottom"
+			],
+			[
+				"ba",
+				"Background_div"
+			],
+			[
+				"mar",
+				"margin-top"
+			],
+			[
+				"padding",
+				"padding-bottom"
+			],
+			[
+				"min",
+				"min-height"
+			],
+			[
+				"bar",
+				"background-origin"
+			],
+			[
+				"round",
+				"round_to_1"
+			],
+			[
+				"this",
+				"this_postcode"
+			],
+			[
+				"st",
+				"style"
+			],
+			[
+				"price",
+				"pricecolumn"
+			],
+			[
+				"get_by_par",
+				"get_by_partner_name_id"
+			],
+			[
+				"par",
+				"partner_name"
+			],
+			[
+				"width",
+				"width"
+			],
+			[
+				"max",
+				"max-height"
+			],
+			[
+				"item",
+				"item_id"
+			],
+			[
+				"calc",
+				"calc_enable"
+			],
+			[
+				"dis",
+				"display_from_message"
+			],
+			[
+				"from",
+				"fromflag"
+			],
+			[
+				"old",
+				"old_password"
+			],
+			[
+				"se",
+				"settings_table"
+			],
+			[
+				"margin",
+				"margin-top"
+			],
+			[
+				"fon",
+				"font-size"
+			],
+			[
+				"chang",
+				"change_password"
+			],
+			[
+				"pa",
+				"params"
+			],
+			[
+				"tem",
+				"template_filename"
+			],
+			[
+				"Blob",
+				"BlobstoreUploadHandler"
+			],
+			[
+				"stat",
+				"status"
+			],
+			[
+				"col",
+				"collectioninstructions"
+			],
+			[
+				"addres",
+				"address2"
+			],
+			[
+				"succe",
+				"success-cash"
+			],
+			[
+				"Re",
+				"RequestHandler"
+			],
+			[
+				"we",
+				"webapp2"
+			],
+			[
+				"time",
+				"timefailflag"
+			],
+			[
+				"partner",
+				"partnername"
+			],
+			[
+				"payment",
+				"payment_method"
+			],
+			[
+				"pay",
+				"payment_method"
+			],
+			[
+				"border-c",
+				"border-color"
+			],
+			[
+				"emai",
+				"email_address"
+			],
+			[
+				"erro",
+				"Error"
+			],
+			[
+				"a",
+				"amount"
+			],
+			[
+				"get_by",
+				"get_by_email"
+			],
+			[
+				"get_by_",
+				"get_by_id"
+			],
+			[
+				"order",
+				"ordernumber"
+			],
+			[
+				"user",
+				"username"
+			],
+			[
+				"valid",
+				"valid_amount"
+			],
+			[
+				"amou",
+				"amount_span"
+			],
+			[
+				"menu",
+				"menuitems"
+			],
+			[
+				"class",
+				"classmethod"
+			],
+			[
+				"part",
+				"partner_key"
+			],
+			[
+				"__",
+				"__dict__"
+			],
+			[
+				"per",
+				"permanenet_item_list"
+			],
+			[
+				"las",
+				"last_orders"
+			],
+			[
+				"ite",
+				"itemfound"
+			],
+			[
+				"pr",
+				"preapprovals"
+			],
+			[
+				"cal",
+				"calculate_price"
+			],
+			[
+				"get",
+				"get_current_session"
+			],
+			[
+				"myOrder",
+				"myOrder"
+			],
+			[
+				"email",
+				"email_2"
+			],
+			[
+				"pho",
+				"phonenumber_2"
+			],
+			[
+				"morni",
+				"morning_end_hr"
+			],
+			[
+				"morn",
+				"morning_end_min"
+			],
+			[
+				"mor",
+				"morning_end"
+			],
+			[
+				"last_o",
+				"last_orders_hr"
+			],
+			[
+				"la",
+				"last_orders"
+			],
+			[
+				"tex",
+				"text-align"
+			],
+			[
+				"pri",
+				"pricemax"
+			],
+			[
+				"tab",
+				"tabname"
+			],
+			[
+				"view",
+				"viewpartners"
+			],
+			[
+				"coll",
+				"collection"
+			],
+			[
+				"Log",
+				"LogoutHandler"
+			],
+			[
+				"webapp2",
+				"webapp2_extras"
+			],
+			[
+				"render",
+				"render_template"
+			],
+			[
+				"Invalid",
+				"InvalidAuthIdError"
+			],
+			[
+				"web",
+				"webapp2_extras"
+			],
+			[
+				"last",
+				"last_d_available"
+			],
+			[
+				"d_day",
+				"d_day_0"
+			],
+			[
+				"first",
+				"first_date"
+			],
+			[
+				"earliest",
+				"earliest_d_time"
+			],
+			[
+				"last_",
+				"last_d_time"
+			],
+			[
+				"earliestco",
+				"earliest_collection_time"
+			],
+			[
+				"select",
+				"selectedDate"
+			],
+			[
+				"stored",
+				"storedCDate"
+			],
+			[
+				"sele",
+				"selectedDate"
+			],
+			[
+				"poss",
+				"possible_days"
+			],
+			[
+				"add",
+				"address2"
+			],
+			[
+				"reqe",
+				"requested_url"
+			],
+			[
+				"collec",
+				"collection_time_date"
+			],
+			[
+				"deliv",
+				"delivery_time_date"
+			],
+			[
+				"body",
+				"body_string"
+			],
+			[
+				"subj",
+				"subject_string"
+			],
+			[
+				"partn",
+				"partner_name"
+			],
+			[
+				"new",
+				"newpartner"
+			],
+			[
+				"ser",
+				"service_partner"
+			],
+			[
+				"DEFAULT",
+				"DEFAULT_PARTNER_KEY"
+			],
+			[
+				"my",
+				"mypostcode"
+			],
+			[
+				"post",
+				"postcode"
+			],
+			[
+				"padd",
+				"padding-bottom"
+			],
+			[
+				"paddin",
+				"padding-right"
+			],
+			[
+				"myOr",
+				"myOrder"
+			],
+			[
+				"myO",
+				"myOrderList"
+			],
+			[
+				"orde",
+				"ordernumber"
+			],
+			[
+				"dateti",
+				"datetime"
+			],
+			[
+				"te",
+				"text-align"
+			],
+			[
+				"cart",
+				"cart"
+			],
+			[
+				"bu",
+				"build_cart_html_table"
+			],
+			[
+				"change_quantity_b",
+				"change_quantity_by_id"
+			],
+			[
+				"tabe",
+				"tablediv"
+			],
+			[
+				"cha",
+				"change"
+			],
+			[
+				"cat",
+				"categories_in_table"
+			],
+			[
+				"border",
+				"border-width"
+			],
+			[
+				"text",
+				"createTextNode"
+			],
+			[
+				"c",
+				"change_quantity"
+			],
+			[
+				"addb",
+				"addbutton"
+			],
+			[
+				"re",
+				"results"
+			],
+			[
+				"templa",
+				"template_values"
+			],
+			[
+				"blob",
+				"blobstore"
+			],
+			[
+				"stri",
+				"stripeResponseHandler"
+			],
+			[
+				"def",
+				"default"
+			],
+			[
+				"G",
+				"GOOGLE_CHECKOUT_MERCHANT_ID"
+			],
+			[
+				"prd",
+				"product_slug"
+			],
+			[
+				"Prod",
+				"ProductAddToCartForm"
+			],
+			[
+				"Cate",
+				"CategoryAdmin"
+			],
+			[
+				"admin",
+				"ProductAdmin"
+			],
+			[
+				"descri",
+				"description"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 47.0,
+		"selected_items":
+		[
+		],
+		"width": 392.0
+	},
+	"console":
+	{
+		"height": 125.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/main.py",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/admin/add.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/settings.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/static/css/partner_custom.css",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/paypal.py",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/partner.py",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/info.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/model.py",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/base.html",
+		"/Users/Will/Desktop/News Update - Featured Cleaners; Your Profile; £5",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/blog/top-10-dry-cleaners-2014",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/footer.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/form.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/menu.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/listings.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/static/css/custom.css",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/base.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/index.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/static/css/filters.svg",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/menu 2.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/thankyou.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/logoheader.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/dashboard.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/admin/addmenu.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/admin.py",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry-dev/static/js/custom/table.js",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry-dev/templates/footer.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry-dev/templates/menu 2.html",
+		"/Users/Will/.Trash/menu 2.html",
+		"/Users/Will/.Trash/menu 3.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/message.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/orders.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/resetpassword.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/signup.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/authenticated.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/order.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/login.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/message.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/resetpassword_dashboard.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/order 3.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/menu.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/reviews.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/order2.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/partner/dashboard_base.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry-go/templates/menu 2.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry-go/main.py",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry-go/templates/review.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry-go/templates/form.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry-go/templates/base.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry-go/templates/menu.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry-go/static/css/custom.css",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/settings.py",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/static/js/custom/table.js",
+		"/Users/Will/Desktop/KNOWN BUGS.txt",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/how it works.txt",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/thankyou_old2.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/index 2.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/form2.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/collection_old.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/templates/collection_form.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/Test/paypal/models.py",
+		"/Users/Will/Google Drive/Pop Laundry/Code/Test/paypal/app.yaml",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/menus/READMEPreparingExport.txt",
+		"/Users/Will/Google Drive/Pop Laundry/Code/Test/login/main.py",
+		"/Users/Will/Google Drive/Pop Laundry/Code/Test/login/templates/base.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/Test/login/app.yaml",
+		"/Users/Will/Google Drive/Pop Laundry/Code/60SL/Pop-laundry/mymodels.py",
+		"/Users/Will/Google Drive/Pop Laundry/Code/Test/skeleton/templates/index.html",
+		"/Users/Will/Google Drive/Pop Laundry/Code/Test/sendemail/app.yaml",
+		"/Users/Will/Google Drive/Pop Laundry/Market Research/README.txt",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/templates/quickview.html",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/templates/thankyou.html",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/templates/review2.html",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/templates/review.html",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/templates/admin/add.html",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/admin.py",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/templates/index.html",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/templates/menu.html",
+		"/Users/Will/Downloads/bootstrap-datetimepicker-master/sample in bootstrap v3/index.html",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/static/js/custom/table.js",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/static/css/custom.css",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/templates/base.html",
+		"/Users/Will/Desktop/Code/60SL/thoughts/Engineering Tasks.txt",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/templates/listings.html",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/templates/logoheader.html",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/mymodels.py",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/app.yaml",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/static/css/custom 2.css",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/bin/postcode.py",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/bin/__init__.py",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/templates/add.html",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/admin/__init__.py",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/templates/viewpartners.html",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/models.py",
+		"/Users/Will/Desktop/Code/MenuOrder3/menuorder3/static/css/custom.css",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/templates/nearby.html",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/admin/admin.py",
+		"/Users/Will/Desktop/Code/60SL/Hackathon/partner_admin/partner_admin.py",
+		"/Users/Will/Desktop/Code/Test/stripe/stripeseventy/main.py",
+		"/Users/Will/Desktop/Projects/MenuOrder2/static/css/custom.css",
+		"/Users/Will/Desktop/Code/60SL/Hackathon1/static/css/custom.css",
+		"/Users/Will/Desktop/Code/Test/stripe/stripeseventy/stylesheets/stylesheet.css",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/ecomstore/catalog/views.py",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/ecomstore/views.py",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/ecomstore/cart/views.py",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/ecomstore/SSLMiddleware.py",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/ecomstore/settings.py",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/ecomstore/cart/models.py",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/ecomstore/urls.py",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/ecomstore/cart/cart.py",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/ecomstore/cart/urls.py",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/ecomstore/catalog/urls.py",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/templates/ecomstore/tags/navigation.html",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/ecomstore/catalog/admin.py",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/catalog/forms.py",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/preview/views.py",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/templates/ecomstore/index.html",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/catalog/admin.py",
+		"/Users/Will/Desktop/Code/Django/ecommerce-projects/ecomstore/ecomstore/preview/urls.py",
+		"/Users/Will/Desktop/map.html",
+		"/Users/Will/Desktop/Code/MenuOrder3/index2.html",
+		"/Users/Will/Desktop/Code/MenuOrder3/menuorder3/tabtester.html",
+		"/Users/Will/Desktop/Code/MenuOrder3/menuorder3/bin/__init__.py",
+		"/Users/Will/Desktop/Code/MenuOrder3/menuorder3/bin/importer.py",
+		"/Users/Will/Desktop/Code/MenuOrder3/menuorder3/testimport.py",
+		"/Users/Will/Desktop/Code/MenuOrder3/menuorder3/Stylesheets/style.css",
+		"/Users/Will/Desktop/Code/MenuOrder3/menuorder3/app.yaml",
+		"/Users/Will/Desktop/Projects/guestbook/index.html"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"outcodes",
+			"settings",
+			"add",
+			"</label>",
+			"p",
+			"addRow",
+			"Save",
+			"cleaner_name",
+			"attr",
+			"class",
+			"getattr",
+			"info",
+			"response",
+			"x-editable",
+			"color",
+			"header",
+			"bread",
+			"370",
+			"main",
+			"wrap",
+			"html",
+			"red",
+			"breadcrumb",
+			"partnerlogo",
+			"quickviewdiv",
+			"delivery_input",
+			"collection_input",
+			"how_it_works",
+			"reviewbtn",
+			"see_prices",
+			"just_pick_up",
+			"#toplogo",
+			"search",
+			"#search",
+			"question",
+			"footer",
+			"white",
+			"body",
+			"z",
+			"home",
+			"order.g",
+			"menuitem.",
+			"render_template",
+			"render_template_dashboard",
+			"menu",
+			"approximate",
+			" x",
+			"()",
+			"priceco",
+			"each",
+			"refresh",
+			"span",
+			"price ca",
+			"add_item",
+			"cart.",
+			"array",
+			"remove_item",
+			"calculator_button",
+			"enable_calculator",
+			"from",
+			"class",
+			"this",
+			"class",
+			"bootbox",
+			"partner-",
+			"_dash",
+			"user",
+			"render_template_dashboard",
+			"login fa",
+			"old",
+			"check",
+			"auth",
+			"partner-log",
+			"failed",
+			"display_message",
+			"Num_",
+			"get_by_em",
+			"render_template_dashboard",
+			"params, partner)",
+			"partner, params)",
+			"render_template_dashboard",
+			"render_template",
+			"config['webapp2_extras.auth']['user_attributes']",
+			"render_template",
+			"webapp2.",
+			"import",
+			"help",
+			"cash",
+			"help_me()",
+			"    ",
+			"{url",
+			"_charge_paypal",
+			"message",
+			"88",
+			"add",
+			"<<<",
+			">>>",
+			"_email_receipt_to_customer",
+			"_charge_paypal",
+			"_display_page",
+			"self",
+			"order.cost",
+			"returned",
+			"cost",
+			"submit_order",
+			"True",
+			"urlfetch",
+			"url_request",
+			"_charge_paypal",
+			"Preapprov",
+			"except",
+			"_display_page",
+			"pass",
+			"email",
+			"order",
+			"mail",
+			"pass",
+			"mail",
+			"submit_order()",
+			"order",
+			"partner-dash",
+			"email_address",
+			"paypal",
+			"SuccessCa",
+			"redire",
+			"pass",
+			"Success",
+			"hide_invalid_times_warning"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"</label><br>",
+			"h2",
+			"cleaner_intro",
+			"current",
+			"partner, params)",
+			"",
+			"order",
+			"hide_invalid_options_warning",
+			"show_invalid_options_warning",
+			"invalid_options_div",
+			"pence",
+			"self",
+			"",
+			"    ",
+			"label>",
+			"<label",
+			"label",
+			"",
+			"item",
+			"    ",
+			"Main",
+			"Listings",
+			"Form",
+			"Success",
+			"Buy",
+			"Review",
+			"preapproval",
+			"item",
+			"preapproval_model",
+			"preapproval_request",
+			"postcode_attempt",
+			"postcode",
+			"model",
+			"create_total_row",
+			"create_item_row",
+			"cart",
+			"update_array",
+			"myItem",
+			"item",
+			"menuitem",
+			"    ",
+			"	",
+			"",
+			"    "
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}

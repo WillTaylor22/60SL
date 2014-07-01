@@ -1,17 +1,31 @@
 {% extends "templates/base.html" %}
+
+{% block headscripts %}
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-47860802-1', '60secondlaundry.com');
+  ga('send', 'pageview');
+
+</script>
+
+
+{% endblock %}
+
 {% block content %}
 
-		<ol class="breadcrumb">
-			<li><a href="/"><img id="logo" src="static/img/Logo_width300.png" alt="Sixty Second Laundry" style="width: 50%; height: 50%"></a></li>
-		</ol>
+		<img src="static/img/LaP300px.png" style="margin-left: 50px">
 
 		{% if error_message %}
 		<div class="alert alert-info">
 		  {{ error_message }}
 		</div>
 		{% endif %}
-		<br>
-		<h2 style="text-align: center"><span style="color: red">Order Laundry</span> <span style="color: grey">&</span><br> <span style="color: #23009D">Dry Cleaning Online</span></h2><br>
+		<br><br>
 		<form onsubmit="return try_submit();">
 			<label>Enter your postcode:</label>
 			<input class="collectionform input-lg" type="text" id="postcode" name="postcode"

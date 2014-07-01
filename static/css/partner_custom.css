@@ -15,7 +15,6 @@
 
 fieldset {
   overflow: hidden;
-  width: 400px;
 }
 
 /*label {
@@ -31,6 +30,15 @@ fieldset {
 #settings_form .time{
   width: 30px;
 }
+
+#settings_form input{
+  margin-bottom: 10px;
+}
+
+#settings_form label {
+  display: inline-block;
+  width: 200px;
+  text-align: right; }​
 
 /* make sidebar nav vertical */ 
 @media (min-width: 768px) {

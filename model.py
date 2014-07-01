@@ -81,34 +81,59 @@ class User(webapp2_extras.appengine.auth.models.User):
 class Partner(ndb.Expando):
   # Models an individual partner entry with name and outcodes
 
-  # public profile
+  # Basic Information
   name = ndb.StringProperty()
   address = ndb.StringProperty()
-  outcodes = ndb.StringProperty(repeated=True)
+
   logo_key = ndb.BlobKeyProperty() #stores the key for the image
-  minimum_order = ndb.IntegerProperty()
-  delivery_cost = ndb.StringProperty()
 
-  # contact
+
+  # Contacting you
   phonenumber = ndb.StringProperty()
+  phonenumber2 = ndb.StringProperty()
   email = ndb.StringProperty()
+  email2 = ndb.StringProperty()
+  email3 = ndb.StringProperty()
 
-  # delivery
-  days = ndb.IntegerProperty(repeated=True)
+
+  # Delivery Locations
+  # - Outcodes
+  outcodes = ndb.StringProperty(repeated=True)
+  # - Free delivery
+  minimum_order = ndb.IntegerProperty()
+  # - Paid delivery
+  minimum_order_paid_accept = ndb.BooleanProperty(default=False)
+  minimum_order_paid = ndb.IntegerProperty(default=0)
+  # delivery_cost = ndb.StringProperty() # Depreciated
+
+  # Delivery Times
+  # - Start
   start_hr = ndb.IntegerProperty()
   start_min = ndb.IntegerProperty()
+  # - End
   end_hr = ndb.IntegerProperty()
   end_min = ndb.IntegerProperty()
+  # - Window
   window_size = ndb.IntegerProperty()
-  start_day = ndb.IntegerProperty()
-  end_day = ndb.IntegerProperty()
+  # - Days
+  days = ndb.IntegerProperty(repeated=True)
+  
+  # start_day = ndb.IntegerProperty() # Depreciated
+  # end_day = ndb.IntegerProperty() # Depreciated
 
+
+
+  # Optional Delivery Settings
+  # - Last orders same evening
+  last_orders_same_day_enable = ndb.BooleanProperty(default=True)
+  last_orders_same_day_hr = ndb.IntegerProperty()
+  last_orders_same_day_min = ndb.IntegerProperty()
+  # - Last orders next morning
+  last_orders_enable = ndb.BooleanProperty(default=True)
   last_orders_hr = ndb.IntegerProperty()
   last_orders_min = ndb.IntegerProperty()
   end_of_morning_hr = ndb.IntegerProperty()
   end_of_morning_min = ndb.IntegerProperty()
-  last_orders_same_day_hr = ndb.IntegerProperty()
-  last_orders_same_day_min = ndb.IntegerProperty()
 
   # best sellers
   shirts = ndb.StringProperty()
@@ -333,7 +358,7 @@ class order(ndb.Model):
 
     username = '853av'
     password = '552cu'
-    to = '447772622352' #partner.phonenumber
+    to = partner.phonenumber
     originator = '60SeLaundry'
     
     # [NEW ORDER] Will Taylor, 17 Corsham Street N1 6DR, Friday 30th May 14:00 - 15:00

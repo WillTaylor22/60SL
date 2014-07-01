@@ -25,6 +25,8 @@ import logging
 from django.utils import simplejson as json
 
 from google.appengine.api import mail
+import quopri # for "= every 75 char" bug
+
 
 try:
   import simplejson as json
@@ -862,78 +864,63 @@ class SettingsHandler(BaseHandler):
     partner.name = self.request.get('name')
     partner.address = self.request.get('address')
 
-    # Delivery Location Information
-    partner_outcodes = self.request.get('outcodes')
-    partner_outcodes = quopri.decodestring(partner_outcodes)
-    partner.outcodes = partner_outcodes.split()
-
-    # - Free Delivery
-    partner.minimum_order = self.request.get('minimum_order')
-
-    # - Paid Delivery
-    partner.minimum_order_paid_accept = self.request.get('minimum_order_paid_accept')
-    partner.minimum_order_paid = self.request.get('minimum_order_paid')
-
-
+    
+    # Contacting you
     partner.phonenumber = self.request.get('phonenumber')
     partner.phonenumber_2 = self.request.get('phonenumber_2')
-    partner.email = self.request.get('email')
     partner.email_2 = self.request.get('email_2')
     partner.email_3 = self.request.get('email_3')
 
+
+    # Delivery Locations
+    # - Outcodes
+    partner_outcodes = self.request.get('outcodes')
+    partner_outcodes = quopri.decodestring(partner_outcodes)
+    partner.outcodes = partner_outcodes.split()
+    # - Free Delivery
+    partner.minimum_order = int(self.request.get('minimum_order'))
+    # - Paid Delivery
+    partner.minimum_order_paid_accept = self.request.get('minimum_order_paid_accept') != ''
+    partner.minimum_order_paid = int(self.request.get('minimum_order_paid'))
+    print "partner.minimum_order_paid_accept"
+    print partner.minimum_order_paid_accept
     
-    # Give the new partner our data
-    partner.name = partner_name
-    partner.address = partner_address
-    partner.outcodes = partner_outcodes
-    partner.minimum_order = int(partner_minimum_order)
-    partner.delivery_cost = partner_delivery_cost
-
-    fname = self.request.get('filename')
-
+    # Delivery Times
+    # - Start
     partner.start_hr = int(self.request.get('start_hr'))
     partner.start_min = int(self.request.get('start_min'))
+    # - End
     partner.end_hr = int(self.request.get('end_hr'))
     partner.end_min = int(self.request.get('end_min'))
+    # - Window
     partner.window_size = int(self.request.get('window_size'))
-
-    partner.last_orders_hr = int(self.request.get('last_orders_hr'))
-    partner.last_orders_min = int(self.request.get('last_orders_min'))
-    partner.end_of_morning_hr = int(self.request.get('end_of_morning_hr'))
-    partner.end_of_morning_min = int(self.request.get('end_of_morning_min'))
-
-    partner.last_orders_same_day_hr = int(self.request.get('last_orders_same_day_hr'))
-    partner.last_orders_same_day_min = int(self.request.get('last_orders_same_day_min'))
-
-    partner.shirts = self.request.get('shirts')
-    partner.suits = self.request.get('suits')
-
-
-
+    # - Days
     days = self.request.get('days')
     day_list = days.split()
     day_list = map(int, day_list)
     partner.days = day_list
 
-    # OLD:
-    # partner.start_day = int(self.request.get('start_day'))
-    # partner.end_day = int(self.request.get('end_day'))
 
-
-    partner.logo_key = blob_key # n.b. blobstore.BlobReferenceProperty() takes a blob_info
-    
-    partner.populate_slots()
-
-    # Use to clear all items
-    clear_items(partner_name) 
-
-    # Populate if no items exist
-    if fname:
-      grab(partner_name, fname)
-
-
+    # Optional Delivery Settings
+    # - Last orders same evening
+    partner.last_orders_same_day_enable = self.request.get('last_orders_same_day_enable') != ''
+    partner.last_orders_same_day_hr = int(self.request.get('last_orders_same_day_hr'))
+    partner.last_orders_same_day_min = int(self.request.get('last_orders_same_day_min'))
+    # - Last orders next morning
+    partner.last_orders_enable = self.request.get('last_orders_enable') != ''
+    partner.last_orders_hr = int(self.request.get('last_orders_hr'))
+    partner.last_orders_min = int(self.request.get('last_orders_min'))
+    partner.end_of_morning_hr = int(self.request.get('end_of_morning_hr'))
+    partner.end_of_morning_min = int(self.request.get('end_of_morning_min'))
 
     partner.put()
 
     # redirect
-    self.redirect('/viewpartners')
+    message = 'Changes saved.'
+
+    params = {
+      'user': user,
+      'message': message,
+    }
+
+    self.render_template_dashboard('settings.html', user, partner, params)
